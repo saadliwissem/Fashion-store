@@ -128,7 +128,9 @@ const Home = () => {
                 <Truck className="w-8 h-8 text-purple-600" />
               </div>
               <h3 className="text-xl font-bold mb-4">Free Shipping</h3>
-              <p className="text-gray-600">Free delivery on orders over $99</p>
+              <p className="text-gray-600">
+                Free delivery on orders over 300 TND
+              </p>
             </div>
 
             <div className="glass-card p-8 text-center">
@@ -189,7 +191,7 @@ const Home = () => {
           </h2>
           <p className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto">
             Join thousands of satisfied customers who have elevated their style
-            with FashionStore
+            with DAR ENNAR
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/shop">

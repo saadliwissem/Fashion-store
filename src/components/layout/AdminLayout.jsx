@@ -153,7 +153,7 @@ const AdminLayout = ({ children }) => {
               </div>
               <div>
                 <h1 className="font-bold text-gray-900">Admin Panel</h1>
-                <p className="text-xs text-gray-500">FashionStore Tunisia</p>
+                <p className="text-xs text-gray-500">DAR ENNAR Tunisia</p>
               </div>
             </Link>
             <button

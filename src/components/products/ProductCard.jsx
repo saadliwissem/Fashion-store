@@ -78,11 +78,11 @@ const ProductCard = ({ product, viewMode = "grid" }) => {
             <div className="text-right">
               <div className="mb-4">
                 <span className="text-2xl font-bold text-gray-900">
-                  ${product.price.toFixed(2)}
+                  {product.price.toFixed(2)} TND
                 </span>
                 {product.originalPrice && (
                   <div className="text-lg text-gray-400 line-through">
-                    ${product.originalPrice.toFixed(2)}
+                    {product.originalPrice.toFixed(2)} TND
                   </div>
                 )}
               </div>
@@ -202,11 +202,11 @@ const ProductCard = ({ product, viewMode = "grid" }) => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="text-2xl font-bold text-gray-900">
-              ${product.price.toFixed(2)}
+              {product.price.toFixed(2)} TND
             </span>
             {product.originalPrice && (
               <span className="text-lg text-gray-400 line-through">
-                ${product.originalPrice.toFixed(2)}
+                {product.originalPrice.toFixed(2)} TND
               </span>
             )}
           </div>

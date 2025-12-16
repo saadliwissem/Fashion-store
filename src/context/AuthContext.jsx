@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Initialize auth state from localStorage
+  // Initialize auth state
   useEffect(() => {
     const token = localStorage.getItem("token");
     const userData = localStorage.getItem("user");
@@ -25,59 +25,50 @@ export const AuthProvider = ({ children }) => {
     if (token && userData) {
       try {
         setUser(JSON.parse(userData));
-        // Optionally validate token with backend
+        validateToken(token);
       } catch (err) {
         console.error("Error parsing user data:", err);
         localStorage.removeItem("token");
         localStorage.removeItem("user");
+        setLoading(false);
       }
+    } else {
+      setLoading(false);
     }
-    setLoading(false);
   }, []);
+
+  const validateToken = async (token) => {
+    try {
+      await authAPI.getProfile();
+      setLoading(false);
+    } catch (err) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      setUser(null);
+      setLoading(false);
+    }
+  };
 
   const login = async (email, password) => {
     setLoading(true);
     setError(null);
 
     try {
-      // In a real app, this would be an API call
-      // const response = await authAPI.login({ email, password });
+      const response = await authAPI.login({ email, password });
+      const { token, user: userData } = response.data;
 
-      // Mock API response
-      setTimeout(() => {
-        // const mockUser = {
-        //   id: "1",
-        //   email,
-        //   firstName: "Ahmed",
-        //   lastName: "Ben Ali",
-        //   role: "customer",
-        //   avatar: null,
-        //   createdAt: new Date().toISOString(),
-        // };
-        const mockUser = {
-          id: "1",
-          email,
-          firstName: "Ahmed",
-          lastName: "Ben Ali",
-          role: "admin", // Change from 'customer' to 'admin' for testing
-          avatar: null,
-          createdAt: new Date().toISOString(),
-        };
-
-        const mockToken = "mock-jwt-token";
-
-        localStorage.setItem("token", mockToken);
-        localStorage.setItem("user", JSON.stringify(mockUser));
-        setUser(mockUser);
-
-        toast.success("Welcome back!");
-        setLoading(false);
-      }, 1000);
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(userData));
+      setUser(userData);
+      toast.success("Welcome back!");
+      return userData;
     } catch (err) {
-      setError(err.response?.data?.message || "Login failed");
-      toast.error("Invalid email or password");
-      setLoading(false);
+      const errorMessage = err.response?.data?.message || "Login failed";
+      setError(errorMessage);
+      toast.error(errorMessage);
       throw err;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -86,94 +77,95 @@ export const AuthProvider = ({ children }) => {
     setError(null);
 
     try {
-      // In a real app, this would be an API call
-      // const response = await authAPI.register(userData);
+      const response = await authAPI.register(userData);
+      const { token, user: newUser } = response.data;
 
-      // Mock API response
-      setTimeout(() => {
-        const mockUser = {
-          id: "2",
-          email: userData.email,
-          firstName: userData.firstName,
-          lastName: userData.lastName,
-          role: "customer",
-          avatar: null,
-          createdAt: new Date().toISOString(),
-        };
-
-        const mockToken = "mock-jwt-token-register";
-
-        localStorage.setItem("token", mockToken);
-        localStorage.setItem("user", JSON.stringify(mockUser));
-        setUser(mockUser);
-
-        toast.success("Account created successfully!");
-        setLoading(false);
-      }, 1000);
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(newUser));
+      setUser(newUser);
+      toast.success("Account created successfully!");
+      return newUser;
     } catch (err) {
-      setError(err.response?.data?.message || "Registration failed");
-      toast.error("Registration failed. Please try again.");
-      setLoading(false);
+      const errorMessage = err.response?.data?.message || "Registration failed";
+      setError(errorMessage);
+      toast.error(errorMessage);
       throw err;
+    } finally {
+      setLoading(false);
     }
   };
 
   const logout = async () => {
     try {
-      // In a real app, this would be an API call
-      // await authAPI.logout();
-
+      await authAPI.logout();
+    } catch (err) {
+      console.error("Logout error:", err);
+    } finally {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       setUser(null);
-
       toast.success("Logged out successfully");
-    } catch (err) {
-      console.error("Logout error:", err);
     }
   };
 
   const updateProfile = async (data) => {
     try {
-      // In a real app, this would be an API call
-      // const response = await authAPI.updateProfile(data);
+      const response = await authAPI.updateProfile(data);
+      const updatedUser = response.data.user;
 
-      const updatedUser = { ...user, ...data };
       localStorage.setItem("user", JSON.stringify(updatedUser));
       setUser(updatedUser);
-
       toast.success("Profile updated successfully");
+      return updatedUser;
     } catch (err) {
-      setError(err.response?.data?.message || "Update failed");
-      toast.error("Failed to update profile");
+      const errorMessage = err.response?.data?.message || "Update failed";
+      toast.error(errorMessage);
       throw err;
     }
   };
 
   const forgotPassword = async (email) => {
     try {
-      // In a real app, this would be an API call
-      // await authAPI.forgotPassword(email);
-
+      await authAPI.forgotPassword(email);
       toast.success("Password reset link sent to your email");
       return true;
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to send reset email");
-      toast.error("Failed to send reset email");
+      const errorMessage =
+        err.response?.data?.message || "Failed to send reset email";
+      toast.error(errorMessage);
       throw err;
     }
   };
 
   const resetPassword = async (data) => {
     try {
-      // In a real app, this would be an API call
-      // await authAPI.resetPassword(data);
+      const response = await authAPI.resetPassword(data);
+      const { token, message } = response.data;
 
-      toast.success("Password reset successfully");
+      if (token) {
+        localStorage.setItem("token", token);
+      }
+
+      toast.success(message || "Password reset successfully");
       return true;
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to reset password");
-      toast.error("Failed to reset password");
+      const errorMessage =
+        err.response?.data?.message || "Failed to reset password";
+      toast.error(errorMessage);
+      throw err;
+    }
+  };
+
+  const getProfile = async () => {
+    try {
+      const response = await authAPI.getProfile();
+      const userData = response.data.user;
+
+      localStorage.setItem("user", JSON.stringify(userData));
+      setUser(userData);
+      return userData;
+    } catch (err) {
+      console.error("Error fetching profile:", err);
       throw err;
     }
   };
@@ -182,14 +174,17 @@ export const AuthProvider = ({ children }) => {
     user,
     loading,
     error,
+    setUser, // Keep this for GoogleCallback
     login,
     register,
     logout,
     updateProfile,
     forgotPassword,
     resetPassword,
+    getProfile,
     isAuthenticated: !!user,
     isAdmin: user?.role === "admin",
+    // REMOVED: handleGoogleAuth - we don't need it for redirect flow
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

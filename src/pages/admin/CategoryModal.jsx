@@ -14,21 +14,24 @@ const CategoryModal = ({
     name: "",
     slug: "",
     description: "",
-    parentId: "",
+    parent: "",
     status: "active",
     featured: false,
     image: "",
     seo: {
       title: "",
       description: "",
-      keywords: "",
+      keywords: [],
     },
     displayOrder: 1,
+    showInMenu: true,
+    showInFooter: false,
   });
 
   const [imagePreview, setImagePreview] = useState("");
   const [showSeoFields, setShowSeoFields] = useState(false);
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (mode === "edit" && category) {
@@ -36,7 +39,7 @@ const CategoryModal = ({
         name: category.name || "",
         slug: category.slug || "",
         description: category.description || "",
-        parentId: category.parentId || "",
+        parent: category.parent?._id || category.parent || "",
         status: category.status || "active",
         featured: category.featured || false,
         image: category.image || "",
@@ -48,15 +51,20 @@ const CategoryModal = ({
             : category.seo?.keywords || "",
         },
         displayOrder: category.displayOrder || 1,
+        showInMenu:
+          category.showInMenu !== undefined ? category.showInMenu : true,
+        showInFooter: category.showInFooter || false,
       });
       setImagePreview(category.image || "");
     } else {
       // Reset form for add mode
+      const nextOrder =
+        Math.max(...categories.map((c) => c.displayOrder || 0), 0) + 1;
       setFormData({
         name: "",
         slug: "",
         description: "",
-        parentId: "",
+        parent: "",
         status: "active",
         featured: false,
         image: "",
@@ -65,7 +73,9 @@ const CategoryModal = ({
           description: "",
           keywords: "",
         },
-        displayOrder: (categories?.length || 0) + 1,
+        displayOrder: nextOrder,
+        showInMenu: true,
+        showInFooter: false,
       });
       setImagePreview("");
       setShowSeoFields(false);
@@ -73,18 +83,34 @@ const CategoryModal = ({
     }
   }, [mode, category, categories]);
 
-  const flattenCategoriesForSelect = (cats, level = 0, parentName = "") => {
+  const flattenCategoriesForSelect = (
+    cats,
+    level = 0,
+    parentName = "",
+    excludeId = ""
+  ) => {
     let result = [];
     cats.forEach((cat) => {
+      // Skip the current category in edit mode (can't be its own parent)
+      if (cat._id === excludeId || cat.id === excludeId) {
+        return;
+      }
+
       const prefix = "— ".repeat(level);
       result.push({
-        value: cat.id,
+        value: cat._id || cat.id,
         label: `${prefix}${cat.name}`,
-        disabled: mode === "edit" && cat.id === category?.id, // Can't select itself as parent
+        disabled: false,
       });
+
       if (cat.children && cat.children.length > 0) {
         result.push(
-          ...flattenCategoriesForSelect(cat.children, level + 1, cat.name)
+          ...flattenCategoriesForSelect(
+            cat.children,
+            level + 1,
+            cat.name,
+            excludeId
+          )
         );
       }
     });
@@ -93,7 +119,12 @@ const CategoryModal = ({
 
   const parentOptions = [
     { value: "", label: "No Parent (Top Level)" },
-    ...flattenCategoriesForSelect(categories || []),
+    ...flattenCategoriesForSelect(
+      categories || [],
+      0,
+      "",
+      category?._id || category?.id
+    ),
   ];
 
   const generateSlug = (name) => {
@@ -130,8 +161,8 @@ const CategoryModal = ({
           slug: generatedSlug,
           seo: {
             ...prev.seo,
-            title: value ? `${value} - FashionStore Tunisia` : "",
-            description: value ? `Shop ${value} at FashionStore Tunisia` : "",
+            title: value ? `${value} - DAR ENNAR Tunisia` : "",
+            description: value ? `Shop ${value} at DAR ENNAR Tunisia` : "",
           },
         }));
       }
@@ -212,26 +243,38 @@ const CategoryModal = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validateForm()) {
       return;
     }
 
-    // Prepare data for saving
-    const categoryData = {
-      ...formData,
-      seo: {
-        ...formData.seo,
-        keywords: formData.seo.keywords
-          .split(",")
-          .map((kw) => kw.trim())
-          .filter((kw) => kw.length > 0),
-      },
-    };
+    setLoading(true);
 
-    onSave(categoryData);
+    try {
+      // Prepare data for saving
+      const categoryData = {
+        ...formData,
+        seo: {
+          ...formData.seo,
+          keywords: formData.seo.keywords
+            ? formData.seo.keywords
+                .split(",")
+                .map((kw) => kw.trim())
+                .filter((kw) => kw.length > 0)
+            : [],
+        },
+        // Convert empty parent to null
+        parent: formData.parent || null,
+      };
+
+      await onSave(categoryData);
+    } catch (error) {
+      // Error handling is done in parent component
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -262,6 +305,7 @@ const CategoryModal = ({
             <button
               onClick={onClose}
               className="p-2 text-gray-400 hover:text-gray-500 hover:bg-gray-100 rounded-lg"
+              disabled={loading}
             >
               <X className="w-5 h-5" />
             </button>
@@ -284,9 +328,10 @@ const CategoryModal = ({
                       name="name"
                       value={formData.name}
                       onChange={handleInputChange}
+                      disabled={loading}
                       className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none ${
                         errors.name ? "border-rose-500" : "border-gray-300"
-                      }`}
+                      } ${loading ? "bg-gray-50" : ""}`}
                       placeholder="e.g., Men's Fashion"
                     />
                     {errors.name && (
@@ -303,16 +348,17 @@ const CategoryModal = ({
                     </label>
                     <div className="flex items-center gap-2">
                       <span className="text-sm text-gray-500">
-                        fashionstore.com/c/
+                        DAR ENNAR.com/c/
                       </span>
                       <input
                         type="text"
                         name="slug"
                         value={formData.slug}
                         onChange={handleInputChange}
+                        disabled={loading}
                         className={`flex-1 px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none ${
                           errors.slug ? "border-rose-500" : "border-gray-300"
-                        }`}
+                        } ${loading ? "bg-gray-50" : ""}`}
                         placeholder="mens-fashion"
                       />
                     </div>
@@ -333,10 +379,13 @@ const CategoryModal = ({
                       Parent Category
                     </label>
                     <select
-                      name="parentId"
-                      value={formData.parentId}
+                      name="parent"
+                      value={formData.parent}
                       onChange={handleInputChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                      disabled={loading}
+                      className={`w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none ${
+                        loading ? "bg-gray-50" : ""
+                      }`}
                     >
                       {parentOptions.map((option) => (
                         <option
@@ -355,35 +404,81 @@ const CategoryModal = ({
                     </p>
                   </div>
 
-                  {/* Status & Featured */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-900 mb-2">
-                        Status
-                      </label>
-                      <select
-                        name="status"
-                        value={formData.status}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
-                      >
-                        <option value="active">Active</option>
-                        <option value="draft">Draft</option>
-                        <option value="archived">Archived</option>
-                      </select>
+                  {/* Status & Display Settings */}
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-900 mb-2">
+                          Status
+                        </label>
+                        <select
+                          name="status"
+                          value={formData.status}
+                          onChange={handleInputChange}
+                          disabled={loading}
+                          className={`w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none ${
+                            loading ? "bg-gray-50" : ""
+                          }`}
+                        >
+                          <option value="active">Active</option>
+                          <option value="draft">Draft</option>
+                          <option value="archived">Archived</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-900 mb-2">
+                          Display Order
+                        </label>
+                        <input
+                          type="number"
+                          name="displayOrder"
+                          value={formData.displayOrder}
+                          onChange={handleInputChange}
+                          disabled={loading}
+                          min="1"
+                          className={`w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none ${
+                            loading ? "bg-gray-50" : ""
+                          }`}
+                        />
+                      </div>
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-900 mb-2">
-                        Display Order
-                      </label>
-                      <input
-                        type="number"
-                        name="displayOrder"
-                        value={formData.displayOrder}
-                        onChange={handleInputChange}
-                        min="1"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
-                      />
+
+                    {/* Display Options */}
+                    <div className="space-y-2">
+                      <div className="flex items-center">
+                        <input
+                          type="checkbox"
+                          id="showInMenu"
+                          name="showInMenu"
+                          checked={formData.showInMenu}
+                          onChange={handleInputChange}
+                          disabled={loading}
+                          className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                        />
+                        <label
+                          htmlFor="showInMenu"
+                          className="ml-2 text-sm text-gray-900"
+                        >
+                          Show in Navigation Menu
+                        </label>
+                      </div>
+                      <div className="flex items-center">
+                        <input
+                          type="checkbox"
+                          id="showInFooter"
+                          name="showInFooter"
+                          checked={formData.showInFooter}
+                          onChange={handleInputChange}
+                          disabled={loading}
+                          className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                        />
+                        <label
+                          htmlFor="showInFooter"
+                          className="ml-2 text-sm text-gray-900"
+                        >
+                          Show in Footer
+                        </label>
+                      </div>
                     </div>
                   </div>
 
@@ -395,6 +490,7 @@ const CategoryModal = ({
                       name="featured"
                       checked={formData.featured}
                       onChange={handleInputChange}
+                      disabled={loading}
                       className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
                     />
                     <label
@@ -431,6 +527,7 @@ const CategoryModal = ({
                           <button
                             type="button"
                             onClick={handleRemoveImage}
+                            disabled={loading}
                             className="absolute top-2 right-2 p-2 bg-white rounded-full shadow-lg hover:bg-gray-50"
                           >
                             <X className="w-4 h-4" />
@@ -447,9 +544,16 @@ const CategoryModal = ({
                               type="file"
                               accept="image/*"
                               onChange={handleImageChange}
+                              disabled={loading}
                               className="hidden"
                             />
-                            <span className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 cursor-pointer">
+                            <span
+                              className={`px-4 py-2 rounded-lg cursor-pointer ${
+                                loading
+                                  ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                                  : "bg-purple-600 text-white hover:bg-purple-700"
+                              }`}
+                            >
                               Choose Image
                             </span>
                           </label>
@@ -474,11 +578,12 @@ const CategoryModal = ({
                       value={formData.description}
                       onChange={handleInputChange}
                       rows="4"
+                      disabled={loading}
                       className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none ${
                         errors.description
                           ? "border-rose-500"
                           : "border-gray-300"
-                      }`}
+                      } ${loading ? "bg-gray-50" : ""}`}
                       placeholder="Describe this category (optional)"
                     />
                     {errors.description && (
@@ -509,7 +614,8 @@ const CategoryModal = ({
                 <button
                   type="button"
                   onClick={() => setShowSeoFields(!showSeoFields)}
-                  className="flex items-center gap-2 text-gray-900 hover:text-purple-600"
+                  disabled={loading}
+                  className="flex items-center gap-2 text-gray-900 hover:text-purple-600 disabled:text-gray-400 disabled:hover:text-gray-400"
                 >
                   <Globe className="w-5 h-5" />
                   <span className="font-medium">SEO Settings</span>
@@ -545,11 +651,12 @@ const CategoryModal = ({
                         name="seo.title"
                         value={formData.seo.title}
                         onChange={handleInputChange}
+                        disabled={loading}
                         className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none ${
                           errors["seo.title"]
                             ? "border-rose-500"
                             : "border-gray-300"
-                        }`}
+                        } ${loading ? "bg-gray-50" : ""}`}
                         placeholder="Optimized title for search engines"
                       />
                       {errors["seo.title"] && (
@@ -580,11 +687,12 @@ const CategoryModal = ({
                         value={formData.seo.description}
                         onChange={handleInputChange}
                         rows="3"
+                        disabled={loading}
                         className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none ${
                           errors["seo.description"]
                             ? "border-rose-500"
                             : "border-gray-300"
-                        }`}
+                        } ${loading ? "bg-gray-50" : ""}`}
                         placeholder="Meta description for search results"
                       />
                       {errors["seo.description"] && (
@@ -604,7 +712,10 @@ const CategoryModal = ({
                         name="seo.keywords"
                         value={formData.seo.keywords}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                        disabled={loading}
+                        className={`w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none ${
+                          loading ? "bg-gray-50" : ""
+                        }`}
                         placeholder="fashion, clothing, style (comma separated)"
                       />
                       <p className="mt-1 text-sm text-gray-500">
@@ -619,11 +730,23 @@ const CategoryModal = ({
 
             {/* Footer */}
             <div className="flex items-center justify-end gap-3 p-6 border-t border-gray-200 bg-gray-50">
-              <Button type="button" variant="outline" onClick={onClose}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={onClose}
+                disabled={loading}
+              >
                 Cancel
               </Button>
-              <Button type="submit">
-                {mode === "add" ? "Create Category" : "Save Changes"}
+              <Button type="submit" disabled={loading}>
+                {loading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    {mode === "add" ? "Creating..." : "Saving..."}
+                  </>
+                ) : (
+                  <>{mode === "add" ? "Create Category" : "Save Changes"}</>
+                )}
               </Button>
             </div>
           </form>

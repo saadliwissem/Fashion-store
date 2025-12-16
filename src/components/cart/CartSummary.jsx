@@ -11,6 +11,39 @@ const CartSummary = ({
   onCheckout,
   isLoading = false,
 }) => {
+  // Helper function to get item display name
+  const getItemName = (item) => {
+    return item.product?.name || item.name || "Unnamed Product";
+  };
+
+  // Helper function to get item price
+  const getItemPrice = (item) => {
+    return item.product?.price || item.price || 0;
+  };
+
+  // Helper function to get item image
+  const getItemImage = (item) => {
+    const product = item.product || item;
+    return product.images?.[0] || product.image || null;
+  };
+
+  // Helper function to get item quantity
+  const getItemQuantity = (item) => {
+    return item.quantity || 1;
+  };
+
+  // Calculate item total
+  const getItemTotal = (item) => {
+    const price = getItemPrice(item);
+    const quantity = getItemQuantity(item);
+    return price * quantity;
+  };
+
+  // Get item ID for key prop
+  const getItemId = (item) => {
+    return item._id || item.id || Math.random().toString();
+  };
+
   return (
     <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-6">
       <h2 className="text-xl font-bold text-gray-900 mb-6">Order Summary</h2>
@@ -22,30 +55,41 @@ const CartSummary = ({
             Items ({items.length})
           </h3>
           <div className="space-y-3 max-h-64 overflow-y-auto pr-2">
-            {items.map((item) => (
-              <div key={item.id} className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
-                  {item.image ? (
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300" />
-                  )}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-medium text-gray-900 truncate">
-                    {item.name}
-                  </p>
-                  <div className="flex items-center justify-between text-sm text-gray-600">
-                    <span>Qty: {item.quantity}</span>
-                    <span>${(item.price * item.quantity).toFixed(2)}</span>
+            {items.map((item) => {
+              const itemName = getItemName(item);
+              const itemImage = getItemImage(item);
+              const itemPrice = getItemPrice(item);
+              const itemQuantity = getItemQuantity(item);
+              const itemTotal = getItemTotal(item);
+              const itemId = getItemId(item);
+
+              return (
+                <div key={itemId} className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                    {itemImage ? (
+                      <img
+                        src={itemImage}
+                        alt={itemName}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
+                        <span className="text-xs text-gray-400">No Image</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-gray-900 truncate">
+                      {itemName}
+                    </p>
+                    <div className="flex items-center justify-between text-sm text-gray-600">
+                      <span>Qty: {itemQuantity}</span>
+                      <span>${itemTotal.toFixed(2)}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
@@ -54,7 +98,7 @@ const CartSummary = ({
       <div className="space-y-3 mb-6">
         <div className="flex justify-between">
           <span className="text-gray-600">Subtotal</span>
-          <span className="font-medium">${subtotal.toFixed(3)} DT</span>
+          <span className="font-medium">{subtotal.toFixed(3)} DT</span>
         </div>
 
         <div className="flex justify-between">
@@ -64,19 +108,19 @@ const CartSummary = ({
               shipping === 0 ? "text-green-600 font-medium" : "font-medium"
             }
           >
-            {shipping === 0 ? "FREE" : `${shipping} DT`}
+            {shipping === 0 ? "FREE" : `${shipping.toFixed(3)} DT`}
           </span>
         </div>
 
         <div className="flex justify-between">
           <span className="text-gray-600">TVA (7%)</span>
-          <span className="font-medium">${tax.toFixed(3)} DT</span>
+          <span className="font-medium">{tax.toFixed(3)} DT</span>
         </div>
 
         {shipping > 0 && subtotal > 0 && (
           <div className="p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg">
             <p className="text-sm text-purple-700 text-center">
-              Add ${(99 - subtotal).toFixed(3)} more for free shipping!
+              Add {(99 - subtotal).toFixed(3)} DT more for free shipping!
             </p>
           </div>
         )}
@@ -86,7 +130,7 @@ const CartSummary = ({
       <div className="border-t border-gray-200 pt-4 mb-6">
         <div className="flex justify-between text-lg font-bold">
           <span>Total</span>
-          <span>${total.toFixed(3)} DT</span>
+          <span>{total.toFixed(3)} DT</span>
         </div>
         <p className="text-sm text-gray-600 text-right mt-1">
           Includes all taxes and fees

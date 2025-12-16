@@ -37,7 +37,7 @@ const ForgotPassword = () => {
               <span className="text-white font-bold text-xl">F</span>
             </div>
             <span className="ml-3 text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">
-              FashionStore
+              DAR ENNAR
             </span>
           </Link>
         </div>

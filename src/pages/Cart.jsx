@@ -10,6 +10,7 @@ import {
   Truck,
   Shield,
   Package,
+  Loader2,
 } from "lucide-react";
 import Button from "../components/common/Button";
 import CartItem from "../components/cart/CartItem";
@@ -18,18 +19,50 @@ import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
 import { useWishlist } from "../context/WishlistContext";
+
 const Cart = () => {
   const navigate = useNavigate();
   const { addToWishlist } = useWishlist();
-  const { cart, cartTotal, removeItem, updateQuantity, clearCart, loading } =
-    useCart();
+  const {
+    cart,
+    cartTotal,
+    removeItem,
+    updateQuantity,
+    clearCart,
+    loading,
+    initialized,
+    updatingItems,
+  } = useCart();
   const { isAuthenticated } = useAuth();
 
+  // Handle move to wishlist for a specific item
+  // In Cart.jsx
+  const handleMoveToWishlist = (item) => {
+    if (!item) return;
+
+    // Extract product information from cart item
+    const productData = item.product || item;
+
+    addToWishlist({
+      id: productData._id || productData.id,
+      name: productData.name,
+      price: productData.price,
+      originalPrice: productData.originalPrice,
+      image: productData.image || productData.images?.[0],
+      category: productData.category,
+    });
+
+    removeItem(item._id || item.id);
+    toast.success("Moved to wishlist!");
+  };
+
   const handleUpdateQuantity = (id, newQuantity) => {
+    if (!id || newQuantity < 1) return;
     updateQuantity(id, newQuantity);
   };
 
   const handleRemoveItem = (id) => {
+    if (!id) return;
     removeItem(id);
   };
 
@@ -38,7 +71,8 @@ const Cart = () => {
   };
 
   const handleProceedToCheckout = () => {
-    if (cart.length === 0) {
+    // Check if cart is null, undefined, or empty
+    if (!cart || !Array.isArray(cart) || cart.length === 0) {
       toast.error("Your cart is empty");
       return;
     }
@@ -55,17 +89,31 @@ const Cart = () => {
     navigate("/checkout");
   };
 
-  const handleMoveToWishlist = () => {
-    addToWishlist({
-      id: item.id,
-      name: item.name,
-      price: item.price,
-      originalPrice: item.originalPrice,
-      image: item.image,
-    });
-  };
+  // Show loading state
+  if (loading || !initialized) {
+    return (
+      <div className="min-h-screen py-16 fade-in">
+        <div className="container mx-auto px-4">
+          <div className="max-w-lg mx-auto text-center">
+            <div className="w-24 h-24 bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <Loader2 className="w-12 h-12 text-purple-600 animate-spin" />
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">
+              Loading your cart...
+            </h1>
+            <p className="text-gray-600 mb-8">
+              Please wait while we load your shopping cart.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-  if (cart.length === 0) {
+  // Check if cart is empty
+  const isCartEmpty = !cart || !Array.isArray(cart) || cart.length === 0;
+
+  if (isCartEmpty) {
     return (
       <div className="min-h-screen py-16 fade-in">
         <div className="container mx-auto px-4">
@@ -97,7 +145,7 @@ const Cart = () => {
                 <div
                   key={i}
                   className="group cursor-pointer"
-                  onClick={() => navigate(`/product/${i}`)}
+                  onClick={() => navigate(`/shop`)}
                 >
                   <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl overflow-hidden mb-3">
                     <div className="w-full h-full group-hover:scale-110 transition-transform duration-500" />
@@ -117,6 +165,14 @@ const Cart = () => {
     );
   }
 
+  // Ensure cartTotal has default values if undefined
+  const safeCartTotal = {
+    subtotal: cartTotal?.subtotal || 0,
+    shipping: cartTotal?.shipping || 0,
+    tax: cartTotal?.tax || 0,
+    total: cartTotal?.total || 0,
+  };
+
   return (
     <div className="min-h-screen py-8 fade-in">
       <div className="container mx-auto px-4">
@@ -133,7 +189,7 @@ const Cart = () => {
             <p>
               Total:{" "}
               <span className="font-bold text-purple-600">
-                {cartTotal.total.toFixed(3)} DT
+                {safeCartTotal.total.toFixed(3)} DT
               </span>
             </p>
           </div>
@@ -163,11 +219,12 @@ const Cart = () => {
               <div className="divide-y divide-gray-100">
                 {cart.map((item) => (
                   <CartItem
-                    key={item.id}
-                    item={item}
+                    key={item._id}
+                    Globalitem={item}
                     onUpdateQuantity={handleUpdateQuantity}
                     onRemove={handleRemoveItem}
-                    onMoveToWishlist={handleMoveToWishlist}
+                    onMoveToWishlist={() => handleMoveToWishlist(item)}
+                    isUpdating={updatingItems[item._id]}
                   />
                 ))}
               </div>
@@ -230,7 +287,7 @@ const Cart = () => {
             </div>
 
             {/* Shipping Progress */}
-            {cartTotal.subtotal < 99 && (
+            {safeCartTotal.subtotal < 99 && (
               <div className="mt-8 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 rounded-2xl p-6">
                 <div className="flex items-center gap-4 mb-4">
                   <div className="w-12 h-12 bg-gradient-to-br from-amber-100 to-amber-200 rounded-xl flex items-center justify-center">
@@ -241,7 +298,7 @@ const Cart = () => {
                       Get Free Shipping!
                     </h3>
                     <p className="text-sm text-gray-600">
-                      Add {(99 - cartTotal.subtotal).toFixed(3)} DT more to
+                      Add {(99 - safeCartTotal.subtotal).toFixed(3)} DT more to
                       qualify for free shipping
                     </p>
                   </div>
@@ -251,7 +308,7 @@ const Cart = () => {
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Your progress</span>
                     <span className="font-medium">
-                      {((cartTotal.subtotal / 99) * 100).toFixed(0)}%
+                      {((safeCartTotal.subtotal / 99) * 100).toFixed(0)}%
                     </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
@@ -259,7 +316,7 @@ const Cart = () => {
                       className="bg-gradient-to-r from-amber-400 to-orange-500 h-2 rounded-full transition-all duration-500"
                       style={{
                         width: `${Math.min(
-                          (cartTotal.subtotal / 99) * 100,
+                          (safeCartTotal.subtotal / 99) * 100,
                           100
                         )}%`,
                       }}
@@ -273,11 +330,11 @@ const Cart = () => {
           {/* Order Summary */}
           <div className="lg:col-span-1">
             <CartSummary
-              items={cart}
-              subtotal={cartTotal.subtotal}
-              shipping={cartTotal.shipping}
-              tax={cartTotal.tax}
-              total={cartTotal.total}
+              items={cart} // This should be the array of cart items
+              subtotal={safeCartTotal.subtotal}
+              shipping={safeCartTotal.shipping}
+              tax={safeCartTotal.tax}
+              total={safeCartTotal.total}
               onCheckout={handleProceedToCheckout}
               isLoading={loading}
             />

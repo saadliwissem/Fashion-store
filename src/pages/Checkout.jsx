@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Lock, Shield, Truck } from "lucide-react";
+import { Lock, Shield, Truck, Loader } from "lucide-react";
 import CheckoutSteps from "../components/checkout/CheckoutSteps";
 import AddressForm from "../components/checkout/AddressForm";
 import PaymentForm from "../components/checkout/PaymentForm";
 import OrderSummary from "../components/checkout/OrderSummary";
 import Button from "../components/common/Button";
 import toast from "react-hot-toast";
+import { cartAPI, ordersAPI } from "../services/api";
 
 // Tunisian governorates
 const TUNISIAN_GOVERNORATES = [
@@ -39,6 +40,11 @@ const TUNISIAN_GOVERNORATES = [
 const Checkout = () => {
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [cart, setCart] = useState(null);
+  const [cartLoading, setCartLoading] = useState(true);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("card");
+
   const [formData, setFormData] = useState({
     // Address Information
     firstName: "",
@@ -53,7 +59,7 @@ const Checkout = () => {
     saveAddress: true,
 
     // Shipping Method
-    shippingMethod: "standard", // standard, express
+    shippingMethod: "standard", // standard, express, pickup
 
     // Payment Information
     cardName: "",
@@ -97,6 +103,30 @@ const Checkout = () => {
     },
   ];
 
+  const paymentMethods = [
+    { id: "card", name: "Credit/Debit Card", icon: "💳" },
+    { id: "cod", name: "Cash on Delivery", icon: "💰" },
+    { id: "mobile", name: "Mobile Money", icon: "📱" },
+    { id: "bank", name: "Bank Transfer", icon: "🏦" },
+  ];
+
+  useEffect(() => {
+    fetchCart();
+  }, []);
+
+  const fetchCart = async () => {
+    try {
+      setCartLoading(true);
+      const response = await cartAPI.getCart();
+      setCart(response.data.cart);
+    } catch (error) {
+      console.error("Failed to fetch cart:", error);
+      toast.error("Failed to load cart. Please try again.");
+    } finally {
+      setCartLoading(false);
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData((prev) => ({
@@ -105,7 +135,111 @@ const Checkout = () => {
     }));
   };
 
+  const validateCurrentStep = () => {
+    switch (currentStep) {
+      case 1: // Address validation
+        const requiredFields = [
+          "firstName",
+          "lastName",
+          "email",
+          "phone",
+          "governorate",
+          "city",
+          "address",
+        ];
+        for (const field of requiredFields) {
+          if (!formData[field]?.trim()) {
+            toast.error(
+              `Please fill in ${field.replace(/([A-Z])/g, " $1").toLowerCase()}`
+            );
+            return false;
+          }
+        }
+
+        // Email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(formData.email)) {
+          toast.error("Please enter a valid email address");
+          return false;
+        }
+
+        // Phone validation (Tunisian format)
+        const phoneRegex = /^[2-9][0-9]{7}$/;
+        const cleanPhone = formData.phone.replace(/\D/g, "");
+        if (!phoneRegex.test(cleanPhone)) {
+          toast.error(
+            "Please enter a valid Tunisian phone number (8 digits starting with 2-9)"
+          );
+          return false;
+        }
+        return true;
+
+      case 2: // Shipping method validation
+        if (!formData.shippingMethod) {
+          toast.error("Please select a shipping method");
+          return false;
+        }
+        return true;
+
+      case 3: // Payment method validation
+        if (!selectedPaymentMethod) {
+          toast.error("Please select a payment method");
+          return false;
+        }
+
+        if (selectedPaymentMethod === "card") {
+          const cardFields = [
+            "cardName",
+            "cardNumber",
+            "cardExpiry",
+            "cardCVC",
+          ];
+          for (const field of cardFields) {
+            if (!formData[field]?.trim()) {
+              toast.error("Please fill in all card details");
+              return false;
+            }
+          }
+
+          // Card number validation (simplified)
+          const cardNumber = formData.cardNumber.replace(/\s/g, "");
+          if (cardNumber.length < 16) {
+            toast.error("Please enter a valid 16-digit card number");
+            return false;
+          }
+
+          // Expiry date validation
+          const [month, year] = formData.cardExpiry.split("/");
+          if (!month || !year || month.length !== 2 || year.length !== 2) {
+            toast.error("Please enter expiry date in MM/YY format");
+            return false;
+          }
+
+          // CVC validation
+          if (formData.cardCVC.length < 3) {
+            toast.error("Please enter a valid 3-digit CVC");
+            return false;
+          }
+        }
+        return true;
+
+      case 4: // Terms validation
+        if (!document.getElementById("terms")?.checked) {
+          toast.error("Please agree to the terms and conditions");
+          return false;
+        }
+        return true;
+
+      default:
+        return true;
+    }
+  };
+
   const handleNextStep = () => {
+    if (!validateCurrentStep()) {
+      return;
+    }
+
     if (currentStep < 4) {
       setCurrentStep(currentStep + 1);
     }
@@ -117,44 +251,149 @@ const Checkout = () => {
     }
   };
 
-  const handleSubmitOrder = () => {
-    // In a real app, you would process the order here
-    toast.success("Commande passée avec succès! Merci pour votre achat.");
+  const handleSubmitOrder = async () => {
+    if (!validateCurrentStep()) {
+      return;
+    }
 
-    // Redirect to order confirmation
-    setTimeout(() => {
-      navigate("/orders");
-    }, 2000);
+    if (!cart || cart.items.length === 0) {
+      toast.error("Your cart is empty");
+      navigate("/cart");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Prepare order data
+      const orderData = {
+        shippingAddress: {
+          firstName: formData.firstName.trim(),
+          lastName: formData.lastName.trim(),
+          email: formData.email.trim(),
+          phone: formData.phone.replace(/\D/g, ""), // Clean phone number
+          governorate: formData.governorate,
+          city: formData.city.trim(),
+          zipCode: formData.zipCode.trim(),
+          address: formData.address.trim(),
+          address2: formData.address2?.trim() || "",
+        },
+        paymentMethod: selectedPaymentMethod,
+        shippingMethod: formData.shippingMethod,
+        customerNotes: formData.notes?.trim() || "",
+        saveAddress: formData.saveAddress,
+      };
+
+      // Add payment details if paying by card
+      if (selectedPaymentMethod === "card") {
+        orderData.paymentDetails = {
+          cardLastFour: formData.cardNumber.slice(-4),
+          cardName: formData.cardName,
+          // In a real app, you would use a payment processor like Stripe here
+          // This is just for demonstration
+        };
+      } else if (selectedPaymentMethod === "mobile") {
+        orderData.paymentDetails = {
+          mobileProvider: "Orange Money", // Default or get from UI
+        };
+      }
+
+      // Call order API
+      const response = await ordersAPI.create(orderData);
+
+      toast.success("Commande passée avec succès! Merci pour votre achat.");
+
+      // Redirect to order confirmation
+      setTimeout(() => {
+        navigate(`/orders/${response.data.order._id}`);
+      }, 1500);
+    } catch (error) {
+      console.error("Order error:", error);
+
+      const errorMessage =
+        error.response?.data?.message || "Failed to place order";
+
+      if (error.response?.status === 400) {
+        // Handle specific error messages
+        if (errorMessage.includes("stock")) {
+          toast.error("Some items are out of stock. Please update your cart.");
+          fetchCart(); // Refresh cart to get updated stock
+        } else if (errorMessage.includes("Cart is empty")) {
+          toast.error("Your cart is empty");
+          navigate("/cart");
+        } else {
+          toast.error(errorMessage);
+        }
+      } else if (error.response?.status === 401) {
+        toast.error("Please login to continue");
+        navigate("/login");
+      } else {
+        toast.error(errorMessage || "An error occurred. Please try again.");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
-  // Sample cart items for order summary
-  const cartItems = [
-    {
-      id: 1,
-      name: "Premium Cotton T-Shirt",
-      price: 29.99,
-      quantity: 2,
-      image:
-        "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=500&fit=crop",
-    },
-    {
-      id: 2,
-      name: "Designer Denim Jacket",
-      price: 89.99,
-      quantity: 1,
-      image:
-        "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=400&h=500&fit=crop",
-    },
-  ];
+  const calculateCartSummary = () => {
+    if (!cart || !cart.items) {
+      return {
+        subtotal: 0,
+        shipping: 0,
+        tax: 0,
+        total: 0,
+        itemCount: 0,
+        totalItems: 0,
+      };
+    }
 
-  const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
-  const shippingPrice =
-    shippingMethods.find((m) => m.id === formData.shippingMethod)?.price || 0;
-  const tax = subtotal * 0.07; // 7% TVA in Tunisia
-  const total = subtotal + shippingPrice + tax;
+    // Use cart summary if available, otherwise calculate
+    if (cart.summary) {
+      const subtotal = cart.summary.subtotal || 0;
+      const shippingPrice =
+        shippingMethods.find((m) => m.id === formData.shippingMethod)?.price ||
+        0;
+      const tax = subtotal * 0.07; // 7% TVA in Tunisia
+      const total = subtotal + shippingPrice + tax;
+
+      return {
+        subtotal,
+        shipping: shippingPrice,
+        tax,
+        total,
+        itemCount: cart.summary.itemCount || 0,
+        totalItems: cart.summary.totalItems || 0,
+      };
+    } else {
+      // Fallback calculation
+      const subtotal = cart.items.reduce(
+        (sum, item) => sum + (item.product?.price || 0) * item.quantity,
+        0
+      );
+      const shippingPrice =
+        shippingMethods.find((m) => m.id === formData.shippingMethod)?.price ||
+        0;
+      const tax = subtotal * 0.07;
+      const total = subtotal + shippingPrice + tax;
+      const itemCount = cart.items.length;
+      const totalItems = cart.items.reduce(
+        (sum, item) => sum + item.quantity,
+        0
+      );
+
+      return {
+        subtotal,
+        shipping: shippingPrice,
+        tax,
+        total,
+        itemCount,
+        totalItems,
+      };
+    }
+  };
+
+  const { subtotal, shipping, tax, total, itemCount, totalItems } =
+    calculateCartSummary();
 
   const renderStepContent = () => {
     switch (currentStep) {
@@ -198,7 +437,9 @@ const Checkout = () => {
                       </div>
                     </div>
                     <div className="text-lg font-semibold">
-                      {method.price === 0 ? "Free" : `${method.price} DT`}
+                      {method.price === 0
+                        ? "Free"
+                        : `${method.price.toFixed(3)} DT`}
                     </div>
                   </div>
                 </div>
@@ -208,10 +449,40 @@ const Checkout = () => {
         );
       case 3:
         return (
-          <PaymentForm
-            formData={formData}
-            handleInputChange={handleInputChange}
-          />
+          <div className="space-y-6">
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">
+              Select Payment Method
+            </h3>
+            <div className="space-y-4">
+              {paymentMethods.map((method) => (
+                <div
+                  key={method.id}
+                  className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${
+                    selectedPaymentMethod === method.id
+                      ? "border-purple-500 bg-purple-50"
+                      : "border-gray-200 hover:border-purple-300"
+                  }`}
+                  onClick={() => setSelectedPaymentMethod(method.id)}
+                >
+                  <div className="flex items-center gap-4">
+                    <span className="text-2xl">{method.icon}</span>
+                    <div>
+                      <p className="font-semibold text-gray-900">
+                        {method.name}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <PaymentForm
+              formData={formData}
+              handleInputChange={handleInputChange}
+              selectedMethod={selectedPaymentMethod}
+              onMethodChange={setSelectedPaymentMethod}
+            />
+          </div>
         );
       case 4:
         return (
@@ -228,38 +499,6 @@ const Checkout = () => {
                   <p className="text-green-700 text-sm">
                     Your information is protected with 256-bit SSL encryption
                   </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <h3 className="text-xl font-semibold text-gray-900">
-                Order Summary
-              </h3>
-              <div className="bg-gray-50 rounded-xl p-6">
-                <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Subtotal</span>
-                    <span className="font-medium">
-                      {subtotal.toFixed(3)} DT
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Shipping</span>
-                    <span className="font-medium">
-                      {shippingPrice === 0 ? "Free" : `${shippingPrice} DT`}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">TVA (7%)</span>
-                    <span className="font-medium">{tax.toFixed(3)} DT</span>
-                  </div>
-                  <div className="border-t pt-3">
-                    <div className="flex justify-between text-lg font-bold">
-                      <span>Total</span>
-                      <span>{total.toFixed(3)} DT</span>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>
@@ -296,6 +535,33 @@ const Checkout = () => {
     }
   };
 
+  if (cartLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <Loader className="w-12 h-12 animate-spin text-purple-600 mx-auto mb-4" />
+          <p className="text-gray-600">Loading your cart...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!cart || cart.items.length === 0) {
+    return (
+      <div className="min-h-screen py-16 text-center">
+        <div className="max-w-md mx-auto">
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+            Your cart is empty
+          </h1>
+          <p className="text-gray-600 mb-8">
+            Add some products to your cart to proceed to checkout
+          </p>
+          <Button onClick={() => navigate("/")}>Continue Shopping</Button>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen py-8 bg-gradient-to-b from-gray-50 to-white">
       <div className="container mx-auto px-4">
@@ -331,24 +597,36 @@ const Checkout = () => {
                 {/* Navigation Buttons */}
                 <div className="flex justify-between mt-8 pt-8 border-t border-gray-200">
                   {currentStep > 1 ? (
-                    <Button variant="outline" onClick={handlePrevStep}>
+                    <Button
+                      variant="outline"
+                      onClick={handlePrevStep}
+                      disabled={loading}
+                    >
                       Back
                     </Button>
                   ) : (
-                    <Button variant="outline" onClick={() => navigate("/cart")}>
+                    <Button
+                      variant="outline"
+                      onClick={() => navigate("/cart")}
+                      disabled={loading}
+                    >
                       Return to Cart
                     </Button>
                   )}
 
                   {currentStep < 4 ? (
-                    <Button onClick={handleNextStep}>
+                    <Button onClick={handleNextStep} disabled={loading}>
                       Continue to {steps[currentStep].name}
                     </Button>
                   ) : (
-                    <Button onClick={handleSubmitOrder}>
+                    <Button onClick={handleSubmitOrder} disabled={loading}>
                       <div className="flex items-center gap-2">
-                        <Lock className="w-4 h-4" />
-                        Place Order
+                        {loading ? (
+                          <Loader className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Lock className="w-4 h-4" />
+                        )}
+                        {loading ? "Processing..." : "Place Order"}
                       </div>
                     </Button>
                   )}
@@ -379,12 +657,15 @@ const Checkout = () => {
             {/* Right Column - Order Summary */}
             <div className="lg:col-span-1">
               <OrderSummary
-                items={cartItems}
+                items={cart.items || []}
                 subtotal={subtotal}
-                shipping={shippingPrice}
+                shipping={shipping}
                 tax={tax}
                 total={total}
                 shippingMethod={formData.shippingMethod}
+                shippingMethods={shippingMethods}
+                itemCount={itemCount}
+                totalItems={totalItems}
               />
             </div>
           </div>
@@ -401,7 +682,7 @@ const Checkout = () => {
               </div>
               <div>
                 <p className="font-medium text-gray-900 mb-1">Email Support</p>
-                <p className="text-gray-600 text-sm">support@fashionstore.tn</p>
+                <p className="text-gray-600 text-sm">support@DAR ENNAR.tn</p>
               </div>
               <div>
                 <p className="font-medium text-gray-900 mb-1">Return Policy</p>

@@ -9,8 +9,16 @@ const OrderSummary = ({
   tax,
   total,
   shippingMethod,
+  shippingMethods,
+  itemCount,
+  totalItems,
 }) => {
   const getShippingMethodName = (method) => {
+    if (shippingMethods) {
+      const methodObj = shippingMethods.find((m) => m.id === method);
+      return methodObj ? methodObj.name : "Standard Delivery";
+    }
+
     switch (method) {
       case "standard":
         return "Standard Delivery (3-5 days)";
@@ -23,34 +31,77 @@ const OrderSummary = ({
     }
   };
 
+  const getShippingMethodInfo = (method) => {
+    if (shippingMethods) {
+      const methodObj = shippingMethods.find((m) => m.id === method);
+      return methodObj ? methodObj.description : "3-5 business days";
+    }
+
+    switch (method) {
+      case "express":
+        return "1-2 business days";
+      case "pickup":
+        return "Ready for pickup in 2 hours";
+      default:
+        return "3-5 business days";
+    }
+  };
+
   return (
     <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-6">
-      <h2 className="text-xl font-bold text-gray-900 mb-6">Order Summary</h2>
+      <h2 className="text-xl font-bold text-gray-900 mb-6">
+        Order Summary{" "}
+        {itemCount !== undefined &&
+          `(${itemCount} ${itemCount === 1 ? "item" : "items"})`}
+      </h2>
 
       {/* Items List */}
       <div className="space-y-4 mb-6">
-        <h3 className="font-semibold text-gray-900">Items ({items.length})</h3>
+        <h3 className="font-semibold text-gray-900">
+          Items {items.length > 0 && `(${items.length})`}
+        </h3>
         <div className="space-y-3 max-h-64 overflow-y-auto pr-2">
           {items.map((item) => (
-            <div key={item.id} className="flex items-center gap-3">
+            <div key={item._id || item.id} className="flex items-center gap-3">
               <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
                 <img
-                  src={item.image}
-                  alt={item.name}
+                  src={
+                    item.product?.images?.[0] ||
+                    item.image ||
+                    "/placeholder.jpg"
+                  }
+                  alt={item.name || item.product?.name}
                   className="w-full h-full object-cover"
                 />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-medium text-gray-900 truncate">
-                  {item.name}
+                  {item.name || item.product?.name}
                 </p>
                 <p className="text-sm text-gray-600">Qty: {item.quantity}</p>
+                {item.selectedColor || item.color ? (
+                  <p className="text-sm text-gray-600">
+                    Color: {item.selectedColor || item.color}
+                  </p>
+                ) : null}
+                {item.selectedSize || item.size ? (
+                  <p className="text-sm text-gray-600">
+                    Size: {item.selectedSize || item.size}
+                  </p>
+                ) : null}
               </div>
               <div className="font-semibold text-gray-900">
-                {(item.price * item.quantity).toFixed(3)} DT
+                {(
+                  (item.price || item.product?.price || 0) * item.quantity
+                ).toFixed(3)}{" "}
+                DT
               </div>
             </div>
           ))}
+
+          {items.length === 0 && (
+            <p className="text-gray-500 text-center py-4">No items in cart</p>
+          )}
         </div>
       </div>
 
@@ -68,7 +119,7 @@ const OrderSummary = ({
               shipping === 0 ? "text-green-600 font-medium" : "font-medium"
             }
           >
-            {shipping === 0 ? "Free" : `${shipping} DT`}
+            {shipping === 0 ? "Free" : `${shipping.toFixed(3)} DT`}
           </span>
         </div>
 
@@ -90,24 +141,22 @@ const OrderSummary = ({
       </div>
 
       {/* Shipping Info */}
-      <div className="mb-6">
-        <h3 className="font-semibold text-gray-900 mb-3">Shipping Method</h3>
-        <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-          <Truck className="w-5 h-5 text-purple-600" />
-          <div>
-            <p className="font-medium">
-              {getShippingMethodName(shippingMethod)}
-            </p>
-            <p className="text-sm text-gray-600">
-              {shippingMethod === "express"
-                ? "1-2 business days"
-                : shippingMethod === "pickup"
-                ? "Ready for pickup in 2 hours"
-                : "3-5 business days"}
-            </p>
+      {shippingMethod && (
+        <div className="mb-6">
+          <h3 className="font-semibold text-gray-900 mb-3">Shipping Method</h3>
+          <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+            <Truck className="w-5 h-5 text-purple-600" />
+            <div>
+              <p className="font-medium">
+                {getShippingMethodName(shippingMethod)}
+              </p>
+              <p className="text-sm text-gray-600">
+                {getShippingMethodInfo(shippingMethod)}
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Guarantees */}
       <div className="space-y-3">

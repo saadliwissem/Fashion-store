@@ -8,28 +8,48 @@ const ProductFilter = ({
   onCategoryChange,
   priceRange,
   onPriceChange,
+  maxPrice = 1000,
+  availableSizes = [],
+  selectedSizes = [],
+  onSizeChange,
+  availableColors = [],
+  selectedColors = [],
+  onColorChange,
+  minRating = 0,
+  onRatingChange,
   onClose,
+  onClearFilters,
 }) => {
-  const priceMarks = [
-    { value: 0, label: "$0" },
-    { value: 50, label: "$50" },
-    { value: 100, label: "$100" },
-    { value: 150, label: "$150" },
-    { value: 200, label: "$200+" },
-  ];
-
-  const sizes = ["XS", "S", "M", "L", "XL", "XXL"];
-  const colors = [
-    { name: "Black", value: "#000000" },
-    { name: "White", value: "#FFFFFF" },
-    { name: "Gray", value: "#6B7280" },
-    { name: "Blue", value: "#3B82F6" },
-    { name: "Red", value: "#EF4444" },
-    { name: "Green", value: "#10B981" },
-    { name: "Purple", value: "#8B5CF6" },
-  ];
-
   const ratings = [5, 4, 3, 2, 1];
+
+  // Format price for display
+  const formatPrice = (price) => {
+    if (price >= 1000) {
+      return `${(price / 1000).toFixed(0)}k`;
+    }
+    return `${price} TND`;
+  };
+
+  // Create price marks dynamically based on maxPrice
+  const getPriceMarks = () => {
+    const marks = [];
+    const step = Math.ceil(maxPrice / 4);
+    for (let i = 0; i <= 4; i++) {
+      const value = i * step;
+      marks.push({
+        value,
+        label: formatPrice(value),
+      });
+    }
+    return marks;
+  };
+
+  const priceMarks = getPriceMarks();
+
+  // Check if a color is selected
+  const isColorSelected = (colorValue) => {
+    return selectedColors.includes(colorValue);
+  };
 
   return (
     <div className="bg-white rounded-2xl shadow-lg p-6 sticky top-6">
@@ -44,7 +64,7 @@ const ProductFilter = ({
       {/* Categories */}
       <div className="mb-8">
         <h3 className="font-semibold text-gray-900 mb-4">Categories</h3>
-        <div className="space-y-2">
+        <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
           {categories.map((category) => (
             <button
               key={category.id}
@@ -63,7 +83,7 @@ const ProductFilter = ({
                     : "bg-gray-100 text-gray-600"
                 }`}
               >
-                {category.count}
+                {category.count || 0}
               </span>
             </button>
           ))}
@@ -81,14 +101,14 @@ const ProductFilter = ({
             <div
               className="absolute h-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"
               style={{
-                left: `${(priceRange[0] / 200) * 100}%`,
-                right: `${100 - (priceRange[1] / 200) * 100}%`,
+                left: `${(priceRange[0] / maxPrice) * 100}%`,
+                right: `${100 - (priceRange[1] / maxPrice) * 100}%`,
               }}
             />
             <input
               type="range"
               min="0"
-              max="200"
+              max={maxPrice}
               value={priceRange[0]}
               onChange={(e) =>
                 onPriceChange([parseInt(e.target.value), priceRange[1]])
@@ -98,7 +118,7 @@ const ProductFilter = ({
             <input
               type="range"
               min="0"
-              max="200"
+              max={maxPrice}
               value={priceRange[1]}
               onChange={(e) =>
                 onPriceChange([priceRange[0], parseInt(e.target.value)])
@@ -107,46 +127,75 @@ const ProductFilter = ({
             />
           </div>
           <div className="flex justify-between text-sm text-gray-600">
-            <span>${priceRange[0]}</span>
-            <span>${priceRange[1]}</span>
+            <span>{formatPrice(priceRange[0])}</span>
+            <span>{formatPrice(priceRange[1])}</span>
           </div>
         </div>
       </div>
 
-      {/* Sizes */}
-      <div className="mb-8">
-        <h3 className="font-semibold text-gray-900 mb-4">Size</h3>
-        <div className="flex flex-wrap gap-2">
-          {sizes.map((size) => (
-            <button
-              key={size}
-              className="w-12 h-12 flex items-center justify-center border border-gray-300 rounded-lg hover:border-purple-500 hover:text-purple-600 transition-colors"
-            >
-              {size}
-            </button>
-          ))}
+      {/* Sizes - Only show if available */}
+      {availableSizes.length > 0 && (
+        <div className="mb-8">
+          <h3 className="font-semibold text-gray-900 mb-4">Size</h3>
+          <div className="flex flex-wrap gap-2">
+            {availableSizes.map((size) => (
+              <button
+                key={size}
+                onClick={() => onSizeChange(size)}
+                className={`w-12 h-12 flex items-center justify-center border rounded-lg font-medium transition-colors ${
+                  selectedSizes.includes(size)
+                    ? "border-purple-600 bg-purple-50 text-purple-700"
+                    : "border-gray-300 hover:border-purple-500"
+                }`}
+              >
+                {size}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Colors */}
-      <div className="mb-8">
-        <h3 className="font-semibold text-gray-900 mb-4">Color</h3>
-        <div className="flex flex-wrap gap-3">
-          {colors.map((color) => (
-            <button
-              key={color.name}
-              className="flex flex-col items-center gap-2"
-              title={color.name}
-            >
-              <div
-                className="w-8 h-8 rounded-full border border-gray-300"
-                style={{ backgroundColor: color.value }}
-              />
-              <span className="text-xs text-gray-600">{color.name}</span>
-            </button>
-          ))}
+      {/* Colors - Only show if available */}
+      {availableColors.length > 0 && (
+        <div className="mb-8">
+          <h3 className="font-semibold text-gray-900 mb-4">Color</h3>
+          <div className="flex flex-wrap gap-3">
+            {availableColors.map((color) => {
+              const colorName = typeof color === "string" ? color : color.name;
+              const colorValue =
+                typeof color === "string" ? color : color.value || color;
+              const isSelected = isColorSelected(colorName);
+
+              return (
+                <button
+                  key={colorName}
+                  onClick={() => onColorChange(colorName)}
+                  className="flex flex-col items-center gap-2 group"
+                  title={colorName}
+                >
+                  <div
+                    className={`w-10 h-10 rounded-full border-2 transition-all ${
+                      isSelected
+                        ? "border-purple-600 scale-110"
+                        : "border-gray-300 group-hover:border-purple-400 group-hover:scale-105"
+                    }`}
+                    style={{ backgroundColor: colorValue }}
+                  />
+                  <span
+                    className={`text-xs transition-colors ${
+                      isSelected
+                        ? "text-purple-600 font-medium"
+                        : "text-gray-600"
+                    }`}
+                  >
+                    {colorName}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Ratings */}
       <div className="mb-8">
@@ -158,7 +207,12 @@ const ProductFilter = ({
           {ratings.map((rating) => (
             <button
               key={rating}
-              className="flex items-center gap-2 p-2 w-full hover:bg-gray-50 rounded-lg"
+              onClick={() => onRatingChange(minRating === rating ? 0 : rating)}
+              className={`flex items-center gap-2 p-2 w-full rounded-lg transition-colors ${
+                minRating === rating
+                  ? "bg-amber-50 text-amber-700"
+                  : "hover:bg-gray-50"
+              }`}
             >
               <div className="flex">
                 {[...Array(5)].map((_, i) => (
@@ -172,21 +226,20 @@ const ProductFilter = ({
                   />
                 ))}
               </div>
-              <span className="text-sm text-gray-600">& above</span>
+              <span
+                className={`text-sm ${
+                  minRating === rating ? "font-medium" : "text-gray-600"
+                }`}
+              >
+                {rating} star{rating !== 1 ? "s" : ""} & above
+              </span>
             </button>
           ))}
         </div>
       </div>
 
       {/* Clear Filters Button */}
-      <Button
-        variant="outline"
-        fullWidth
-        onClick={() => {
-          onCategoryChange("all");
-          onPriceChange([0, 200]);
-        }}
-      >
+      <Button variant="outline" fullWidth onClick={onClearFilters}>
         Clear All Filters
       </Button>
     </div>

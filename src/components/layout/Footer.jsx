@@ -25,7 +25,7 @@ const Footer = () => {
               <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-pink-500 rounded-xl flex items-center justify-center">
                 <span className="text-white font-bold">FS</span>
               </div>
-              <span className="text-2xl font-bold">FashionStore</span>
+              <span className="text-2xl font-bold">DAR ENNAR</span>
             </Link>
             <p className="text-gray-400">
               Discover the latest fashion trends with premium quality clothing
@@ -167,7 +167,7 @@ const Footer = () => {
               </div>
               <div className="flex items-center space-x-3 text-gray-400">
                 <Mail className="w-5 h-5" />
-                <span>support@fashionstore.com</span>
+                <span>support@DAR ENNAR.com</span>
               </div>
             </div>
           </div>
@@ -203,7 +203,7 @@ const Footer = () => {
         {/* Bottom Bar */}
         <div className="border-t border-gray-800 pt-8 mt-8 text-center">
           <p className="text-gray-400">
-            © {new Date().getFullYear()} FashionStore. All rights reserved.
+            © {new Date().getFullYear()} DAR ENNAR. All rights reserved.
           </p>
           <p className="text-gray-500 text-sm mt-2">
             Made with ❤️ for fashion lovers worldwide

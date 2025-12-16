@@ -13,7 +13,6 @@ import Button from "../components/common/Button";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
-
 const Register = () => {
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
@@ -44,6 +43,27 @@ const Register = () => {
   const handlePasswordChange = (e) => {
     const pass = e.target.value;
     setPasswordStrength(calculatePasswordStrength(pass));
+  };
+  const handleGoogleSignIn = () => {
+    // Store the current path to redirect back after login
+    localStorage.setItem("redirectAfterLogin", window.location.pathname);
+
+    // Construct Google OAuth URL
+    const googleAuthUrl = "https://accounts.google.com/o/oauth2/v2/auth";
+
+    const params = {
+      client_id:
+        "1070114963774-gl663sh28j4pe1jfc2bqnrqqk7ptkmaj.apps.googleusercontent.com",
+      redirect_uri: `${window.location.origin}/auth/google/callback`,
+      response_type: "code",
+      scope: "openid email profile",
+      access_type: "offline",
+      prompt: "consent",
+      state: "register", // You can use this to differentiate between login and register
+    };
+
+    const queryString = new URLSearchParams(params).toString();
+    window.location.href = `${googleAuthUrl}?${queryString}`;
   };
 
   const getStrengthColor = (strength) => {
@@ -76,11 +96,6 @@ const Register = () => {
     }
   };
 
-  const handleSocialRegister = (provider) => {
-    toast.success(`Redirecting to ${provider} registration...`);
-    // In a real app, this would redirect to OAuth
-  };
-
   const passwordRequirements = [
     { text: "At least 8 characters", met: password.length >= 8 },
     { text: "One uppercase letter", met: /[A-Z]/.test(password) },
@@ -98,7 +113,7 @@ const Register = () => {
               <span className="text-white font-bold text-xl">F</span>
             </div>
             <span className="ml-3 text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">
-              FashionStore
+              DAR ENNAR
             </span>
           </Link>
           <h1 className="mt-6 text-3xl font-bold text-gray-900">
@@ -396,7 +411,7 @@ const Register = () => {
                 <div className="ml-3">
                   <label htmlFor="newsletter" className="text-sm text-gray-700">
                     Yes, I want to receive fashion tips, exclusive offers, and
-                    updates from FashionStore Tunisia.
+                    updates from DAR ENNAR Tunisia.
                   </label>
                 </div>
               </div>
@@ -433,13 +448,13 @@ const Register = () => {
                 </div>
               </div>
 
-              {/* Social Registration */}
-              <div className="mt-6 grid grid-cols-2 gap-3">
+              {/* Google Sign In Button */}
+              <div className="mt-6">
                 <button
-                  onClick={() => handleSocialRegister("Google")}
-                  className="flex items-center justify-center w-full px-4 py-3 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                  onClick={handleGoogleSignIn}
+                  className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
                 >
-                  <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5" viewBox="0 0 24 24">
                     <path
                       fill="#4285F4"
                       d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -457,25 +472,7 @@ const Register = () => {
                       d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                     />
                   </svg>
-                  Google
-                </button>
-
-                <button
-                  onClick={() => handleSocialRegister("Facebook")}
-                  className="flex items-center justify-center w-full px-4 py-3 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
-                >
-                  <svg
-                    className="w-5 h-5 mr-2 text-blue-600"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  Facebook
+                  Continue with Google
                 </button>
               </div>
             </div>
@@ -498,7 +495,7 @@ const Register = () => {
           <div className="space-y-6">
             <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-8">
               <h3 className="text-xl font-bold text-gray-900 mb-6">
-                Why Join FashionStore Tunisia?
+                Why Join DAR ENNAR Tunisia?
               </h3>
 
               <div className="space-y-6">
