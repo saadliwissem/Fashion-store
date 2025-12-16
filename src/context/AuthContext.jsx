@@ -72,7 +72,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const register = async (userData) => {
+  const registering = async (userData) => {
     setLoading(true);
     setError(null);
 
@@ -176,7 +176,7 @@ export const AuthProvider = ({ children }) => {
     error,
     setUser, // Keep this for GoogleCallback
     login,
-    register,
+    registering,
     logout,
     updateProfile,
     forgotPassword,

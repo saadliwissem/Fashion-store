@@ -418,6 +418,7 @@ const Register = () => {
 
               {/* Submit Button */}
               <Button
+                onClick={onSubmit}
                 type="submit"
                 fullWidth
                 size="large"
