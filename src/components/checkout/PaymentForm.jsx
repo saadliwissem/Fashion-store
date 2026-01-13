@@ -233,7 +233,7 @@ const PaymentForm = ({ formData, handleInputChange }) => {
                     <strong>Bank:</strong> BIAT
                   </p>
                   <p>
-                    <strong>Account Name:</strong> FashionStore SARL
+                    <strong>Account Name:</strong> DAR ENNAR SARL
                   </p>
                   <p>
                     <strong>RIB:</strong> 04 018 123456789123 89

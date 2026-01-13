@@ -14,7 +14,7 @@ import {
 import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
 import { useWishlist } from "../../context/WishlistContext";
-import logo from "../../assets/images/darennar_logo.png";
+import logo from "../../assets/images/logo.webp";
 import axios from "axios";
 
 const API_BASE_URL =
@@ -165,7 +165,7 @@ const Header = () => {
     <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-2xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 max-h-96 overflow-y-auto">
       {loadingCategories ? (
         <div className="px-6 py-8 flex items-center justify-center">
-          <Loader2 className="w-5 h-5 text-purple-600 animate-spin" />
+          <Loader2 className="w-5 h-5 text-[#C9A24D] animate-spin" />
           <span className="ml-2 text-gray-600">Loading categories...</span>
         </div>
       ) : categories.length === 0 ? (
@@ -177,7 +177,7 @@ const Header = () => {
           {/* All Products */}
           <Link
             to="/shop"
-            className="flex items-center gap-3 px-6 py-4 text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors first:rounded-t-2xl border-b border-gray-100"
+            className="flex items-center gap-3 px-6 py-4 text-gray-700 hover:bg-[#FAF6E8] hover:text-[#C9A24D] transition-colors first:rounded-t-2xl border-b border-gray-100"
             onClick={() => setIsUserDropdownOpen(false)}
           >
             <span className="text-xl">🛍️</span>
@@ -194,7 +194,7 @@ const Header = () => {
             <Link
               key={category.id}
               to={`/shop?category=${category.slug}`}
-              className="flex items-center gap-3 px-6 py-4 text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors last:rounded-b-2xl"
+              className="flex items-center gap-3 px-6 py-4 text-gray-700 hover:bg-[#FAF6E8] hover:text-[#C9A24D] transition-colors last:rounded-b-2xl"
               onClick={() => setIsUserDropdownOpen(false)}
             >
               <span className="text-xl">{category.icon}</span>
@@ -226,13 +226,13 @@ const Header = () => {
         <p className="font-semibold text-gray-700 mb-2">Categories</p>
         {loadingCategories ? (
           <div className="flex items-center justify-center py-4">
-            <Loader2 className="w-5 h-5 text-purple-600 animate-spin" />
+            <Loader2 className="w-5 h-5 text-[#C9A24D] animate-spin" />
           </div>
         ) : (
           <>
             <Link
               to="/shop"
-              className="flex items-center gap-2 py-3 text-gray-600 hover:text-purple-600 transition-colors border-b border-gray-100"
+              className="flex items-center gap-2 py-3 text-gray-600 hover:text-[#C9A24D] transition-colors border-b border-gray-100"
               onClick={() => setIsMenuOpen(false)}
             >
               <span>🛍️</span>
@@ -243,7 +243,7 @@ const Header = () => {
               <Link
                 key={category.id}
                 to={`/shop?category=${category.slug}`}
-                className="flex items-center gap-2 py-3 text-gray-600 hover:text-purple-600 transition-colors border-b border-gray-100 last:border-b-0"
+                className="flex items-center gap-2 py-3 text-gray-600 hover:text-[#C9A24D] transition-colors border-b border-gray-100 last:border-b-0"
                 onClick={() => setIsMenuOpen(false)}
               >
                 <span>{getCategoryIcon(category.name)}</span>
@@ -259,7 +259,7 @@ const Header = () => {
             {categories.length > 6 && (
               <Link
                 to="/categories"
-                className="block py-3 text-purple-600 hover:text-purple-700 transition-colors font-medium text-center"
+                className="block py-3 text-[#C9A24D] hover:text-[#C9A24D] transition-colors font-medium text-center"
                 onClick={() => setIsMenuOpen(false)}
               >
                 View All Categories →
@@ -285,8 +285,8 @@ const Header = () => {
               />
             </div>
 
-            <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">
-              DAR ENNAR
+            <span className="text-2xl font-bold bg-gradient-to-r from-black to-[#C9A24D] bg-clip-text text-transparent">
+              Puzzle
             </span>
           </Link>
 
@@ -314,7 +314,7 @@ const Header = () => {
             {user?.role === "admin" && (
               <Link
                 to="/admin"
-                className="nav-link text-purple-600 font-semibold"
+                className="nav-link text-[#C9A24D] font-semibold"
               >
                 Admin Dashboard
               </Link>
@@ -368,9 +368,9 @@ const Header = () => {
               onClick={() => navigate("/cart")}
               className="p-2 hover:bg-gray-100 rounded-xl transition-colors relative"
             >
-              <ShoppingBag className="w-6 h-6 text-gray-700 hover:text-purple-600 transition-colors" />
+              <ShoppingBag className="w-6 h-6 text-gray-700 hover:text-[#C9A24D] transition-colors" />
               {getTotalCartItems() > 0 && (
-                <span className="absolute -top-1 -right-1 bg-purple-600 text-white text-xs min-w-5 h-5 rounded-full flex items-center justify-center px-1">
+                <span className="absolute -top-1 -right-1 bg-[#FAF6E8] text-white text-xs min-w-5 h-5 rounded-full flex items-center justify-center px-1">
                   {getTotalCartItems() > 99 ? "99+" : getTotalCartItems()}
                 </span>
               )}
@@ -382,7 +382,7 @@ const Header = () => {
                 onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
                 className="p-2 hover:bg-gray-100 rounded-xl transition-colors flex items-center space-x-2"
               >
-                <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-400 rounded-full flex items-center justify-center">
+                <div className="w-8 h-8 bg-gradient-to-br from-black to-[#C9A24D] rounded-full flex items-center justify-center">
                   <User className="w-4 h-4 text-white" />
                 </div>
               </button>
@@ -401,25 +401,25 @@ const Header = () => {
                       </div>
                       <Link
                         to="/profile"
-                        className="block px-6 py-3 text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors"
+                        className="block px-6 py-3 text-gray-700 hover:bg-[#FAF6E8] hover:text-[#C9A24D] transition-colors"
                       >
                         Profile
                       </Link>
                       <Link
                         to="/orders"
-                        className="block px-6 py-3 text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors"
+                        className="block px-6 py-3 text-gray-700 hover:bg-[#FAF6E8] hover:text-[#C9A24D] transition-colors"
                       >
                         My Orders
                       </Link>
                       <Link
                         to="/wishlist"
-                        className="block px-6 py-3 text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors"
+                        className="block px-6 py-3 text-gray-700 hover:bg-[#FAF6E8] hover:text-[#C9A24D] transition-colors"
                       >
                         Wishlist ({getWishlistCount()})
                       </Link>
                       <Link
                         to="/cart"
-                        className="block px-6 py-3 text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors"
+                        className="block px-6 py-3 text-gray-700 hover:bg-[#FAF6E8] hover:text-[#C9A24D] transition-colors"
                       >
                         Cart ({getTotalCartItems()})
                       </Link>
@@ -439,14 +439,14 @@ const Header = () => {
                     <>
                       <Link
                         to="/login"
-                        className="block px-6 py-3 text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors"
+                        className="block px-6 py-3 text-gray-700 hover:bg-[#FAF6E8] hover:text-[#C9A24D] transition-colors"
                         onClick={() => setIsUserDropdownOpen(false)}
                       >
                         Sign In
                       </Link>
                       <Link
                         to="/register"
-                        className="block px-6 py-3 text-gray-700 hover:bg-purple-50 hover:text-purple-600 transition-colors"
+                        className="block px-6 py-3 text-gray-700 hover:bg-[#FAF6E8] hover:text-[#C9A24D] transition-colors"
                         onClick={() => setIsUserDropdownOpen(false)}
                       >
                         Create Account
@@ -515,7 +515,7 @@ const Header = () => {
               {user?.role === "admin" && (
                 <Link
                   to="/admin"
-                  className="nav-link py-2 text-purple-600 font-semibold"
+                  className="nav-link py-2 text-[#C9A24D] font-semibold"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Admin Dashboard

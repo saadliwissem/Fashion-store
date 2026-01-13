@@ -11,12 +11,12 @@
   }
   
   .order-summary-scroll::-webkit-scrollbar-thumb {
-    background: #8b5cf6;
+    background: #D4AF37;
     border-radius: 10px;
   }
   
   .order-summary-scroll::-webkit-scrollbar-thumb:hover {
-    background: #7c3aed;
+    background: #E6C76A;
   }
   
   /* Smooth transitions */

@@ -177,8 +177,8 @@
 }
 /* Add this to the :root section */
 :root[data-theme="dark"] {
-    --primary: #8B5CF6;
-    --primary-dark: #7C3AED;
+    --primary: #D4AF37;
+    --primary-dark: #E6C76A;
     --secondary: #10B981;
     --accent: #F59E0B;
     --dark: #F9FAFB;
@@ -187,8 +187,8 @@
   
   /* Add color variations based on data-color attribute */
   :root[data-color="purple"] {
-    --primary: #7C3AED;
-    --primary-dark: #6D28D9;
+    --primary: #E6C76A;
+    --primary-dark: #C9A24D;
   }
   
   :root[data-color="blue"] {
