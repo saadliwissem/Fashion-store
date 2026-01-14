@@ -1,9 +1,17 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import Button from "../components/common/Button";
-import { ArrowRight, Star, Shield, TrendingUp, Truck } from "lucide-react";
+import {
+  ArrowRight,
+  Star,
+  Shield,
+  TrendingUp,
+  Truck,
+  Puzzle,
+  Sparkles,
+  Users,
+} from "lucide-react";
 import ProductCard from "../components/products/ProductCard";
-
 // Mock data - will be replaced with real API data
 const featuredProducts = [
   {
@@ -118,7 +126,163 @@ const Home = () => {
           </div>
         </div>
       </section>
+      {/* Puzzle Mysteries Section - FIXED VERSION */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-100 text-purple-700 font-semibold mb-4">
+              <Sparkles className="w-4 h-4" />
+              <span>Exclusive Experience</span>
+            </div>
+            <h2 className="text-3xl lg:text-4xl font-bold mb-4">
+              Join Our
+              <span className="block bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">
+                Puzzle Mysteries
+              </span>
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Become part of an exclusive community solving epic fashion
+              mysteries. Claim unique fragments, collaborate with keepers, and
+              earn legendary rewards.
+            </p>
+          </div>
 
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            {/* Mystery Preview Card - FIXED: No dark backgrounds that overflow */}
+            <div className="rounded-3xl overflow-hidden border border-gray-200 group hover:shadow-2xl transition-all duration-300 bg-white">
+              <div className="h-48 overflow-hidden">
+                <img
+                  src="https://images.unsplash.com/photo-1635805737707-575885ab0820?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+                  alt="Anime Chronicles Mystery"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+              </div>
+
+              <div className="p-8">
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="px-3 py-1 rounded-full bg-purple-100 text-purple-700 text-sm font-medium">
+                    Active Mystery
+                  </span>
+                  <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-sm font-medium">
+                    32 Keepers
+                  </span>
+                </div>
+
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                  Anime Chronicles
+                </h3>
+                <p className="text-gray-600 mb-6">
+                  Unravel hidden truths behind legendary anime worlds. Claim
+                  fragments, solve mysteries, and earn exclusive rewards.
+                </p>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="text-center">
+                      <div className="text-xl font-bold text-gray-900">9</div>
+                      <div className="text-xs text-gray-500">Fragments</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-xl font-bold text-emerald-600">
+                        3
+                      </div>
+                      <div className="text-xs text-gray-500">Claimed</div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-xl font-bold text-amber-600">6</div>
+                      <div className="text-xs text-gray-500">Available</div>
+                    </div>
+                  </div>
+
+                  <Link
+                    to="/mysteries"
+                    className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-500 text-white font-medium hover:shadow-lg transition-all group-hover:scale-105"
+                  >
+                    <Puzzle className="w-4 h-4" />
+                    Explore
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* How It Works */}
+            <div className="space-y-6">
+              <div className="glass-card p-8">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center">
+                    <span className="text-2xl">🔍</span>
+                  </div>
+                  <div>
+                    <h4 className="text-xl font-bold mb-1">
+                      Discover Mysteries
+                    </h4>
+                    <p className="text-gray-600">
+                      Browse exclusive puzzle collections
+                    </p>
+                  </div>
+                </div>
+                <p className="text-gray-700">
+                  Each mystery contains unique fragments that form part of a
+                  larger story. Explore themes like Anime Chronicles, Mythology
+                  Enigmas, and more.
+                </p>
+              </div>
+
+              <div className="glass-card p-8">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-2xl flex items-center justify-center">
+                    <Users className="w-6 h-6 text-emerald-600" />
+                  </div>
+                  <div>
+                    <h4 className="text-xl font-bold mb-1">
+                      Claim & Collaborate
+                    </h4>
+                    <p className="text-gray-600">
+                      Join keepers solving puzzles together
+                    </p>
+                  </div>
+                </div>
+                <p className="text-gray-700">
+                  Claim unique fragments, connect with other keepers, and work
+                  together to unravel mysteries. Each fragment is globally
+                  unique to its owner.
+                </p>
+              </div>
+
+              <div className="glass-card p-8">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-12 h-12 bg-gradient-to-br from-amber-100 to-amber-200 rounded-2xl flex items-center justify-center">
+                    <Sparkles className="w-6 h-6 text-amber-600" />
+                  </div>
+                  <div>
+                    <h4 className="text-xl font-bold mb-1">Earn Rewards</h4>
+                    <p className="text-gray-600">
+                      Unlock exclusive prizes and recognition
+                    </p>
+                  </div>
+                </div>
+                <p className="text-gray-700">
+                  Solve mysteries to earn limited edition artifacts, digital
+                  content, special recognition, and early access to future
+                  releases.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center">
+            <Link
+              to="/mysteries"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-500 text-white font-bold text-lg hover:shadow-xl transition-all hover:scale-105"
+            >
+              <Puzzle className="w-5 h-5" />
+              Explore All Mysteries
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+          </div>
+        </div>
+      </section>
       {/* Features */}
       <section className="py-16">
         <div className="container mx-auto px-4">

@@ -42,7 +42,9 @@ const OrderDetails = lazy(() => import("./components/orders/OrderDetails"));
 
 const Wishlist = lazy(() => import("./pages/Wishlist"));
 const NotFound = lazy(() => import("./pages/NotFound"));
-
+const EnigmasPage = lazy(() => import("./pages/EnigmasPage"));
+const EnigmaDetailPage = lazy(() => import("./pages/EnigmaDetailPage"));
+const ChronicleDetailPage = lazy(() => import("./pages/ChronicleDetailPage"));
 function App() {
   return (
     <ThemeProvider>
@@ -67,6 +69,15 @@ function App() {
                       element={<TestConnection />}
                     />
                     <Route path="/shop" element={<Shop />} />
+                    <Route path="/mysteries" element={<EnigmasPage />} />
+                    <Route
+                      path="/mysteries/:id"
+                      element={<EnigmaDetailPage />}
+                    />
+                    <Route
+                      path="/mysteries/:enigmaId/chronicles/:chronicleId"
+                      element={<ChronicleDetailPage />}
+                    />
                     <Route path="/product/:id" element={<ProductDetails />} />
                     <Route
                       path="/product/slug/:slug"

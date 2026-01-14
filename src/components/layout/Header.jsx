@@ -304,7 +304,9 @@ const Header = () => {
               </button>
               {renderCategoriesDropdown()}
             </div>
-
+            <Link to="/mysteries" className="nav-link">
+              Mysteries
+            </Link>
             <Link to="/about" className="nav-link">
               About
             </Link>
@@ -496,7 +498,13 @@ const Header = () => {
               </Link>
 
               {renderMobileCategories()}
-
+              <Link
+                to="/mysteries"
+                className="nav-link py-2"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Mysteries
+              </Link>
               <Link
                 to="/about"
                 className="nav-link py-2"
