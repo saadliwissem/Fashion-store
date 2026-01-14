@@ -66,7 +66,7 @@ const CartItem = ({
 
             <div className="flex-1">
               <Link to={`/product/${productId}`}>
-                <h3 className="font-semibold text-gray-900 hover:text-purple-600 transition-colors">
+                <h3 className="font-semibold text-gray-900 hover:text-primary-600 transition-colors">
                   {item.name || "Unnamed Product"}
                 </h3>
               </Link>
@@ -149,7 +149,7 @@ const CartItem = ({
                   onUpdateQuantity &&
                   onUpdateQuantity(itemId, quantity - 1)
                 }
-                className="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-purple-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-primary-600 disabled:opacity-50 disabled:cursor-not-allowed"
                 disabled={quantity <= 1}
               >
                 {isUpdating ? (
@@ -167,7 +167,7 @@ const CartItem = ({
                   onUpdateQuantity &&
                   onUpdateQuantity(itemId, quantity + 1)
                 }
-                className="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-purple-600"
+                className="w-10 h-10 flex items-center justify-center text-gray-600 hover:text-primary-600"
               >
                 {isUpdating ? (
                   <Loader2 className="w-4 h-4 animate-spin" />

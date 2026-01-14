@@ -29,8 +29,8 @@ const Wishlist = () => {
       <div className="min-h-screen py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-md mx-auto text-center">
-            <div className="w-24 h-24 bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <Heart className="w-12 h-12 text-purple-600" />
+            <div className="w-24 h-24 bg-gradient-to-br from-primary-100 to-neutral-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <Heart className="w-12 h-12 text-primary-600" />
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-4">
               Sign In Required
@@ -57,8 +57,8 @@ const Wishlist = () => {
       <div className="min-h-screen py-16 fade-in">
         <div className="container mx-auto px-4">
           <div className="max-w-lg mx-auto text-center">
-            <div className="w-24 h-24 bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <Heart className="w-12 h-12 text-purple-600" />
+            <div className="w-24 h-24 bg-gradient-to-br from-primary-100 to-neutral-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <Heart className="w-12 h-12 text-primary-600" />
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-4">
               Your Wishlist is Empty
@@ -88,7 +88,7 @@ const Wishlist = () => {
                   <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl overflow-hidden mb-3">
                     <div className="w-full h-full group-hover:scale-110 transition-transform duration-500" />
                   </div>
-                  <h3 className="font-medium text-gray-900 group-hover:text-purple-600">
+                  <h3 className="font-medium text-gray-900 group-hover:text-primary-600">
                     Popular Item {i}
                   </h3>
                   <p className="text-gray-600">
@@ -186,10 +186,10 @@ const Wishlist = () => {
 
         {/* Bulk Actions */}
         {selectedItems.length > 0 && (
-          <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl">
+          <div className="mb-6 p-4 bg-gradient-to-r from-primary-50 to-neutral-50 rounded-2xl">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 bg-purple-600 text-white rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-primary-600 text-white rounded-lg flex items-center justify-center">
                   {selectedItems.length}
                 </div>
                 <span className="font-medium text-gray-900">
@@ -251,7 +251,7 @@ const Wishlist = () => {
                     onClick={() => setViewMode("grid")}
                     className={`p-2 rounded-lg ${
                       viewMode === "grid"
-                        ? "bg-purple-100 text-purple-600"
+                        ? "bg-primary-100 text-primary-600"
                         : "hover:bg-gray-100"
                     }`}
                   >
@@ -261,7 +261,7 @@ const Wishlist = () => {
                     onClick={() => setViewMode("list")}
                     className={`p-2 rounded-lg ${
                       viewMode === "list"
-                        ? "bg-purple-100 text-purple-600"
+                        ? "bg-primary-100 text-primary-600"
                         : "hover:bg-gray-100"
                     }`}
                   >
@@ -298,7 +298,7 @@ const Wishlist = () => {
               <div className="mt-8 pt-6 border-t">
                 <button
                   onClick={handleSelectAll}
-                  className="flex items-center gap-2 text-purple-600 hover:text-purple-700"
+                  className="flex items-center gap-2 text-primary-600 hover:text-primary-700"
                 >
                   <input
                     type="checkbox"
@@ -307,7 +307,7 @@ const Wishlist = () => {
                       wishlist.length > 0
                     }
                     onChange={handleSelectAll}
-                    className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                    className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   Select All Items
                 </button>
@@ -329,7 +329,7 @@ const Wishlist = () => {
                   key={item.id}
                   className={`group bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl ${
                     selectedItems.includes(item.id)
-                      ? "ring-2 ring-purple-500"
+                      ? "ring-2 ring-primary-500"
                       : ""
                   }`}
                 >
@@ -341,7 +341,7 @@ const Wishlist = () => {
                           type="checkbox"
                           checked={selectedItems.includes(item.id)}
                           onChange={() => handleSelectItem(item.id)}
-                          className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                          className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                         />
                         <span className="text-sm text-gray-500">
                           Added {new Date(item.addedAt).toLocaleDateString()}
@@ -381,7 +381,7 @@ const Wishlist = () => {
                       {/* Product Info */}
                       <div className="flex-1 min-w-0">
                         <Link to={`/product/${item.id}`}>
-                          <h3 className="font-semibold text-gray-900 group-hover:text-purple-600 transition-colors truncate">
+                          <h3 className="font-semibold text-gray-900 group-hover:text-primary-600 transition-colors truncate">
                             {item.name}
                           </h3>
                         </Link>
@@ -418,7 +418,7 @@ const Wishlist = () => {
                           {/* Actions */}
                           <div className="flex gap-2">
                             <Link to={`/product/${item.id}`}>
-                              <button className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg">
+                              <button className="p-2 text-gray-600 hover:text-primary-600 hover:bg-purple-50 rounded-lg">
                                 <Eye className="w-5 h-5" />
                               </button>
                             </Link>
@@ -442,7 +442,7 @@ const Wishlist = () => {
                       <span className="text-green-600 font-medium">
                         In Stock
                       </span>
-                      <button className="text-purple-600 hover:text-purple-700 font-medium">
+                      <button className="text-primary-600 hover:text-primary-700 font-medium">
                         Notify when on sale
                       </button>
                     </div>
@@ -462,7 +462,7 @@ const Wishlist = () => {
                     key={page}
                     className={`w-10 h-10 flex items-center justify-center rounded-lg font-medium ${
                       page === 1
-                        ? "bg-purple-600 text-white"
+                        ? "bg-primary-600 text-white"
                         : "hover:bg-gray-100"
                     }`}
                   >
@@ -477,10 +477,10 @@ const Wishlist = () => {
 
             {/* Stats */}
             <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6">
+              <div className="bg-gradient-to-br from-primary-50 to-neutral-50 rounded-2xl p-6">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center">
-                    <Heart className="w-6 h-6 text-purple-600" />
+                    <Heart className="w-6 h-6 text-primary-600" />
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-gray-900">

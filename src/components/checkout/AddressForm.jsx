@@ -171,7 +171,7 @@ const AddressForm = ({ formData, handleInputChange, governorates }) => {
               name="saveAddress"
               checked={formData.saveAddress}
               onChange={handleInputChange}
-              className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+              className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
             />
             <label htmlFor="saveAddress" className="text-sm text-gray-600">
               Save this address for future orders

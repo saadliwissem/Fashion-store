@@ -6,8 +6,8 @@
 
 @layer base {
   :root {
-    --primary: #7C3AED;
-    --primary-dark: #6D28D9;
+    --primary: #C9A24D;
+    --primary-dark: #8e7537;
     --secondary: #10B981;
     --accent: #F59E0B;
     --dark: #1F2937;
@@ -43,19 +43,19 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-gradient-to-b from-purple-500 to-purple-600 rounded-full;
+    @apply bg-gradient-to-b from-primary-500 to-primary-600 rounded-full;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-gradient-to-b from-purple-600 to-purple-700;
+    @apply bg-gradient-to-b from-primary-600 to-primary-700;
   }
 }
 
 @layer components {
   /* Button Styles */
   .btn-primary {
-    @apply bg-gradient-to-r from-purple-600 to-purple-700 text-white px-6 py-3 rounded-xl font-semibold 
-           hover:from-purple-700 hover:to-purple-800 transition-all duration-300 
+    @apply bg-gradient-to-r from-primary-500 to-primary-600 text-white px-6 py-3 rounded-xl font-semibold
+           hover:from-primary-600 hover:to-primary-700 transition-all duration-300
            hover:scale-[1.02] hover:shadow-xl active:scale-[0.98] shadow-md;
   }
   
@@ -66,7 +66,7 @@
   }
   
   .btn-outline {
-    @apply border-2 border-purple-600 text-purple-600 px-6 py-3 rounded-xl font-semibold 
+    @apply border-2 border-primary-600 text-primary-500 px-6 py-3 rounded-xl font-semibold
            hover:bg-purple-50 transition-all duration-300 hover:scale-[1.02] hover:shadow-md;
   }
 
@@ -80,7 +80,7 @@
 
   /* Input Styles */
   .input-modern {
-    @apply w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-purple-500 
+    @apply w-full px-4 py-3 rounded-xl border border-gray-300 focus:border-primary-500
            focus:ring-2 focus:ring-purple-200 transition-all duration-300 
            focus:outline-none focus:shadow-md bg-white;
   }
@@ -99,12 +99,12 @@
   }
   
   .badge-popular {
-    @apply bg-gradient-to-r from-purple-500 to-purple-600 text-white;
+    @apply bg-gradient-to-r from-primary-500 to-primary-600 text-white;
   }
 
   /* Navigation */
   .nav-link {
-    @apply relative text-gray-700 hover:text-purple-600 font-medium transition-colors duration-300;
+    @apply relative text-gray-700 hover:text-primary-600 font-medium transition-colors duration-300;
   }
   
   .nav-link::after {

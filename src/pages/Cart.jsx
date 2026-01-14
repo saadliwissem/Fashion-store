@@ -95,8 +95,8 @@ const Cart = () => {
       <div className="min-h-screen py-16 fade-in">
         <div className="container mx-auto px-4">
           <div className="max-w-lg mx-auto text-center">
-            <div className="w-24 h-24 bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <Loader2 className="w-12 h-12 text-purple-600 animate-spin" />
+            <div className="w-24 h-24 bg-gradient-to-br from-primary-100 to-neutral-200 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <Loader2 className="w-12 h-12 text-primary-600 animate-spin" />
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-4">
               Loading your cart...
@@ -118,8 +118,8 @@ const Cart = () => {
       <div className="min-h-screen py-16 fade-in">
         <div className="container mx-auto px-4">
           <div className="max-w-lg mx-auto text-center">
-            <div className="w-24 h-24 bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <ShoppingBag className="w-12 h-12 text-purple-600" />
+            <div className="w-24 h-24 bg-gradient-to-br from-primary-100 to-neutral-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <ShoppingBag className="w-12 h-12 text-primary-600" />
             </div>
             <h1 className="text-3xl font-bold text-gray-900 mb-4">
               Your cart is empty
@@ -150,7 +150,7 @@ const Cart = () => {
                   <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl overflow-hidden mb-3">
                     <div className="w-full h-full group-hover:scale-110 transition-transform duration-500" />
                   </div>
-                  <h3 className="font-medium text-gray-900 group-hover:text-purple-600">
+                  <h3 className="font-medium text-gray-900 group-hover:text-primary-600">
                     Suggested Item {i}
                   </h3>
                   <p className="text-gray-600">
@@ -188,7 +188,7 @@ const Cart = () => {
             <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
             <p>
               Total:{" "}
-              <span className="font-bold text-purple-600">
+              <span className="font-bold text-primary-600">
                 {safeCartTotal.total.toFixed(3)} DT
               </span>
             </p>
@@ -266,7 +266,7 @@ const Cart = () => {
             </div>
 
             {/* Promo Code */}
-            <div className="mt-8 bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6">
+            <div className="mt-8 bg-gradient-to-r from-primary-50 to-neutral-50 rounded-2xl p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
                 Have a promo code?
               </h3>
@@ -388,7 +388,7 @@ const Cart = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Truck className="w-5 h-5 text-purple-600" />
+                  <Truck className="w-5 h-5 text-primary-600" />
                   <div>
                     <p className="text-sm font-medium text-gray-900">
                       Fast Shipping
@@ -427,7 +427,7 @@ const Cart = () => {
                 className="group bg-white rounded-2xl shadow-lg p-4 hover:shadow-xl transition-shadow"
               >
                 <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl mb-4"></div>
-                <h3 className="font-semibold text-gray-900 group-hover:text-purple-600">
+                <h3 className="font-semibold text-gray-900 group-hover:text-primary-600">
                   {product.name}
                 </h3>
                 <div className="flex items-center justify-between mt-2">

@@ -153,7 +153,7 @@ const OrderDetails = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading order details...</p>
         </div>
       </div>
@@ -529,7 +529,7 @@ const OrderDetails = () => {
                 {/* Shipping Method */}
                 <div className="mt-4 p-3 bg-gray-50 rounded-lg">
                   <div className="flex items-center gap-3">
-                    <Truck className="w-5 h-5 text-purple-600" />
+                    <Truck className="w-5 h-5 text-primary-600" />
                     <div>
                       <p className="font-medium text-gray-900">
                         {order.shippingMethod === "express"
@@ -581,9 +581,9 @@ const OrderDetails = () => {
             )}
 
             {/* Need Help */}
-            <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-6">
+            <div className="bg-gradient-to-r from-primary-50 to-neutral-50 rounded-xl p-6">
               <div className="flex items-center gap-3 mb-4">
-                <Shield className="w-6 h-6 text-purple-600" />
+                <Shield className="w-6 h-6 text-primary-600" />
                 <h3 className="font-semibold text-gray-900">Need Help?</h3>
               </div>
               <p className="text-gray-600 text-sm mb-4">

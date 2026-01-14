@@ -145,7 +145,7 @@ const OrderSummary = ({
         <div className="mb-6">
           <h3 className="font-semibold text-gray-900 mb-3">Shipping Method</h3>
           <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-            <Truck className="w-5 h-5 text-purple-600" />
+            <Truck className="w-5 h-5 text-primary-600" />
             <div>
               <p className="font-medium">
                 {getShippingMethodName(shippingMethod)}
@@ -161,8 +161,8 @@ const OrderSummary = ({
       {/* Guarantees */}
       <div className="space-y-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-purple-100 to-purple-200 rounded-lg flex items-center justify-center">
-            <Package className="w-5 h-5 text-purple-600" />
+          <div className="w-10 h-10 bg-gradient-to-br from-primary-100 to-primary-200 rounded-lg flex items-center justify-center">
+            <Package className="w-5 h-5 text-primary-600" />
           </div>
           <div>
             <p className="font-medium text-gray-900">30-Day Returns</p>

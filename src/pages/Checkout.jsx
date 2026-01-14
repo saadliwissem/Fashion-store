@@ -417,8 +417,8 @@ const Checkout = () => {
                   key={method.id}
                   className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${
                     formData.shippingMethod === method.id
-                      ? "border-purple-500 bg-purple-50"
-                      : "border-gray-200 hover:border-purple-300"
+                      ? "border-primary-500 bg-primary-50"
+                      : "border-gray-200 hover:border-primary-300"
                   }`}
                   onClick={() =>
                     setFormData({ ...formData, shippingMethod: method.id })
@@ -459,8 +459,8 @@ const Checkout = () => {
                   key={method.id}
                   className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${
                     selectedPaymentMethod === method.id
-                      ? "border-purple-500 bg-purple-50"
-                      : "border-gray-200 hover:border-purple-300"
+                      ? "border-primary-500 bg-primary-50"
+                      : "border-gray-200 hover:border-primary-300"
                   }`}
                   onClick={() => setSelectedPaymentMethod(method.id)}
                 >
@@ -513,7 +513,7 @@ const Checkout = () => {
                 value={formData.notes}
                 onChange={handleInputChange}
                 placeholder="Add special instructions for your order..."
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                 rows="3"
               />
             </div>
@@ -539,7 +539,7 @@ const Checkout = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <Loader className="w-12 h-12 animate-spin text-purple-600 mx-auto mb-4" />
+          <Loader className="w-12 h-12 animate-spin text-primary-600 mx-auto mb-4" />
           <p className="text-gray-600">Loading your cart...</p>
         </div>
       </div>
@@ -644,7 +644,7 @@ const Checkout = () => {
                   <p className="text-sm font-medium">Secure Payment</p>
                 </div>
                 <div className="bg-white p-4 rounded-xl shadow-sm text-center">
-                  <Truck className="w-8 h-8 mx-auto mb-2 text-purple-600" />
+                  <Truck className="w-8 h-8 mx-auto mb-2 text-primary-600" />
                   <p className="text-sm font-medium">Fast Delivery</p>
                 </div>
                 <div className="bg-white p-4 rounded-xl shadow-sm text-center">
@@ -671,7 +671,7 @@ const Checkout = () => {
           </div>
 
           {/* Help Section */}
-          <div className="mt-8 p-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl">
+          <div className="mt-8 p-6 bg-gradient-to-r from-primary-50 to-neutral-50 rounded-2xl">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
               Need Help?
             </h3>
