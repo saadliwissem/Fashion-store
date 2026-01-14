@@ -103,7 +103,7 @@ const Shop = () => {
         { name: "Blue", value: "#3B82F6" },
         { name: "Red", value: "#EF4444" },
         { name: "Green", value: "#10B981" },
-        { name: "Purple", value: "#8B5CF6" },
+        { name: "Purple", value: "#f0b100" },
       ]);
     }
   };
@@ -334,7 +334,7 @@ const Shop = () => {
                       onClick={() => setViewMode("grid")}
                       className={`p-2 rounded-lg ${
                         viewMode === "grid"
-                          ? "bg-purple-100 text-purple-600"
+                          ? "bg-primary-100 text-primary-600"
                           : "hover:bg-gray-100"
                       }`}
                     >
@@ -344,7 +344,7 @@ const Shop = () => {
                       onClick={() => setViewMode("list")}
                       className={`p-2 rounded-lg ${
                         viewMode === "list"
-                          ? "bg-purple-100 text-purple-600"
+                          ? "bg-primary-100 text-primary-600"
                           : "hover:bg-gray-100"
                       }`}
                     >
@@ -374,7 +374,7 @@ const Shop = () => {
                       value={sortBy}
                       onChange={(e) => handleSortChange(e.target.value)}
                       disabled={loading}
-                      className="appearance-none bg-gray-100 border-none rounded-lg pl-4 pr-10 py-2 focus:ring-2 focus:ring-purple-200 focus:outline-none disabled:opacity-50"
+                      className="appearance-none bg-gray-100 border-none rounded-lg pl-4 pr-10 py-2 focus:ring-2 focus:ring-primary-100 focus:outline-none disabled:opacity-50"
                     >
                       {sortOptions.map((option) => (
                         <option key={option.id} value={option.id}>
@@ -398,7 +398,7 @@ const Shop = () => {
               <div className="mb-6 flex flex-wrap gap-2">
                 <span className="text-gray-600">Active filters:</span>
                 {selectedCategory !== "all" && (
-                  <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm">
+                  <span className="px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm">
                     {categories.find((c) => c.id === selectedCategory)?.name}
                   </span>
                 )}
@@ -440,7 +440,7 @@ const Shop = () => {
             {/* Loading State */}
             {loading && (
               <div className="flex justify-center items-center py-20">
-                <Loader2 className="w-12 h-12 text-purple-600 animate-spin" />
+                <Loader2 className="w-12 h-12 text-primary-600 animate-spin" />
               </div>
             )}
 
@@ -509,7 +509,7 @@ const Shop = () => {
                           onClick={() => handlePageChange(page)}
                           className={`w-10 h-10 flex items-center justify-center rounded-lg font-medium ${
                             page === currentPage
-                              ? "bg-purple-600 text-white"
+                              ? "bg-primary-600 text-white"
                               : "hover:bg-gray-100"
                           }`}
                         >

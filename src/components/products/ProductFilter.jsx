@@ -71,7 +71,7 @@ const ProductFilter = ({
               onClick={() => onCategoryChange(category.id)}
               className={`flex items-center justify-between w-full p-3 rounded-lg text-left transition-colors ${
                 selectedCategory === category.id
-                  ? "bg-purple-50 text-purple-700"
+                  ? "bg-primary-50 text-primary-700"
                   : "hover:bg-gray-50"
               }`}
             >
@@ -79,7 +79,7 @@ const ProductFilter = ({
               <span
                 className={`px-2 py-1 rounded-full text-xs ${
                   selectedCategory === category.id
-                    ? "bg-purple-100 text-purple-700"
+                    ? "bg-primary-100 text-primary-700"
                     : "bg-gray-100 text-gray-600"
                 }`}
               >
@@ -99,7 +99,7 @@ const ProductFilter = ({
         <div className="px-2">
           <div className="relative h-2 bg-gray-200 rounded-full mb-4">
             <div
-              className="absolute h-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full"
+              className="absolute h-2 bg-gradient-to-r from-primary-500 to-black rounded-full"
               style={{
                 left: `${(priceRange[0] / maxPrice) * 100}%`,
                 right: `${100 - (priceRange[1] / maxPrice) * 100}%`,
@@ -144,8 +144,8 @@ const ProductFilter = ({
                 onClick={() => onSizeChange(size)}
                 className={`w-12 h-12 flex items-center justify-center border rounded-lg font-medium transition-colors ${
                   selectedSizes.includes(size)
-                    ? "border-purple-600 bg-purple-50 text-purple-700"
-                    : "border-gray-300 hover:border-purple-500"
+                    ? "border-primary-600 bg-primary-50 text-primary-700"
+                    : "border-gray-300 hover:border-primary-500"
                 }`}
               >
                 {size}
@@ -176,15 +176,15 @@ const ProductFilter = ({
                   <div
                     className={`w-10 h-10 rounded-full border-2 transition-all ${
                       isSelected
-                        ? "border-purple-600 scale-110"
-                        : "border-gray-300 group-hover:border-purple-400 group-hover:scale-105"
+                        ? "border-primary-600 scale-110"
+                        : "border-gray-300 group-hover:border-primary-400 group-hover:scale-105"
                     }`}
                     style={{ backgroundColor: colorValue }}
                   />
                   <span
                     className={`text-xs transition-colors ${
                       isSelected
-                        ? "text-purple-600 font-medium"
+                        ? "text-primary-600 font-medium"
                         : "text-gray-600"
                     }`}
                   >

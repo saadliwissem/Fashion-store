@@ -18,7 +18,7 @@ export const ThemeProvider = ({ children }) => {
   // Initialize theme from localStorage
   useEffect(() => {
     const savedTheme = localStorage.getItem("theme") || "light";
-    const savedPrimaryColor = localStorage.getItem("primaryColor") || "purple";
+    const savedPrimaryColor = localStorage.getItem("primaryColor") || "yellow";
     const savedFontSize = localStorage.getItem("fontSize") || "medium";
 
     setTheme(savedTheme);

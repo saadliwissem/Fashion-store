@@ -186,7 +186,7 @@ const ContactUs = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-purple-600 to-pink-500 text-white overflow-hidden">
+      <section className="relative bg-gradient-to-r from-primary-500 to-black text-white overflow-hidden">
         <div className="absolute inset-0">
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-32 translate-x-32"></div>
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-white/5 rounded-full translate-y-48 -translate-x-48"></div>
@@ -197,11 +197,11 @@ const ContactUs = () => {
             <h1 className="text-5xl md:text-6xl font-bold mb-6">
               We're Here to Help
             </h1>
-            <p className="text-xl md:text-2xl text-purple-100 mb-8">
+            <p className="text-xl md:text-2xl text-primary-100 mb-8">
               Get in touch with our friendly team. We're always happy to assist
               you.
             </p>
-            <div className="flex items-center justify-center gap-2 text-purple-100">
+            <div className="flex items-center justify-center gap-2 text-primary-100">
               <MessageSquare className="w-5 h-5" />
               <span>Average response time: 15 minutes</span>
             </div>
@@ -259,7 +259,7 @@ const ContactUs = () => {
           <div className="lg:col-span-2">
             <div className="bg-white rounded-2xl shadow-lg p-8">
               <div className="flex items-center gap-3 mb-8">
-                <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center text-purple-600">
+                <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center text-primary-600">
                   <Send className="w-6 h-6" />
                 </div>
                 <div>
@@ -473,7 +473,7 @@ const ContactUs = () => {
                 {departments.map((dept, index) => (
                   <div
                     key={index}
-                    className="bg-white rounded-xl border border-gray-200 p-6 hover:border-purple-300 transition-colors"
+                    className="bg-white rounded-xl border border-gray-200 p-6 hover:border-primary-300 transition-colors"
                   >
                     <h4 className="font-bold text-gray-900 mb-2">
                       {dept.name}
@@ -484,7 +484,7 @@ const ContactUs = () => {
                     <div className="space-y-2">
                       <a
                         href={`mailto:${dept.email}`}
-                        className="flex items-center gap-2 text-purple-600 hover:text-purple-700 text-sm"
+                        className="flex items-center gap-2 text-primary-600 hover:text-primary-700 text-sm"
                       >
                         <Mail className="w-4 h-4" />
                         {dept.email}
@@ -508,7 +508,7 @@ const ContactUs = () => {
             {/* FAQ Section */}
             <div className="bg-white rounded-2xl shadow-lg p-6">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center text-purple-600">
+                <div className="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center text-primary-600">
                   <HelpCircle className="w-5 h-5" />
                 </div>
                 <h3 className="text-xl font-bold text-gray-900">
@@ -540,7 +540,7 @@ const ContactUs = () => {
             </div>
 
             {/* Social Media */}
-            <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6">
+            <div className="bg-gradient-to-br from-primary-50 to-neutral-50 rounded-2xl p-6">
               <h3 className="text-xl font-bold text-gray-900 mb-4">
                 Connect With Us
               </h3>
@@ -619,15 +619,15 @@ const ContactUs = () => {
                   available.
                 </p>
                 <div className="flex items-center gap-2 text-gray-700 mb-4">
-                  <MapPin className="w-5 h-5 text-purple-600" />
+                  <MapPin className="w-5 h-5 text-primary-600" />
                   <span>Avenue Habib Bourguiba, Tunis, Tunisia</span>
                 </div>
               </div>
               <div className="h-64 bg-gray-200 relative">
                 {/* In production, use a real map component like Google Maps */}
-                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100">
+                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-100 to-primary-100">
                   <div className="text-center">
-                    <MapPin className="w-12 h-12 text-purple-600 mx-auto mb-3" />
+                    <MapPin className="w-12 h-12 text-primary-600 mx-auto mb-3" />
                     <p className="font-medium text-gray-700">Interactive Map</p>
                     <p className="text-sm text-gray-500 mt-1">
                       Click to view in Google Maps
@@ -651,11 +651,11 @@ const ContactUs = () => {
       </div>
 
       {/* Newsletter CTA */}
-      <section className="bg-gradient-to-r from-purple-600 to-pink-500 text-white py-16">
+      <section className="bg-gradient-to-r from-primary-600 to-black text-white py-16">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto text-center">
             <h2 className="text-3xl font-bold mb-4">Stay Updated</h2>
-            <p className="text-purple-100 mb-8">
+            <p className="text-primary-100 mb-8">
               Subscribe to our newsletter for exclusive offers, fashion tips,
               and updates.
             </p>
@@ -663,13 +663,13 @@ const ContactUs = () => {
               <input
                 type="email"
                 placeholder="Your email address"
-                className="flex-1 px-4 py-3 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-purple-600"
+                className="flex-1 px-4 py-3 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary-600"
               />
-              <Button className="bg-white text-purple-700 hover:bg-purple-50 whitespace-nowrap">
+              <Button className="bg-white text-primary-700 hover:bg-primary-50 whitespace-nowrap">
                 Subscribe
               </Button>
             </div>
-            <p className="text-purple-200 text-sm mt-4">
+            <p className="text-primary-200 text-sm mt-4">
               We respect your privacy. Unsubscribe at any time.
             </p>
           </div>

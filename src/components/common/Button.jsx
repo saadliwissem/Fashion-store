@@ -15,11 +15,11 @@ const Button = ({
 
   const variants = {
     primary:
-      "bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-700 hover:to-purple-800 hover:shadow-xl active:scale-95",
+      "bg-gradient-to-r from-yellow-600 to-yellow-700 text-white hover:from-yellow-700 hover:to-yellow-800 hover:shadow-xl active:scale-95",
     secondary:
       "bg-gradient-to-r from-emerald-500 to-emerald-600 text-white hover:from-emerald-600 hover:to-emerald-700 hover:shadow-xl active:scale-95",
     outline:
-      "border-2 border-purple-600 text-purple-600 hover:bg-purple-50 active:scale-95",
+      "border-2 border-yellow-600 text-yellow-600 hover:bg-yesslow-50 active:scale-95",
     ghost: "text-gray-700 hover:bg-gray-100 active:scale-95",
   };
 

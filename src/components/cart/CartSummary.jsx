@@ -118,8 +118,8 @@ const CartSummary = ({
         </div>
 
         {shipping > 0 && subtotal > 0 && (
-          <div className="p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg">
-            <p className="text-sm text-purple-700 text-center">
+          <div className="p-3 bg-gradient-to-r from-primary-50 to-pink-50 rounded-lg">
+            <p className="text-sm text-primary-700 text-center">
               Add {(99 - subtotal).toFixed(3)} DT more for free shipping!
             </p>
           </div>
@@ -177,8 +177,8 @@ const CartSummary = ({
       {/* Guarantees */}
       <div className="space-y-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-purple-100 to-purple-200 rounded-lg flex items-center justify-center">
-            <Truck className="w-5 h-5 text-purple-600" />
+          <div className="w-10 h-10 bg-gradient-to-br from-primary-100 to-primary-200 rounded-lg flex items-center justify-center">
+            <Truck className="w-5 h-5 text-primary-600" />
           </div>
           <div>
             <p className="font-medium text-gray-900">Free Shipping</p>

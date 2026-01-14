@@ -359,7 +359,7 @@ const ProductDetails = () => {
       <div className="min-h-screen py-8 fade-in">
         <div className="container mx-auto px-4">
           <div className="flex justify-center items-center py-20">
-            <Loader2 className="w-12 h-12 text-purple-600 animate-spin" />
+            <Loader2 className="w-12 h-12 text-primary-600 animate-spin" />
           </div>
         </div>
       </div>
@@ -395,14 +395,14 @@ const ProductDetails = () => {
         <div className="flex items-center gap-2 text-sm text-gray-600 mb-8">
           <button
             onClick={() => navigate("/")}
-            className="hover:text-purple-600"
+            className="hover:text-primary-600"
           >
             Home
           </button>
           <span>/</span>
           <button
             onClick={() => navigate("/shop")}
-            className="hover:text-purple-600"
+            className="hover:text-primary-600"
           >
             Shop
           </button>
@@ -417,7 +417,7 @@ const ProductDetails = () => {
                     }`
                   )
                 }
-                className="hover:text-purple-600 capitalize"
+                className="hover:text-primary-600 capitalize"
               >
                 {product.category.name || product.category}
               </button>
@@ -465,7 +465,7 @@ const ProductDetails = () => {
                   onClick={() => setSelectedImage(index)}
                   className={`flex-shrink-0 w-24 h-24 rounded-lg overflow-hidden ${
                     selectedImage === index
-                      ? "ring-2 ring-purple-500"
+                      ? "ring-2 ring-primary-500"
                       : "opacity-60 hover:opacity-100"
                   }`}
                 >
@@ -486,7 +486,7 @@ const ProductDetails = () => {
                 {product.tags?.map((tag) => (
                   <span
                     key={tag}
-                    className="px-3 py-1 bg-purple-100 text-purple-700 text-xs font-medium rounded-full capitalize"
+                    className="px-3 py-1 bg-purple-100 text-primary-700 text-xs font-medium rounded-full capitalize"
                   >
                     {tag}
                   </span>
@@ -525,7 +525,7 @@ const ProductDetails = () => {
                 </div>
                 <button
                   onClick={handleShare}
-                  className="flex items-center gap-2 text-gray-600 hover:text-purple-600"
+                  className="flex items-center gap-2 text-gray-600 hover:text-primary-600"
                 >
                   <Share2 className="w-4 h-4" />
                   Share
@@ -565,7 +565,7 @@ const ProductDetails = () => {
                       onClick={() => setSelectedColor(color)}
                       className={`flex flex-col items-center gap-2 p-2 rounded-lg transition-colors ${
                         selectedColor === color
-                          ? "bg-purple-50 border border-purple-200"
+                          ? "bg-primary-50 border border-primary-200"
                           : "hover:bg-gray-50"
                       }`}
                     >
@@ -600,7 +600,7 @@ const ProductDetails = () => {
               <div className="mb-8">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="font-semibold text-gray-900">Size</h3>
-                  <button className="text-sm text-purple-600 hover:text-purple-700">
+                  <button className="text-sm text-primary-600 hover:text-primary-700">
                     Size Guide
                   </button>
                 </div>
@@ -611,8 +611,8 @@ const ProductDetails = () => {
                       onClick={() => setSelectedSize(size)}
                       className={`w-16 h-12 flex items-center justify-center border rounded-lg font-medium transition-all ${
                         selectedSize === size
-                          ? "border-purple-600 bg-purple-50 text-purple-700"
-                          : "border-gray-300 hover:border-purple-500 hover:bg-purple-50"
+                          ? "border-primary-600 bg-primary-500 text-primary-700"
+                          : "border-gray-300 hover:border-primary-500 hover:bg-primary-50"
                       }`}
                     >
                       {size}
@@ -631,7 +631,7 @@ const ProductDetails = () => {
                 <div className="flex items-center border border-gray-300 rounded-xl">
                   <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="w-12 h-12 flex items-center justify-center text-gray-600 hover:text-purple-600 disabled:text-gray-400 disabled:cursor-not-allowed"
+                    className="w-12 h-12 flex items-center justify-center text-gray-600 hover:text-primary-6000 disabled:text-gray-400 disabled:cursor-not-allowed"
                     disabled={getCurrentStock() <= 0}
                   >
                     -
@@ -643,7 +643,7 @@ const ProductDetails = () => {
                     onClick={() =>
                       setQuantity(Math.min(getCurrentStock(), quantity + 1))
                     }
-                    className="w-12 h-12 flex items-center justify-center text-gray-600 hover:text-purple-600 disabled:text-gray-400 disabled:cursor-not-allowed"
+                    className="w-12 h-12 flex items-center justify-center text-gray-600 hover:text-primary-600 disabled:text-gray-400 disabled:cursor-not-allowed"
                     disabled={
                       getCurrentStock() <= 0 || quantity >= getCurrentStock()
                     }
@@ -687,21 +687,21 @@ const ProductDetails = () => {
             {/* Features */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
               <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
-                <Truck className="w-6 h-6 text-purple-600" />
+                <Truck className="w-6 h-6 text-primary-600" />
                 <div>
                   <p className="font-semibold">Free Shipping</p>
                   <p className="text-sm text-gray-600">On orders over $99</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
-                <Shield className="w-6 h-6 text-purple-600" />
+                <Shield className="w-6 h-6 text-primary-600" />
                 <div>
                   <p className="font-semibold">2-Year Warranty</p>
                   <p className="text-sm text-gray-600">Quality guarantee</p>
                 </div>
               </div>
               <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-xl">
-                <RefreshCw className="w-6 h-6 text-purple-600" />
+                <RefreshCw className="w-6 h-6 text-primary-600" />
                 <div>
                   <p className="font-semibold">Easy Returns</p>
                   <p className="text-sm text-gray-600">30-day return policy</p>
@@ -719,25 +719,25 @@ const ProductDetails = () => {
                   <>
                     {product.specifications.material && (
                       <li className="flex items-center gap-2 text-gray-600">
-                        <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
+                        <div className="w-1.5 h-1.5 bg-primary-500 rounded-full"></div>
                         Material: {product.specifications.material}
                       </li>
                     )}
                     {product.specifications.care && (
                       <li className="flex items-center gap-2 text-gray-600">
-                        <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
+                        <div className="w-1.5 h-1.5 bg-primary-500 rounded-full"></div>
                         Care: {product.specifications.care}
                       </li>
                     )}
                   </>
                 )}
                 <li className="flex items-center gap-2 text-gray-600">
-                  <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
+                  <div className="w-1.5 h-1.5 bg-primary-500 rounded-full"></div>
                   Category: {product.category?.name || product.category}
                 </li>
                 {product.sku && (
                   <li className="flex items-center gap-2 text-gray-600">
-                    <div className="w-1.5 h-1.5 bg-purple-500 rounded-full"></div>
+                    <div className="w-1.5 h-1.5 bg-primary-500 rounded-full"></div>
                     SKU: {product.sku}
                   </li>
                 )}
@@ -761,7 +761,7 @@ const ProductDetails = () => {
                     }`
                   )
                 }
-                className="flex items-center gap-2 text-purple-600 hover:text-purple-700"
+                className="flex items-center gap-2 text-primary-600 hover:text-primary-700"
               >
                 View All
                 <ChevronRight className="w-4 h-4" />
@@ -799,7 +799,7 @@ const ProductDetails = () => {
                         ${relatedProduct.price?.toFixed(2) || "0.00"}
                       </span>
                       <button
-                        className="p-2 bg-gray-100 hover:bg-purple-600 hover:text-white rounded-lg transition-colors"
+                        className="p-2 bg-gray-100 hover:bg-primary-600 hover:text-white rounded-lg transition-colors"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleAddToWishlist();

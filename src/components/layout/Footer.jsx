@@ -37,7 +37,7 @@ const Footer = () => {
               <div className="w-10 h-10 bg-gradient-to-br from-primary-600 to-secondary-600 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
                 <Puzzle className="w-6 h-6 text-white" />
               </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-primary-500 to-accent-500 bg-clip-text text-transparent">
+              <span className="text-2xl font-bold bg-gradient-to-r from-primary-500 to-accent-900 bg-clip-text text-transparent">
                 Puzzle
               </span>
             </Link>
@@ -55,7 +55,7 @@ const Footer = () => {
               </a>
               <a
                 href="#"
-                className="p-2 bg-gray-800 hover:bg-gradient-to-r hover:from-purple-600 hover:to-pink-600 rounded-lg transition-all duration-300 hover:scale-110 hover:shadow-puzzle"
+                className="p-2 bg-gray-800 hover:bg-gradient-to-r hover:from-primary-600 hover:to-black rounded-lg transition-all duration-300 hover:scale-110 hover:shadow-puzzle"
                 aria-label="Instagram"
               >
                 <Instagram className="w-5 h-5" />

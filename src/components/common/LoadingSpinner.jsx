@@ -8,7 +8,7 @@ const LoadingSpinner = ({ size = "medium", color = "purple" }) => {
   };
 
   const colors = {
-    purple: "border-purple-600",
+    purple: "border-primary-600",
     white: "border-white",
     gray: "border-gray-400",
   };

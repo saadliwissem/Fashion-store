@@ -57,19 +57,19 @@ const PaymentForm = ({ formData, handleInputChange }) => {
               key={method.id}
               className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${
                 selectedMethod === method.id
-                  ? "border-purple-500 bg-purple-50"
-                  : "border-gray-200 hover:border-purple-300"
+                  ? "border-primary-500 bg-primary-50"
+                  : "border-gray-200 hover:border-primary-300"
               }`}
               onClick={() => setSelectedMethod(method.id)}
             >
               <div className="flex items-center gap-3 mb-2">
                 {method.icon && (
-                  <method.icon className="w-5 h-5 text-purple-600" />
+                  <method.icon className="w-5 h-5 text-primary-600" />
                 )}
                 <div>
                   <p className="font-semibold text-gray-900">{method.name}</p>
                   {method.popular && (
-                    <span className="text-xs bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 px-2 py-1 rounded-full">
+                    <span className="text-xs bg-gradient-to-r from-primary-100 to-neutral-100 text-primary-700 px-2 py-1 rounded-full">
                       Popular
                     </span>
                   )}
@@ -166,7 +166,7 @@ const PaymentForm = ({ formData, handleInputChange }) => {
               name="saveCard"
               checked={formData.saveCard}
               onChange={handleInputChange}
-              className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+              className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
             />
             <label htmlFor="saveCard" className="text-sm text-gray-600">
               Save card for future purchases

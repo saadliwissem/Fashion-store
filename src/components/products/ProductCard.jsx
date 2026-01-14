@@ -172,8 +172,8 @@ const ProductCard = ({ product, viewMode = "grid" }) => {
             onClick={handleAddToCart}
             className={`p-2 bg-white rounded-full shadow-lg transition-colors ${
               isInCart(product.id)
-                ? "text-purple-600 hover:bg-purple-50"
-                : "text-gray-700 hover:text-purple-600 hover:bg-purple-50"
+                ? "text-primary-600 hover:bg-primary-50"
+                : "text-gray-700 hover:text-primary-600 hover:bg-primary-50"
             }`}
           >
             <ShoppingBag className="w-5 h-5" />
@@ -195,7 +195,7 @@ const ProductCard = ({ product, viewMode = "grid" }) => {
           </div>
         </div>
 
-        <h3 className="text-lg font-semibold mb-2 group-hover:text-purple-600 transition-colors">
+        <h3 className="text-lg font-semibold mb-2 group-hover:text-primary-600 transition-colors">
           {product.name}
         </h3>
 
@@ -215,8 +215,8 @@ const ProductCard = ({ product, viewMode = "grid" }) => {
             onClick={handleAddToCart}
             className={`p-2 rounded-lg transition-all duration-300 group-hover:scale-110 ${
               isInCart(product.id)
-                ? "bg-purple-600 text-white"
-                : "bg-gray-100 hover:bg-purple-600 hover:text-white"
+                ? "bg-primary-600 text-white"
+                : "bg-gray-100 hover:bg-primary-600 hover:text-white"
             }`}
           >
             <ShoppingBag className="w-5 h-5" />
