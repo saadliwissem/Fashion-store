@@ -205,4 +205,80 @@ export const adminAPI = {
     }),
 };
 
+// API endpoints for Enigmas
+export const enigmaAPI = {
+  getAll: (params) => api.get("/enigmas", { params }),
+  getOne: (id) => api.get(`/enigmas/${id}`),
+  getChronicles: (id, params) =>
+    api.get(`/enigmas/${id}/chronicles`, { params }),
+  getStats: () => api.get("/enigmas/stats"),
+};
+
+// API endpoints for Chronicles
+export const chronicleAPI = {
+  getAll: (params) => api.get("/chronicles", { params }),
+  getOne: (id) => api.get(`/chronicles/${id}`),
+  getFragments: (id, params) =>
+    api.get(`/chronicles/${id}/fragments`, { params }),
+  getProgress: (id) => api.get(`/chronicles/${id}/progress`),
+  getWaitlistStats: (id) => api.get(`/chronicles/${id}/waitlist-stats`),
+};
+
+// API endpoints for Fragments
+export const fragmentAPI = {
+  getAll: (params) => api.get("/fragments", { params }),
+  getOne: (id) => api.get(`/fragments/${id}`),
+  checkAvailability: (id) => api.get(`/fragments/${id}/availability`),
+  claim: (id, data) => api.post(`/fragments/${id}/claim`, data),
+};
+
+// API endpoints for Claims
+export const claimAPI = {
+  create: (data) => api.post("/claims", data),
+  getUserClaims: (params) => api.get("/claims/user", { params }),
+  getOne: (id) => api.get(`/claims/${id}`),
+};
+
+// API endpoints for Waitlist
+export const waitlistAPI = {
+  join: (data) => api.post("/waitlist", data),
+  getUserPosition: (chronicleId) =>
+    api.get(`/waitlist/position/${chronicleId}`),
+  getStats: (chronicleId) => api.get(`/waitlist/stats/${chronicleId}`),
+  leave: (id) => api.delete(`/waitlist/${id}`),
+  updatePreferences: (id, data) =>
+    api.patch(`/waitlist/${id}/preferences`, data),
+};
+
+// API endpoints for Analytics
+export const analyticsAPI = {
+  getChronicleAnalytics: (id) => api.get(`/analytics/chronicle/${id}`),
+  getEnigmaAnalytics: (id) => api.get(`/analytics/enigma/${id}`),
+  getTrending: (params) => api.get("/analytics/trending", { params }),
+};
+
+// API endpoints for Keepers
+export const keeperAPI = {
+  // Get current user's profile (no userId needed - uses token)
+  getMyProfile: () => api.get("/keepers/profile/me"),
+  getProfile: (userId) => {
+    if (userId) {
+      return api.get(`/keepers/profile/${userId}`);
+    } else {
+      return api.get("/keepers/profile/me"); // Or handle differently
+    }
+  },
+  updateProfile: (data) => api.put("/keepers/profile", data),
+  getCollection: (userId, params) =>
+    api.get(`/keepers/${userId}/collection`, { params }),
+  getActivity: (userId, params) =>
+    api.get(`/keepers/${userId}/activity`, { params }),
+  follow: (userId) => api.post(`/keepers/${userId}/follow`),
+  unfollow: (userId) => api.delete(`/keepers/${userId}/follow`),
+  getFollowers: (userId, params) =>
+    api.get(`/keepers/${userId}/followers`, { params }),
+  getFollowing: (userId, params) =>
+    api.get(`/keepers/${userId}/following`, { params }),
+};
+
 export default api;

@@ -25,11 +25,20 @@ import {
   CreditCard,
   Star,
   ShoppingBag,
+  Puzzle,
+  Users,
+  Clock,
+  Sparkles,
+  Trophy,
+  Key,
+  TrendingUp,
+  AlertCircle,
 } from "lucide-react";
 import Button from "../components/common/Button";
-import { authAPI } from "../services/api";
+import { authAPI, keeperAPI, waitlistAPI, claimAPI } from "../services/api";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
+import { Link } from "react-router-dom";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -44,6 +53,23 @@ const Profile = () => {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [avatarFile, setAvatarFile] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState("");
+
+  // Keeper profile data
+  const [keeperProfile, setKeeperProfile] = useState(null);
+  const [keeperStats, setKeeperStats] = useState({
+    fragmentsClaimed: 0,
+    chroniclesCompleted: 0,
+    mysteriesSolved: 0,
+    totalSpent: 0,
+    waitlistEntries: 0,
+    claimsCount: 0,
+    uniqueChronicles: 0,
+    reputation: 0,
+  });
+  const [badges, setBadges] = useState([]);
+  const [waitlistEntries, setWaitlistEntries] = useState([]);
+  const [recentClaims, setRecentClaims] = useState([]);
+  const [loadingKeeperData, setLoadingKeeperData] = useState(false);
 
   const [profile, setProfile] = useState({
     firstName: "",
@@ -114,6 +140,7 @@ const Profile = () => {
 
   useEffect(() => {
     fetchProfile();
+    fetchKeeperData();
   }, []);
 
   const fetchProfile = async () => {
@@ -126,6 +153,32 @@ const Profile = () => {
       toast.error("Failed to load profile data");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchKeeperData = async () => {
+    try {
+      setLoadingKeeperData(true);
+
+      // Use getMyProfile for the current user's profile
+      const keeperResponse = await keeperAPI.getMyProfile();
+      setKeeperProfile(keeperResponse.data.data);
+      setKeeperStats(keeperResponse.data.data.stats);
+      setBadges(keeperResponse.data.data.badges || []);
+
+      // Fetch user's claims
+      const claimsResponse = await claimAPI.getUserClaims({ limit: 5 });
+      setRecentClaims(claimsResponse.data.data);
+
+      // Fetch user's waitlist entries
+      // You'll need to add this endpoint to your waitlistAPI
+      // const waitlistResponse = await waitlistAPI.getUserWaitlists();
+      // setWaitlistEntries(waitlistResponse.data.data);
+    } catch (error) {
+      console.error("Failed to fetch keeper data:", error);
+      // Don't show error toast as this might be first-time user without keeper profile
+    } finally {
+      setLoadingKeeperData(false);
     }
   };
 
@@ -369,6 +422,14 @@ const Profile = () => {
     });
   };
 
+  const getReputationColor = (reputation) => {
+    if (reputation >= 80) return "text-green-600";
+    if (reputation >= 60) return "text-blue-600";
+    if (reputation >= 40) return "text-yellow-600";
+    if (reputation >= 20) return "text-orange-600";
+    return "text-gray-600";
+  };
+
   if (loading && !profile.firstName) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -391,7 +452,8 @@ const Profile = () => {
                 My Profile
               </h1>
               <p className="text-gray-600">
-                Manage your personal information and preferences
+                Manage your personal information, keeper profile, and
+                preferences
               </p>
             </div>
             <div className="flex items-center gap-3">
@@ -443,13 +505,17 @@ const Profile = () => {
                   {profile.firstName} {profile.lastName}
                 </h2>
                 <p className="text-gray-600 text-sm mt-1">{profile.email}</p>
-                <div className="mt-2">
-                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-purple-100 text-purple-700 text-xs font-medium">
-                    <Shield className="w-3 h-3" />
-                    {profile.role.charAt(0).toUpperCase() +
-                      profile.role.slice(1)}
-                  </span>
-                </div>
+
+                {/* Keeper Badge */}
+                {keeperProfile && (
+                  <div className="mt-2">
+                    <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r from-primary-100 to-secondary-100 text-primary-700 text-xs font-medium border border-primary-200">
+                      <Sparkles className="w-3 h-3" />
+                      Keeper Level {Math.floor(keeperStats.reputation / 10) + 1}
+                    </span>
+                  </div>
+                )}
+
                 <p className="text-gray-500 text-sm mt-3">
                   Member since {getJoinedDate()}
                 </p>
@@ -459,11 +525,27 @@ const Profile = () => {
               <nav className="space-y-1">
                 {[
                   { id: "personal", icon: User, label: "Personal Info" },
+                  {
+                    id: "keeper",
+                    icon: Puzzle,
+                    label: "Keeper Profile",
+                    badge: keeperStats?.fragmentsClaimed,
+                  },
                   { id: "addresses", icon: MapPin, label: "Addresses" },
                   { id: "security", icon: Lock, label: "Security" },
                   { id: "preferences", icon: Bell, label: "Preferences" },
-                  { id: "orders", icon: ShoppingBag, label: "My Orders" },
-                  { id: "wishlist", icon: Heart, label: "Wishlist" },
+                  {
+                    id: "orders",
+                    icon: ShoppingBag,
+                    label: "My Orders",
+                    badge: profile.orderCount,
+                  },
+                  {
+                    id: "wishlist",
+                    icon: Heart,
+                    label: "Wishlist",
+                    badge: profile.wishlistCount,
+                  },
                 ].map((item) => (
                   <button
                     key={item.id}
@@ -476,14 +558,9 @@ const Profile = () => {
                   >
                     <item.icon className="w-5 h-5" />
                     {item.label}
-                    {item.id === "orders" && profile.orderCount > 0 && (
+                    {item.badge > 0 && (
                       <span className="ml-auto bg-purple-100 text-purple-700 text-xs font-medium px-2 py-1 rounded-full">
-                        {profile.orderCount}
-                      </span>
-                    )}
-                    {item.id === "wishlist" && profile.wishlistCount > 0 && (
-                      <span className="ml-auto bg-red-100 text-red-700 text-xs font-medium px-2 py-1 rounded-full">
-                        {profile.wishlistCount}
+                        {item.badge}
                       </span>
                     )}
                   </button>
@@ -520,7 +597,211 @@ const Profile = () => {
           </div>
 
           {/* Main Content Area */}
-          <div className="lg:col-span-3">
+          <div className="lg:col-span-3 space-y-6">
+            {/* Keeper Profile Tab - NEW */}
+            {activeTab === "keeper" && (
+              <div className="space-y-6">
+                {/* Keeper Stats Overview */}
+                <div className="bg-white rounded-xl shadow-sm p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <div>
+                      <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                        <Puzzle className="w-6 h-6 text-primary-600" />
+                        Keeper Profile
+                      </h3>
+                      <p className="text-gray-600">
+                        Your mystery-solving journey and achievements
+                      </p>
+                    </div>
+                    <Link to="/mysteries">
+                      <Button variant="outline" size="small">
+                        Explore Mysteries
+                      </Button>
+                    </Link>
+                  </div>
+
+                  {/* Reputation Bar */}
+                  <div className="mb-6 p-4 bg-gradient-to-r from-primary-50 to-secondary-50 rounded-xl border border-primary-100">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-sm font-medium text-gray-700">
+                        Keeper Reputation
+                      </span>
+                      <span
+                        className={`text-sm font-bold ${getReputationColor(
+                          keeperStats.reputation
+                        )}`}
+                      >
+                        {keeperStats.reputation}%
+                      </span>
+                    </div>
+                    <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-primary-500 to-secondary-500 transition-all"
+                        style={{ width: `${keeperStats.reputation}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Stats Grid */}
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                    <div className="bg-gray-50 rounded-xl p-4 text-center">
+                      <div className="text-2xl font-bold text-primary-600 mb-1">
+                        {keeperStats.fragmentsClaimed}
+                      </div>
+                      <div className="text-xs text-gray-600">
+                        Fragments Claimed
+                      </div>
+                    </div>
+                    <div className="bg-gray-50 rounded-xl p-4 text-center">
+                      <div className="text-2xl font-bold text-secondary-600 mb-1">
+                        {keeperStats.uniqueChronicles}
+                      </div>
+                      <div className="text-xs text-gray-600">Chronicles</div>
+                    </div>
+                    <div className="bg-gray-50 rounded-xl p-4 text-center">
+                      <div className="text-2xl font-bold text-accent-600 mb-1">
+                        {keeperStats.waitlistEntries}
+                      </div>
+                      <div className="text-xs text-gray-600">Waitlists</div>
+                    </div>
+                    <div className="bg-gray-50 rounded-xl p-4 text-center">
+                      <div className="text-2xl font-bold text-purple-600 mb-1">
+                        {keeperStats.claimsCount}
+                      </div>
+                      <div className="text-xs text-gray-600">Claims</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Recent Claims */}
+                <div className="bg-white rounded-xl shadow-sm p-6">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <Package className="w-5 h-5 text-primary-500" />
+                    Recent Fragment Claims
+                  </h4>
+
+                  {recentClaims.length === 0 ? (
+                    <div className="text-center py-8">
+                      <Package className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                      <p className="text-gray-600">No fragments claimed yet</p>
+                      <Link to="/mysteries">
+                        <Button variant="outline" size="small" className="mt-4">
+                          Explore Mysteries
+                        </Button>
+                      </Link>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {recentClaims.map((claim) => (
+                        <div
+                          key={claim._id}
+                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200"
+                        >
+                          <div>
+                            <p className="font-medium text-gray-900">
+                              {claim.fragment?.name || "Fragment"}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              {new Date(claim.createdAt).toLocaleDateString()}
+                            </p>
+                          </div>
+                          <div>
+                            <span
+                              className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                claim.status === "delivered"
+                                  ? "bg-green-100 text-green-700"
+                                  : claim.status === "shipped"
+                                  ? "bg-blue-100 text-blue-700"
+                                  : claim.status === "confirmed"
+                                  ? "bg-purple-100 text-purple-700"
+                                  : "bg-yellow-100 text-yellow-700"
+                              }`}
+                            >
+                              {claim.status}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                      <Link to="/claims">
+                        <Button
+                          variant="outline"
+                          size="small"
+                          className="w-full"
+                        >
+                          View All Claims
+                        </Button>
+                      </Link>
+                    </div>
+                  )}
+                </div>
+
+                {/* Waitlist Entries */}
+                <div className="bg-white rounded-xl shadow-sm p-6">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                    <Clock className="w-5 h-5 text-accent-500" />
+                    Waitlist Entries
+                  </h4>
+
+                  {waitlistEntries.length === 0 ? (
+                    <div className="text-center py-8">
+                      <Clock className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                      <p className="text-gray-600">
+                        No active waitlist entries
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {waitlistEntries.map((entry) => (
+                        <div
+                          key={entry._id}
+                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200"
+                        >
+                          <div>
+                            <p className="font-medium text-gray-900">
+                              {entry.chronicle?.name}
+                            </p>
+                            <p className="text-xs text-gray-500">
+                              Position #{entry.position}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-sm text-accent-600">
+                              {entry.preferences?.notifyOnAvailable
+                                ? "🔔"
+                                : "🔕"}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Badges */}
+                {badges.length > 0 && (
+                  <div className="bg-white rounded-xl shadow-sm p-6">
+                    <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                      <Trophy className="w-5 h-5 text-yellow-500" />
+                      Achievements
+                    </h4>
+                    <div className="flex flex-wrap gap-3">
+                      {badges.map((badge, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center gap-2 px-3 py-2 bg-gradient-to-r from-yellow-50 to-orange-50 rounded-lg border border-yellow-200"
+                        >
+                          <Trophy className="w-4 h-4 text-yellow-600" />
+                          <span className="text-sm font-medium text-gray-700">
+                            {badge.name}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Personal Info Tab */}
             {activeTab === "personal" && (
               <div className="bg-white rounded-xl shadow-sm p-6">

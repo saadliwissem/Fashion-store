@@ -10,141 +10,59 @@ import {
   Eye,
 } from "lucide-react";
 import { EnigmaGrid, MysteryReveal } from "../components/mysteries";
+import { enigmaAPI } from "../services/api";
+import toast from "react-hot-toast";
 
 const EnigmasPage = () => {
   const [showHero, setShowHero] = useState(true);
   const [activeFilter, setActiveFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [enigmas, setEnigmas] = useState([]);
+  const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [featuredEnigma, setFeaturedEnigma] = useState(null);
 
-  // Sample data - in production, this would come from an API
-  const enigmasData = [
-    {
-      id: 1,
-      name: "Anime Chronicles",
-      description: "Unravel the hidden truths behind legendary anime worlds",
-      lore: "In the beginning, there were stories. Stories that transcended reality, creating worlds where the impossible became possible. These stories contained fragments of truth, pieces of a larger puzzle scattered across dimensions.\n\nThose who possess the fragments become keepers of these truths. Each fragment holds a clue, and only when all fragments are united can the full mystery be revealed.\n\nThe journey begins with a single fragment, but it takes a community of keepers to piece together the complete picture. Will you be among those who solve the ultimate mystery?",
-      status: "active",
-      coverImage:
-        "https://images.unsplash.com/photo-1635805737707-575885ab0820?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      totalChronicles: 5,
-      totalFragments: 45,
-      fragmentsClaimed: 32,
-      difficulty: "medium",
-      featured: true,
-      startDate: "2024-01-15",
-      estimatedEnd: "2024-06-30",
-      rewards: [
-        {
-          title: "Arcane Artifact",
-          description:
-            "Limited edition physical artifact from the solved puzzle",
-        },
-        {
-          title: "Digital Grimoire",
-          description: "Exclusive digital content and behind-the-scenes lore",
-        },
-        {
-          title: "Keeper's Badge",
-          description: "Special recognition on the leaderboard and community",
-        },
-        {
-          title: "Next Enigma Access",
-          description: "Early access to the next mystery before public release",
-        },
-      ],
-    },
-    {
-      id: 2,
-      name: "Mythology Enigmas",
-      description: "Decode ancient myths and forgotten legends",
-      status: "upcoming",
-      coverImage:
-        "https://images.unsplash.com/photo-1531259683007-016a7b628fc3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      totalChronicles: 3,
-      totalFragments: 27,
-      fragmentsClaimed: 0,
-      difficulty: "hard",
-      featured: true,
-    },
-    {
-      id: 3,
-      name: "Sci-Fi Paradoxes",
-      description: "Solve futuristic puzzles across time and space",
-      status: "upcoming",
-      coverImage:
-        "https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      totalChronicles: 4,
-      totalFragments: 36,
-      fragmentsClaimed: 0,
-      difficulty: "expert",
-      featured: false,
-    },
-    {
-      id: 4,
-      name: "Historical Cryptex",
-      description: "Unlock secrets from pivotal moments in history",
-      status: "active",
-      coverImage:
-        "https://images.unsplash.com/photo-1505664194779-8beaceb93744?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      totalChronicles: 6,
-      totalFragments: 54,
-      fragmentsClaimed: 48,
-      difficulty: "medium",
-      featured: false,
-    },
-    {
-      id: 5,
-      name: "Fantasy Legends",
-      description: "Navigate magical realms and mystical creatures",
-      status: "archived",
-      coverImage:
-        "https://images.unsplash.com/photo-1518709268805-4e9042af2176?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      totalChronicles: 4,
-      totalFragments: 36,
-      fragmentsClaimed: 36,
-      difficulty: "easy",
-      featured: true,
-    },
-    {
-      id: 6,
-      name: "Cyber Enigma",
-      description: "Hack through digital mysteries and virtual realities",
-      status: "active",
-      coverImage:
-        "https://images.unsplash.com/photo-1518709268805-4e9042af2176?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
-      totalChronicles: 3,
-      totalFragments: 27,
-      fragmentsClaimed: 15,
-      difficulty: "hard",
-      featured: true,
-    },
-  ];
+  useEffect(() => {
+    fetchEnigmas();
+    fetchStats();
+  }, []);
 
-  const stats = {
-    totalEnigmas: enigmasData.length,
-    activeEnigmas: enigmasData.filter((e) => e.status === "active").length,
-    totalFragments: enigmasData.reduce((sum, e) => sum + e.totalFragments, 0),
-    claimedFragments: enigmasData.reduce(
-      (sum, e) => sum + e.fragmentsClaimed,
-      0
-    ),
-    totalKeepers: enigmasData.reduce((sum, e) => sum + e.fragmentsClaimed, 0),
+  const fetchEnigmas = async () => {
+    try {
+      const params = {};
+      if (activeFilter !== "all") {
+        params.status = activeFilter === "featured" ? undefined : activeFilter;
+        if (activeFilter === "featured") params.featured = true;
+      }
+      if (searchQuery) params.search = searchQuery;
+
+      const response = await enigmaAPI.getAll(params);
+      setEnigmas(response.data.data);
+      console.log(response.data.data);
+
+      // Set featured enigma for hero
+      const featured = response.data.data.find((e) => e.featured);
+      if (featured) setFeaturedEnigma(featured);
+    } catch (error) {
+      toast.error("Failed to load enigmas");
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const filteredEnigmas = enigmasData
-    .filter((enigma) => {
-      if (activeFilter === "all") return true;
-      if (activeFilter === "active") return enigma.status === "active";
-      if (activeFilter === "upcoming") return enigma.status === "upcoming";
-      if (activeFilter === "archived") return enigma.status === "archived";
-      if (activeFilter === "featured") return enigma.featured;
-      return true;
-    })
-    .filter(
-      (enigma) =>
-        enigma.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        enigma.description.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+  const fetchStats = async () => {
+    try {
+      const response = await enigmaAPI.getStats();
+      setStats(response.data.data);
+    } catch (error) {
+      console.error("Failed to load stats:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchEnigmas();
+  }, [activeFilter, searchQuery]);
 
   // Hide hero after 10 seconds of inactivity
   useEffect(() => {
@@ -157,6 +75,19 @@ const EnigmasPage = () => {
     return () => clearTimeout(timer);
   }, [showHero]);
 
+  if (loading && !enigmas.length) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-primary-300 border-t-primary-500 rounded-full animate-spin mx-auto mb-4"></div>
+          <div className="text-gray-600">Unraveling mysteries...</div>
+        </div>
+      </div>
+    );
+  }
+
+  const filteredEnigmas = enigmas; // Already filtered by API
+
   return (
     <>
       <Helmet>
@@ -167,14 +98,14 @@ const EnigmasPage = () => {
         />
       </Helmet>
 
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-black">
+      <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
         {/* Hero Section - Only shows on first visit */}
-        {showHero && (
+        {showHero && featuredEnigma && (
           <div className="relative">
-            <MysteryReveal enigma={enigmasData[0]} />
+            <MysteryReveal enigma={featuredEnigma} />
             <button
               onClick={() => setShowHero(false)}
-              className="absolute bottom-8 left-1/2 transform -translate-x-1/2 px-6 py-2 bg-black/50 backdrop-blur-sm border border-gray-700 rounded-full text-sm text-gray-300 hover:text-white hover:border-gray-600 transition-all z-10"
+              className="absolute bottom-8 left-1/2 transform -translate-x-1/2 px-6 py-2 bg-white/80 backdrop-blur-sm border border-gray-300 rounded-full text-sm text-gray-700 hover:text-gray-900 hover:border-gray-400 transition-all z-10 shadow-sm"
             >
               Skip to Mysteries
             </button>
@@ -184,15 +115,17 @@ const EnigmasPage = () => {
         <div className="container mx-auto px-4 py-8">
           {/* Page Header */}
           <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary-500/20 to-secondary-500/20 border border-primary-500/30 mb-4">
-              <Sparkles className="w-4 h-4 text-primary-400" />
-              <span className="text-sm font-medium">Exclusive Mysteries</span>
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary-100 to-secondary-100 border border-primary-200 mb-4">
+              <Sparkles className="w-4 h-4 text-primary-600" />
+              <span className="text-sm font-medium text-gray-700">
+                Exclusive Mysteries
+              </span>
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-gray-900">
               Discover Arcane{" "}
-              <span className="text-primary-400">Mysteries</span>
+              <span className="text-primary-600">Mysteries</span>
             </h1>
-            <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
               Join exclusive puzzle collections. Claim unique fragments,
               collaborate with fellow keepers, and unravel epic mysteries for
               legendary rewards.
@@ -200,73 +133,83 @@ const EnigmasPage = () => {
           </div>
 
           {/* Quick Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-            <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl p-6 border border-gray-700">
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-primary-500/20 rounded-xl">
-                  <Eye className="w-6 h-6 text-primary-400" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold">{stats.totalEnigmas}</div>
-                  <div className="text-sm text-gray-400">Active Mysteries</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl p-6 border border-gray-700">
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-secondary-500/20 rounded-xl">
-                  <Users className="w-6 h-6 text-secondary-400" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold">{stats.totalKeepers}</div>
-                  <div className="text-sm text-gray-400">Keeper Guardians</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl p-6 border border-gray-700">
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-accent-500/20 rounded-xl">
-                  <TrendingUp className="w-6 h-6 text-accent-400" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold">
-                    {stats.claimedFragments}/{stats.totalFragments}
+          {stats && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
+              <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-soft">
+                <div className="flex items-center gap-3">
+                  <div className="p-3 bg-primary-100 rounded-xl">
+                    <Eye className="w-6 h-6 text-primary-600" />
                   </div>
-                  <div className="text-sm text-gray-400">Fragments Claimed</div>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl p-6 border border-gray-700">
-              <div className="flex items-center gap-3">
-                <div className="p-3 bg-purple-500/20 rounded-xl">
-                  <Clock className="w-6 h-6 text-purple-400" />
-                </div>
-                <div>
-                  <div className="text-2xl font-bold">
-                    {stats.activeEnigmas}
-                  </div>
-                  <div className="text-sm text-gray-400">
-                    Active Investigations
+                  <div>
+                    <div className="text-2xl font-bold text-gray-900">
+                      {stats.totalEnigmas}
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      Active Mysteries
+                    </div>
                   </div>
                 </div>
               </div>
+
+              <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-soft">
+                <div className="flex items-center gap-3">
+                  <div className="p-3 bg-secondary-100 rounded-xl">
+                    <Users className="w-6 h-6 text-secondary-600" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-gray-900">
+                      {stats.totalKeepers}
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      Keeper Guardians
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-soft">
+                <div className="flex items-center gap-3">
+                  <div className="p-3 bg-accent-100 rounded-xl">
+                    <TrendingUp className="w-6 h-6 text-accent-600" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-gray-900">
+                      {stats.fragmentsClaimed}/{stats.totalFragments}
+                    </div>
+                    <div className="text-sm text-gray-600">
+                      Fragments Claimed
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-soft">
+                <div className="flex items-center gap-3">
+                  <div className="p-3 bg-purple-100 rounded-xl">
+                    <Clock className="w-6 h-6 text-purple-600" />
+                  </div>
+                  <div>
+                    <div className="text-2xl font-bold text-gray-900">
+                      {stats.activeWaitlists}
+                    </div>
+                    <div className="text-sm text-gray-600">Waitlist Active</div>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Search and Filter Bar */}
           <div className="mb-8">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1 relative">
-                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
+                <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   type="text"
                   placeholder="Search mysteries, themes, or keywords..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-12 pr-4 py-4 rounded-2xl border border-gray-700 bg-gray-800/50 text-white placeholder-gray-500 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+                  className="w-full pl-12 pr-4 py-4 rounded-2xl border border-gray-300 bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all shadow-sm"
                 />
               </div>
 
@@ -275,19 +218,19 @@ const EnigmasPage = () => {
                   onClick={() => setActiveFilter("all")}
                   className={`px-4 py-2 rounded-xl transition-all ${
                     activeFilter === "all"
-                      ? "bg-primary-500 text-white"
-                      : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                      ? "bg-primary-500 text-white shadow-sm"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm"
                   }`}
                 >
                   <Filter className="w-4 h-4 inline mr-2" />
-                  All
+                  All ({stats?.totalEnigmas || 0})
                 </button>
                 <button
                   onClick={() => setActiveFilter("active")}
                   className={`px-4 py-2 rounded-xl transition-all ${
                     activeFilter === "active"
-                      ? "bg-green-500 text-white"
-                      : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                      ? "bg-green-500 text-white shadow-sm"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm"
                   }`}
                 >
                   Active
@@ -296,8 +239,8 @@ const EnigmasPage = () => {
                   onClick={() => setActiveFilter("upcoming")}
                   className={`px-4 py-2 rounded-xl transition-all ${
                     activeFilter === "upcoming"
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                      ? "bg-blue-500 text-white shadow-sm"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm"
                   }`}
                 >
                   Upcoming
@@ -306,8 +249,8 @@ const EnigmasPage = () => {
                   onClick={() => setActiveFilter("featured")}
                   className={`px-4 py-2 rounded-xl transition-all ${
                     activeFilter === "featured"
-                      ? "bg-yellow-500 text-white"
-                      : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                      ? "bg-yellow-500 text-white shadow-sm"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm"
                   }`}
                 >
                   Featured
@@ -316,12 +259,13 @@ const EnigmasPage = () => {
             </div>
 
             {/* Results Count */}
-            <div className="mt-4 text-gray-400">
-              Showing {filteredEnigmas.length} of {enigmasData.length} mysteries
+            <div className="mt-4 text-gray-600">
+              Showing {filteredEnigmas.length} of {stats?.totalEnigmas || 0}{" "}
+              mysteries
               {searchQuery && (
                 <span>
                   {" "}
-                  for "<span className="text-primary-300">{searchQuery}</span>"
+                  for "<span className="text-primary-600">{searchQuery}</span>"
                 </span>
               )}
             </div>
@@ -332,11 +276,11 @@ const EnigmasPage = () => {
 
           {/* CTA Section */}
           <div className="mt-16 text-center">
-            <div className="bg-gradient-to-br from-gray-800/30 to-gray-900/30 rounded-3xl border border-gray-700 p-12">
-              <h2 className="text-3xl font-bold mb-4">
+            <div className="bg-gradient-to-br from-white to-gray-50 rounded-2xl border border-gray-200 p-12 shadow-medium">
+              <h2 className="text-3xl font-bold mb-4 text-gray-900">
                 Ready to Begin Your Journey?
               </h2>
-              <p className="text-gray-400 mb-8 max-w-2xl mx-auto">
+              <p className="text-gray-600 mb-8 max-w-2xl mx-auto">
                 Join thousands of keepers unraveling mysteries. Claim your
                 fragment, become part of an exclusive community, and etch your
                 name in puzzle history.
@@ -355,34 +299,40 @@ const EnigmasPage = () => {
 
           {/* FAQ Section */}
           <div className="mt-16">
-            <h3 className="text-2xl font-bold mb-8 text-center">
+            <h3 className="text-2xl font-bold mb-8 text-center text-gray-900">
               How Puzzle Mysteries Work
             </h3>
             <div className="grid md:grid-cols-3 gap-6">
-              <div className="bg-gradient-to-br from-gray-800/30 to-gray-900/30 rounded-2xl p-6 border border-gray-700">
-                <div className="text-3xl font-bold text-primary-400 mb-2">
+              <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-soft">
+                <div className="text-3xl font-bold text-primary-600 mb-2">
                   1
                 </div>
-                <h4 className="text-lg font-bold mb-2">Choose a Mystery</h4>
-                <p className="text-gray-400">
+                <h4 className="text-lg font-bold mb-2 text-gray-900">
+                  Choose a Mystery
+                </h4>
+                <p className="text-gray-600">
                   Browse through our exclusive enigma collections. Each contains
                   unique fragments waiting for keepers.
                 </p>
               </div>
-              <div className="bg-gradient-to-br from-gray-800/30 to-gray-900/30 rounded-2xl p-6 border border-gray-700">
-                <div className="text-3xl font-bold text-secondary-400 mb-2">
+              <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-soft">
+                <div className="text-3xl font-bold text-secondary-600 mb-2">
                   2
                 </div>
-                <h4 className="text-lg font-bold mb-2">Claim Your Fragment</h4>
-                <p className="text-gray-400">
+                <h4 className="text-lg font-bold mb-2 text-gray-900">
+                  Claim Your Fragment
+                </h4>
+                <p className="text-gray-600">
                   Select and purchase a specific fragment. You become its
                   exclusive guardian with NFT authentication.
                 </p>
               </div>
-              <div className="bg-gradient-to-br from-gray-800/30 to-gray-900/30 rounded-2xl p-6 border border-gray-700">
-                <div className="text-3xl font-bold text-accent-400 mb-2">3</div>
-                <h4 className="text-lg font-bold mb-2">Solve & Earn Rewards</h4>
-                <p className="text-gray-400">
+              <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-soft">
+                <div className="text-3xl font-bold text-accent-600 mb-2">3</div>
+                <h4 className="text-lg font-bold mb-2 text-gray-900">
+                  Solve & Earn Rewards
+                </h4>
+                <p className="text-gray-600">
                   Collaborate with other keepers, solve the mystery, and earn
                   exclusive rewards and recognition.
                 </p>

@@ -30,17 +30,17 @@ const EnigmaGrid = ({ enigmas }) => {
       <div className="mb-8">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <h1 className="text-3xl font-bold mb-2 flex items-center gap-2">
-              <Sparkles className="w-8 h-8 text-primary-500" />
+            <h1 className="text-3xl font-bold mb-2 flex items-center gap-2 text-gray-900">
+              <Sparkles className="w-8 h-8 text-primary-600" />
               Arcane Enigmas
             </h1>
-            <p className="text-gray-400">
+            <p className="text-gray-600">
               Unravel mysteries, claim fragments, and solve cosmic puzzles
             </p>
           </div>
           <div className="flex items-center gap-2">
             <Eye className="w-5 h-5 text-gray-500" />
-            <span className="text-sm text-gray-400">
+            <span className="text-sm text-gray-600">
               {enigmas.length} enigmas waiting
             </span>
           </div>
@@ -49,13 +49,13 @@ const EnigmaGrid = ({ enigmas }) => {
         {/* Search and Filters */}
         <div className="flex flex-col md:flex-row gap-4 mb-8">
           <div className="flex-1 relative">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
               type="text"
               placeholder="Search for mysteries, themes, or fragments..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-700 bg-gray-800/50 text-white placeholder-gray-500 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+              className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all shadow-sm"
             />
           </div>
 
@@ -64,8 +64,8 @@ const EnigmaGrid = ({ enigmas }) => {
               onClick={() => setFilter("all")}
               className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-all ${
                 filter === "all"
-                  ? "bg-primary-500 text-white"
-                  : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                  ? "bg-primary-500 text-white shadow-sm"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm"
               }`}
             >
               <Filter className="w-4 h-4" />
@@ -75,8 +75,8 @@ const EnigmaGrid = ({ enigmas }) => {
               onClick={() => setFilter("active")}
               className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-all ${
                 filter === "active"
-                  ? "bg-secondary-500 text-white"
-                  : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                  ? "bg-secondary-500 text-white shadow-sm"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm"
               }`}
             >
               Active ({getFilterCount("active")})
@@ -85,8 +85,8 @@ const EnigmaGrid = ({ enigmas }) => {
               onClick={() => setFilter("upcoming")}
               className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-all ${
                 filter === "upcoming"
-                  ? "bg-accent-500 text-white"
-                  : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                  ? "bg-accent-500 text-white shadow-sm"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm"
               }`}
             >
               Upcoming ({getFilterCount("upcoming")})
@@ -95,8 +95,8 @@ const EnigmaGrid = ({ enigmas }) => {
               onClick={() => setFilter("archived")}
               className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-all ${
                 filter === "archived"
-                  ? "bg-gray-700 text-white"
-                  : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                  ? "bg-gray-600 text-white shadow-sm"
+                  : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm"
               }`}
             >
               Archived ({getFilterCount("archived")})
@@ -107,14 +107,16 @@ const EnigmaGrid = ({ enigmas }) => {
 
       {/* Results Count */}
       <div className="mb-6">
-        <p className="text-gray-400">
+        <p className="text-gray-700">
           Found{" "}
-          <span className="text-white font-bold">{filteredEnigmas.length}</span>{" "}
+          <span className="text-gray-900 font-bold">
+            {filteredEnigmas.length}
+          </span>{" "}
           enigma{filteredEnigmas.length !== 1 ? "s" : ""}
           {searchTerm && (
             <span>
               {" "}
-              for "<span className="text-primary-300">{searchTerm}</span>"
+              for "<span className="text-primary-600">{searchTerm}</span>"
             </span>
           )}
         </p>
@@ -122,10 +124,12 @@ const EnigmaGrid = ({ enigmas }) => {
 
       {/* Empty State */}
       {filteredEnigmas.length === 0 ? (
-        <div className="text-center py-16 bg-gradient-to-br from-gray-800/30 to-gray-900/30 rounded-2xl border border-gray-700">
-          <Sparkles className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-          <h3 className="text-xl font-bold mb-2">No Mysteries Found</h3>
-          <p className="text-gray-400 max-w-md mx-auto">
+        <div className="text-center py-16 bg-gray-50 rounded-2xl border border-gray-200">
+          <Sparkles className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-xl font-bold mb-2 text-gray-900">
+            No Mysteries Found
+          </h3>
+          <p className="text-gray-600 max-w-md mx-auto">
             {searchTerm
               ? `No enigmas match "${searchTerm}". Try another search or explore all mysteries.`
               : `All mysteries are currently hidden. New enigmas will appear soon.`}
@@ -133,7 +137,7 @@ const EnigmaGrid = ({ enigmas }) => {
           {searchTerm && (
             <button
               onClick={() => setSearchTerm("")}
-              className="mt-4 px-6 py-2 bg-primary-500 hover:bg-primary-600 rounded-lg transition-colors"
+              className="mt-4 px-6 py-2 btn-primary"
             >
               Clear Search
             </button>
@@ -149,24 +153,24 @@ const EnigmaGrid = ({ enigmas }) => {
       )}
 
       {/* Stats Footer */}
-      <div className="mt-12 pt-8 border-t border-gray-800 grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="text-center p-6 bg-gradient-to-br from-gray-800/30 to-gray-900/30 rounded-xl">
-          <div className="text-3xl font-bold text-primary-400 mb-2">
+      <div className="mt-12 pt-8 border-t border-gray-200 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="text-center p-6 bg-gray-50 rounded-xl border border-gray-200 shadow-soft">
+          <div className="text-3xl font-bold text-primary-600 mb-2">
             {enigmas.filter((e) => e.status === "active").length}
           </div>
-          <div className="text-gray-400">Active Investigations</div>
+          <div className="text-gray-600">Active Investigations</div>
         </div>
-        <div className="text-center p-6 bg-gradient-to-br from-gray-800/30 to-gray-900/30 rounded-xl">
-          <div className="text-3xl font-bold text-secondary-400 mb-2">
+        <div className="text-center p-6 bg-gray-50 rounded-xl border border-gray-200 shadow-soft">
+          <div className="text-3xl font-bold text-secondary-600 mb-2">
             {enigmas.reduce((sum, e) => sum + e.totalFragments, 0)}
           </div>
-          <div className="text-gray-400">Fragments Waiting</div>
+          <div className="text-gray-600">Fragments Waiting</div>
         </div>
-        <div className="text-center p-6 bg-gradient-to-br from-gray-800/30 to-gray-900/30 rounded-xl">
-          <div className="text-3xl font-bold text-accent-400 mb-2">
+        <div className="text-center p-6 bg-gray-50 rounded-xl border border-gray-200 shadow-soft">
+          <div className="text-3xl font-bold text-accent-600 mb-2">
             {enigmas.filter((e) => e.status === "solved").length}
           </div>
-          <div className="text-gray-400">Solved Mysteries</div>
+          <div className="text-gray-600">Solved Mysteries</div>
         </div>
       </div>
     </div>

@@ -40,10 +40,10 @@ const WaitlistManager = ({ chronicle, currentUserPosition = null }) => {
   };
 
   const getWaitTimeColor = (position) => {
-    if (position <= 10) return "text-green-400";
-    if (position <= 30) return "text-yellow-400";
-    if (position <= 50) return "text-orange-400";
-    return "text-red-400";
+    if (position <= 10) return "text-green-600";
+    if (position <= 30) return "text-yellow-600";
+    if (position <= 50) return "text-orange-600";
+    return "text-red-600";
   };
 
   const formatDate = (dateString) => {
@@ -56,17 +56,19 @@ const WaitlistManager = ({ chronicle, currentUserPosition = null }) => {
   };
 
   return (
-    <div className="bg-gradient-to-br from-gray-900 to-black rounded-3xl border border-gray-700 p-6 lg:p-8">
+    <div className="bg-white rounded-2xl border border-gray-200 p-6 lg:p-8 shadow-medium">
       {/* Header */}
       <div className="text-center mb-8">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-accent-500/20 to-yellow-500/20 border border-accent-500/30 mb-4">
-          <Bell className="w-4 h-4 text-accent-400" />
-          <span className="text-sm font-medium">Waitlist Manager</span>
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-accent-100 to-yellow-100 border border-accent-200 mb-4">
+          <Bell className="w-4 h-4 text-accent-600" />
+          <span className="text-sm font-medium text-gray-700">
+            Waitlist Manager
+          </span>
         </div>
-        <h2 className="text-2xl lg:text-3xl font-bold mb-3">
+        <h2 className="text-2xl lg:text-3xl font-bold mb-3 text-gray-900">
           {chronicle?.name || "This Chronicle"} is Fully Claimed
         </h2>
-        <p className="text-gray-400 max-w-2xl mx-auto">
+        <p className="text-gray-600 max-w-2xl mx-auto">
           All fragments have been claimed for this chronicle. Join the waitlist
           to be notified when fragments become available or new chronicles are
           released.
@@ -75,58 +77,58 @@ const WaitlistManager = ({ chronicle, currentUserPosition = null }) => {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-xl p-6 border border-gray-700">
+        <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-soft">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-primary-500/20 rounded-lg">
-              <Users className="w-6 h-6 text-primary-400" />
+            <div className="p-3 bg-primary-100 rounded-lg">
+              <Users className="w-6 h-6 text-primary-600" />
             </div>
             <div>
-              <div className="text-2xl font-bold">
+              <div className="text-2xl font-bold text-gray-900">
                 {waitlistData.totalSubscribers}
               </div>
-              <div className="text-sm text-gray-400">Waiting</div>
+              <div className="text-sm text-gray-600">Waiting</div>
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-xl p-6 border border-gray-700">
+        <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-soft">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-secondary-500/20 rounded-lg">
-              <Clock className="w-6 h-6 text-secondary-400" />
+            <div className="p-3 bg-secondary-100 rounded-lg">
+              <Clock className="w-6 h-6 text-secondary-600" />
             </div>
             <div>
-              <div className="text-2xl font-bold">
+              <div className="text-2xl font-bold text-gray-900">
                 {waitlistData.usersAhead}
               </div>
-              <div className="text-sm text-gray-400">Ahead of You</div>
+              <div className="text-sm text-gray-600">Ahead of You</div>
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-xl p-6 border border-gray-700">
+        <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-soft">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-accent-500/20 rounded-lg">
-              <Bell className="w-6 h-6 text-accent-400" />
+            <div className="p-3 bg-accent-100 rounded-lg">
+              <Bell className="w-6 h-6 text-accent-600" />
             </div>
             <div>
-              <div className="text-2xl font-bold">
+              <div className="text-2xl font-bold text-gray-900">
                 {waitlistData.notificationSent}
               </div>
-              <div className="text-sm text-gray-400">Notified</div>
+              <div className="text-sm text-gray-600">Notified</div>
             </div>
           </div>
         </div>
 
-        <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-xl p-6 border border-gray-700">
+        <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-soft">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-green-500/20 rounded-lg">
-              <TrendingUp className="w-6 h-6 text-green-400" />
+            <div className="p-3 bg-green-100 rounded-lg">
+              <TrendingUp className="w-6 h-6 text-green-600" />
             </div>
             <div>
-              <div className="text-xl font-bold">
+              <div className="text-xl font-bold text-gray-900">
                 {waitlistData.averageWaitTime}
               </div>
-              <div className="text-sm text-gray-400">Average Wait</div>
+              <div className="text-sm text-gray-600">Average Wait</div>
             </div>
           </div>
         </div>
@@ -135,21 +137,23 @@ const WaitlistManager = ({ chronicle, currentUserPosition = null }) => {
       {/* Main Content */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Waitlist Form */}
-        <div className="bg-gradient-to-br from-gray-800/30 to-gray-900/30 rounded-2xl border border-gray-700 p-6">
+        <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-soft">
           {isSubscribed ? (
             <div className="text-center py-8">
-              <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-md">
                 <CheckCircle className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-xl font-bold mb-2">You're on the List!</h3>
-              <p className="text-gray-400 mb-6">
+              <h3 className="text-xl font-bold mb-2 text-gray-900">
+                You're on the List!
+              </h3>
+              <p className="text-gray-600 mb-6">
                 We've added{" "}
-                <span className="text-primary-300 font-medium">{email}</span> to
+                <span className="text-primary-600 font-medium">{email}</span> to
                 the waitlist.
               </p>
               <div className="space-y-4">
-                <div className="p-4 bg-gray-800/50 rounded-xl">
-                  <div className="text-sm text-gray-400 mb-1">
+                <div className="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                  <div className="text-sm text-gray-600 mb-1">
                     Your Position
                   </div>
                   <div
@@ -168,14 +172,14 @@ const WaitlistManager = ({ chronicle, currentUserPosition = null }) => {
             </div>
           ) : (
             <>
-              <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
-                <UserPlus className="w-5 h-5 text-primary-500" />
+              <h3 className="text-xl font-bold mb-6 flex items-center gap-2 text-gray-900">
+                <UserPlus className="w-5 h-5 text-primary-600" />
                 Join the Waitlist
               </h3>
 
               <form onSubmit={handleSubscribe} className="space-y-6">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     <Mail className="w-4 h-4 inline mr-2" />
                     Email Address
                   </label>
@@ -183,7 +187,7 @@ const WaitlistManager = ({ chronicle, currentUserPosition = null }) => {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-700 bg-gray-800/50 text-white placeholder-gray-500 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all shadow-sm"
                     placeholder="your@email.com"
                     required
                   />
@@ -196,16 +200,16 @@ const WaitlistManager = ({ chronicle, currentUserPosition = null }) => {
                       id="notifyAvailable"
                       checked={notifyOnAvailable}
                       onChange={(e) => setNotifyOnAvailable(e.target.checked)}
-                      className="mt-1"
+                      className="mt-1 text-primary-600 focus:ring-primary-200"
                     />
                     <label
                       htmlFor="notifyAvailable"
-                      className="text-sm text-gray-300"
+                      className="text-sm text-gray-700"
                     >
                       <span className="font-medium">
                         Notify me when fragments become available
                       </span>
-                      <div className="text-gray-500 mt-1">
+                      <div className="text-gray-600 mt-1">
                         Get immediate notification if a claimed fragment is
                         released
                       </div>
@@ -220,16 +224,16 @@ const WaitlistManager = ({ chronicle, currentUserPosition = null }) => {
                       onChange={(e) =>
                         setNotifyOnNewChronicle(e.target.checked)
                       }
-                      className="mt-1"
+                      className="mt-1 text-primary-600 focus:ring-primary-200"
                     />
                     <label
                       htmlFor="notifyNew"
-                      className="text-sm text-gray-300"
+                      className="text-sm text-gray-700"
                     >
                       <span className="font-medium">
                         Notify me about new chronicles
                       </span>
-                      <div className="text-gray-500 mt-1">
+                      <div className="text-gray-600 mt-1">
                         Be the first to know about upcoming puzzle releases
                       </div>
                     </label>
@@ -249,20 +253,22 @@ const WaitlistManager = ({ chronicle, currentUserPosition = null }) => {
 
         {/* Waitlist Information */}
         <div className="space-y-6">
-          <div className="bg-gradient-to-br from-gray-800/30 to-gray-900/30 rounded-2xl border border-gray-700 p-6">
-            <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5 text-accent-500" />
+          <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-soft">
+            <h3 className="text-xl font-bold mb-6 flex items-center gap-2 text-gray-900">
+              <AlertTriangle className="w-5 h-5 text-accent-600" />
               How Waitlist Works
             </h3>
 
             <div className="space-y-4">
               <div className="flex items-start gap-3">
-                <div className="p-2 bg-primary-500/20 rounded-lg">
-                  <Bell className="w-4 h-4 text-primary-400" />
+                <div className="p-2 bg-primary-100 rounded-lg">
+                  <Bell className="w-4 h-4 text-primary-600" />
                 </div>
                 <div>
-                  <div className="font-medium">Priority Notifications</div>
-                  <div className="text-sm text-gray-400">
+                  <div className="font-medium text-gray-900">
+                    Priority Notifications
+                  </div>
+                  <div className="text-sm text-gray-600">
                     Waitlist members get first access to newly available
                     fragments
                   </div>
@@ -270,12 +276,12 @@ const WaitlistManager = ({ chronicle, currentUserPosition = null }) => {
               </div>
 
               <div className="flex items-start gap-3">
-                <div className="p-2 bg-secondary-500/20 rounded-lg">
-                  <Clock className="w-4 h-4 text-secondary-400" />
+                <div className="p-2 bg-secondary-100 rounded-lg">
+                  <Clock className="w-4 h-4 text-secondary-600" />
                 </div>
                 <div>
-                  <div className="font-medium">Time Window</div>
-                  <div className="text-sm text-gray-400">
+                  <div className="font-medium text-gray-900">Time Window</div>
+                  <div className="text-sm text-gray-600">
                     You'll have 24 hours to claim before it goes to the next
                     person
                   </div>
@@ -283,12 +289,14 @@ const WaitlistManager = ({ chronicle, currentUserPosition = null }) => {
               </div>
 
               <div className="flex items-start gap-3">
-                <div className="p-2 bg-accent-500/20 rounded-lg">
-                  <TrendingUp className="w-4 h-4 text-accent-400" />
+                <div className="p-2 bg-accent-100 rounded-lg">
+                  <TrendingUp className="w-4 h-4 text-accent-600" />
                 </div>
                 <div>
-                  <div className="font-medium">Position Updates</div>
-                  <div className="text-sm text-gray-400">
+                  <div className="font-medium text-gray-900">
+                    Position Updates
+                  </div>
+                  <div className="text-sm text-gray-600">
                     Your position improves as others ahead of you claim
                     fragments
                   </div>
@@ -298,28 +306,30 @@ const WaitlistManager = ({ chronicle, currentUserPosition = null }) => {
           </div>
 
           {/* Timeline */}
-          <div className="bg-gradient-to-br from-gray-800/30 to-gray-900/30 rounded-2xl border border-gray-700 p-6">
-            <h3 className="text-xl font-bold mb-6 flex items-center gap-2">
-              <Clock className="w-5 h-5 text-gray-400" />
+          <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-soft">
+            <h3 className="text-xl font-bold mb-6 flex items-center gap-2 text-gray-900">
+              <Clock className="w-5 h-5 text-gray-600" />
               Expected Timeline
             </h3>
 
             <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <div className="text-gray-300">Next Expected Release</div>
-                <div className="font-bold">
+                <div className="text-gray-700">Next Expected Release</div>
+                <div className="font-bold text-gray-900">
                   {formatDate(waitlistData.nextExpectedRelease)}
                 </div>
               </div>
 
               <div className="flex justify-between items-center">
-                <div className="text-gray-300">Average Wait Time</div>
-                <div className="font-bold">{waitlistData.averageWaitTime}</div>
+                <div className="text-gray-700">Average Wait Time</div>
+                <div className="font-bold text-gray-900">
+                  {waitlistData.averageWaitTime}
+                </div>
               </div>
 
               <div className="flex justify-between items-center">
-                <div className="text-gray-300">Last Available Fragment</div>
-                <div className="font-bold">
+                <div className="text-gray-700">Last Available Fragment</div>
+                <div className="font-bold text-gray-900">
                   {waitlistData.lastAvailableFragment}
                 </div>
               </div>
@@ -328,7 +338,7 @@ const WaitlistManager = ({ chronicle, currentUserPosition = null }) => {
             {/* Wait Time Indicator */}
             <div className="mt-6">
               <div className="flex justify-between text-sm mb-2">
-                <span className="text-gray-300">Estimated Wait</span>
+                <span className="text-gray-700">Estimated Wait</span>
                 <span
                   className={`font-bold ${getWaitTimeColor(
                     waitlistData.usersAhead
@@ -343,7 +353,7 @@ const WaitlistManager = ({ chronicle, currentUserPosition = null }) => {
                     : "Very Long"}
                 </span>
               </div>
-              <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
+              <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                 <div
                   className={`h-full rounded-full transition-all duration-1000 ${
                     waitlistData.usersAhead <= 10
@@ -372,36 +382,36 @@ const WaitlistManager = ({ chronicle, currentUserPosition = null }) => {
       </div>
 
       {/* Alternative Options */}
-      <div className="mt-8 pt-8 border-t border-gray-700">
-        <h3 className="text-xl font-bold mb-6 text-center">
+      <div className="mt-8 pt-8 border-t border-gray-200">
+        <h3 className="text-xl font-bold mb-6 text-center text-gray-900">
           Alternative Options
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-gradient-to-br from-gray-800/30 to-gray-900/30 rounded-xl p-6 border border-gray-700 text-center">
-            <div className="text-2xl font-bold text-primary-400 mb-2">
+          <div className="bg-white rounded-xl p-6 border border-gray-200 text-center shadow-soft">
+            <div className="text-2xl font-bold text-primary-600 mb-2">
               Explore Other Chronicles
             </div>
-            <p className="text-sm text-gray-400 mb-4">
+            <p className="text-sm text-gray-600 mb-4">
               Browse available fragments in other ongoing mysteries
             </p>
             <button className="btn-outline w-full">View Chronicles</button>
           </div>
 
-          <div className="bg-gradient-to-br from-gray-800/30 to-gray-900/30 rounded-xl p-6 border border-gray-700 text-center">
-            <div className="text-2xl font-bold text-secondary-400 mb-2">
+          <div className="bg-white rounded-xl p-6 border border-gray-200 text-center shadow-soft">
+            <div className="text-2xl font-bold text-secondary-600 mb-2">
               Secondary Market
             </div>
-            <p className="text-sm text-gray-400 mb-4">
+            <p className="text-sm text-gray-600 mb-4">
               Check if keepers are willing to transfer their fragments
             </p>
             <button className="btn-outline w-full">Browse Transfers</button>
           </div>
 
-          <div className="bg-gradient-to-br from-gray-800/30 to-gray-900/30 rounded-xl p-6 border border-gray-700 text-center">
-            <div className="text-2xl font-bold text-accent-400 mb-2">
+          <div className="bg-white rounded-xl p-6 border border-gray-200 text-center shadow-soft">
+            <div className="text-2xl font-bold text-accent-600 mb-2">
               Create Alert
             </div>
-            <p className="text-sm text-gray-400 mb-4">
+            <p className="text-sm text-gray-600 mb-4">
               Get notified when similar chronicles are released
             </p>
             <button className="btn-outline w-full">Set Alert</button>

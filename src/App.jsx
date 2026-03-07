@@ -7,6 +7,9 @@ import { ThemeProvider } from "./context/ThemeContext";
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext";
 import { WishlistProvider } from "./context/WishlistContext";
+import { MysteryProvider } from "./context/MysteryContext";
+import socketService from "./services/socket";
+import { useEffect } from "react";
 
 // Lazy load pages for better performance
 const Home = lazy(() => import("./pages/Home"));
@@ -46,161 +49,171 @@ const EnigmasPage = lazy(() => import("./pages/EnigmasPage"));
 const EnigmaDetailPage = lazy(() => import("./pages/EnigmaDetailPage"));
 const ChronicleDetailPage = lazy(() => import("./pages/ChronicleDetailPage"));
 function App() {
+  useEffect(() => {
+    // Connect to socket when app loads
+    socketService.connect();
+
+    return () => {
+      socketService.disconnect();
+    };
+  }, []);
   return (
     <ThemeProvider>
       <AuthProvider>
         <CartProvider>
           <WishlistProvider>
-            <Router>
-              <Layout>
-                <Suspense
-                  fallback={
-                    <div className="min-h-screen flex items-center justify-center">
-                      <LoadingSpinner size="large" color="gold" />
-                    </div>
-                  }
-                >
-                  <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/about" element={<About />} />
-                    <Route path="/contact" element={<Contact />} />
-                    <Route
-                      path="/test-connection"
-                      element={<TestConnection />}
-                    />
-                    <Route path="/shop" element={<Shop />} />
-                    <Route path="/mysteries" element={<EnigmasPage />} />
-                    <Route
-                      path="/mysteries/:id"
-                      element={<EnigmaDetailPage />}
-                    />
-                    <Route
-                      path="/mysteries/:enigmaId/chronicles/:chronicleId"
-                      element={<ChronicleDetailPage />}
-                    />
-                    <Route path="/product/:id" element={<ProductDetails />} />
-                    <Route
-                      path="/product/slug/:slug"
-                      element={<ProductDetails />}
-                    />
-                    <Route path="/cart" element={<Cart />} />
-                    <Route path="/checkout" element={<Checkout />} />
-                    <Route
-                      path="/login"
-                      element={
-                        <PublicRoute>
-                          <Login />
-                        </PublicRoute>
-                      }
-                    />
-                    <Route
-                      path="/register"
-                      element={
-                        <PublicRoute>
-                          {" "}
-                          <Register />{" "}
-                        </PublicRoute>
-                      }
-                    />
-                    <Route
-                      path="/auth/google/callback"
-                      element={<GoogleCallback />}
-                    />
-                    <Route
-                      path="/forgot-password"
-                      element={<ForgotPassword />}
-                    />
-                    {/* <Route path="/dashboard" element={<Dashboard />} /> */}
-                    <Route path="/orders" element={<Orders />} />
-                    <Route path="/profile" element={<Profile />} />
-                    <Route path="/orders/:id" element={<OrderDetails />} />
-                    <Route path="/wishlist" element={<Wishlist />} />
-                    <Route path="*" element={<NotFound />} />
-                    <Route
-                      path="/admin"
-                      element={
-                        <AdminRoute>
-                          <AdminDashboard />
-                        </AdminRoute>
-                      }
-                    />
-                    <Route
-                      path="/admin/products"
-                      element={
-                        <AdminRoute>
-                          <AdminProducts />
-                        </AdminRoute>
-                      }
-                    />
-                    <Route
-                      path="/admin/orders"
-                      element={
-                        <AdminRoute>
-                          <OrdersManagement />
-                        </AdminRoute>
-                      }
-                    />
-                    <Route
-                      path="/admin/products/inventory"
-                      element={
-                        <AdminRoute>
-                          <Inventory />
-                        </AdminRoute>
-                      }
-                    />
-                    <Route
-                      path="/admin/orders"
-                      element={
-                        <AdminRoute>
-                          <Orders />
-                        </AdminRoute>
-                      }
-                    />
-                    <Route
-                      path="/admin/customers"
-                      element={
-                        <AdminRoute>
-                          <Customers />
-                        </AdminRoute>
-                      }
-                    />
-                    <Route
-                      path="/admin/products"
-                      element={
-                        <AdminRoute>
-                          <AdminProducts />
-                        </AdminRoute>
-                      }
-                    />
-                    // Also add other admin sub-routes for products
-                    <Route
-                      path="/admin/products/new"
-                      element={
-                        <AdminRoute>
-                          <AdminProducts />
-                        </AdminRoute>
-                      }
-                    />
-                    <Route
-                      path="/admin/products/categories"
-                      element={
-                        <AdminRoute>
-                          <Categories />
-                        </AdminRoute>
-                      }
-                    />
-                    <Route
-                      path="/admin/products/inventory"
-                      element={
-                        <AdminRoute>
-                          <div>Inventory Management Page</div>
-                        </AdminRoute>
-                      }
-                    />
-                  </Routes>
-                </Suspense>
-              </Layout>
-            </Router>
+            <MysteryProvider>
+              <Router>
+                <Layout>
+                  <Suspense
+                    fallback={
+                      <div className="min-h-screen flex items-center justify-center">
+                        <LoadingSpinner size="large" color="gold" />
+                      </div>
+                    }
+                  >
+                    <Routes>
+                      <Route path="/" element={<Home />} />
+                      <Route path="/about" element={<About />} />
+                      <Route path="/contact" element={<Contact />} />
+                      <Route
+                        path="/test-connection"
+                        element={<TestConnection />}
+                      />
+                      <Route path="/shop" element={<Shop />} />
+                      <Route path="/mysteries" element={<EnigmasPage />} />
+                      <Route
+                        path="/enigmas/:id"
+                        element={<EnigmaDetailPage />}
+                      />
+                      <Route
+                        path="/enigmas/:enigmaId/chronicles/:chronicleId"
+                        element={<ChronicleDetailPage />}
+                      />
+                      <Route path="/product/:id" element={<ProductDetails />} />
+                      <Route
+                        path="/product/slug/:slug"
+                        element={<ProductDetails />}
+                      />
+                      <Route path="/cart" element={<Cart />} />
+                      <Route path="/checkout" element={<Checkout />} />
+                      <Route
+                        path="/login"
+                        element={
+                          <PublicRoute>
+                            <Login />
+                          </PublicRoute>
+                        }
+                      />
+                      <Route
+                        path="/register"
+                        element={
+                          <PublicRoute>
+                            {" "}
+                            <Register />{" "}
+                          </PublicRoute>
+                        }
+                      />
+                      <Route
+                        path="/auth/google/callback"
+                        element={<GoogleCallback />}
+                      />
+                      <Route
+                        path="/forgot-password"
+                        element={<ForgotPassword />}
+                      />
+                      {/* <Route path="/dashboard" element={<Dashboard />} /> */}
+                      <Route path="/orders" element={<Orders />} />
+                      <Route path="/profile" element={<Profile />} />
+                      <Route path="/orders/:id" element={<OrderDetails />} />
+                      <Route path="/wishlist" element={<Wishlist />} />
+                      <Route path="*" element={<NotFound />} />
+                      <Route
+                        path="/admin"
+                        element={
+                          <AdminRoute>
+                            <AdminDashboard />
+                          </AdminRoute>
+                        }
+                      />
+                      <Route
+                        path="/admin/products"
+                        element={
+                          <AdminRoute>
+                            <AdminProducts />
+                          </AdminRoute>
+                        }
+                      />
+                      <Route
+                        path="/admin/orders"
+                        element={
+                          <AdminRoute>
+                            <OrdersManagement />
+                          </AdminRoute>
+                        }
+                      />
+                      <Route
+                        path="/admin/products/inventory"
+                        element={
+                          <AdminRoute>
+                            <Inventory />
+                          </AdminRoute>
+                        }
+                      />
+                      <Route
+                        path="/admin/orders"
+                        element={
+                          <AdminRoute>
+                            <Orders />
+                          </AdminRoute>
+                        }
+                      />
+                      <Route
+                        path="/admin/customers"
+                        element={
+                          <AdminRoute>
+                            <Customers />
+                          </AdminRoute>
+                        }
+                      />
+                      <Route
+                        path="/admin/products"
+                        element={
+                          <AdminRoute>
+                            <AdminProducts />
+                          </AdminRoute>
+                        }
+                      />
+                      // Also add other admin sub-routes for products
+                      <Route
+                        path="/admin/products/new"
+                        element={
+                          <AdminRoute>
+                            <AdminProducts />
+                          </AdminRoute>
+                        }
+                      />
+                      <Route
+                        path="/admin/products/categories"
+                        element={
+                          <AdminRoute>
+                            <Categories />
+                          </AdminRoute>
+                        }
+                      />
+                      <Route
+                        path="/admin/products/inventory"
+                        element={
+                          <AdminRoute>
+                            <div>Inventory Management Page</div>
+                          </AdminRoute>
+                        }
+                      />
+                    </Routes>
+                  </Suspense>
+                </Layout>
+              </Router>
+            </MysteryProvider>
           </WishlistProvider>
         </CartProvider>
       </AuthProvider>

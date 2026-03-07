@@ -4,7 +4,7 @@ import {
   Mail,
   Phone,
   MapPin,
-  Size,
+  Maximize2,
   CreditCard,
   Shield,
   AlertCircle,
@@ -73,6 +73,16 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
     }
 
     if (stepNumber === 3) {
+      if (formData.paymentMethod === "card") {
+        if (!formData.cardName.trim())
+          newErrors.cardName = "Cardholder name is required";
+        if (!formData.cardNumber.trim())
+          newErrors.cardNumber = "Card number is required";
+        if (!formData.cardExpiry.trim())
+          newErrors.cardExpiry = "Expiry date is required";
+        if (!formData.cardCvc.trim()) newErrors.cardCvc = "CVC is required";
+      }
+
       if (!formData.acceptTerms) {
         newErrors.acceptTerms = "You must accept the terms and conditions";
       }
@@ -144,12 +154,12 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
         <React.Fragment key={stepNumber}>
           <div className="flex flex-col items-center">
             <div
-              className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all ${
+              className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all shadow-sm ${
                 stepNumber === step
                   ? "bg-primary-500 border-primary-500 text-white"
                   : stepNumber < step
                   ? "bg-green-500 border-green-500 text-white"
-                  : "bg-gray-800 border-gray-700 text-gray-400"
+                  : "bg-gray-100 border-gray-300 text-gray-600"
               }`}
             >
               {stepNumber < step ? (
@@ -158,7 +168,7 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
                 <span className="font-bold">{stepNumber}</span>
               )}
             </div>
-            <span className="text-xs mt-2 text-gray-400">
+            <span className="text-xs mt-2 text-gray-600">
               {stepNumber === 1 && "Personal"}
               {stepNumber === 2 && "Shipping"}
               {stepNumber === 3 && "Payment"}
@@ -169,7 +179,7 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
           {stepNumber < 4 && (
             <div
               className={`w-16 h-0.5 mx-2 ${
-                stepNumber < step ? "bg-green-500" : "bg-gray-700"
+                stepNumber < step ? "bg-green-500" : "bg-gray-300"
               }`}
             />
           )}
@@ -184,15 +194,17 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
         return (
           <div className="space-y-6">
             <div className="text-center mb-6">
-              <h3 className="text-2xl font-bold mb-2">Personal Information</h3>
-              <p className="text-gray-400">
+              <h3 className="text-2xl font-bold mb-2 text-gray-900">
+                Personal Information
+              </h3>
+              <p className="text-gray-600">
                 Enter your details to become a fragment guardian
               </p>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   <User className="w-4 h-4 inline mr-2" />
                   Full Name
                 </label>
@@ -202,18 +214,18 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
                   value={formData.fullName}
                   onChange={handleInputChange}
                   className={`w-full px-4 py-3 rounded-xl border ${
-                    errors.fullName ? "border-red-500" : "border-gray-700"
-                  } bg-gray-800/50 text-white focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all`}
+                    errors.fullName ? "border-red-500" : "border-gray-300"
+                  } bg-white text-gray-900 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all shadow-sm`}
                   placeholder="Enter your full name"
                 />
                 {errors.fullName && (
-                  <p className="mt-1 text-sm text-red-400">{errors.fullName}</p>
+                  <p className="mt-1 text-sm text-red-600">{errors.fullName}</p>
                 )}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     <Mail className="w-4 h-4 inline mr-2" />
                     Email Address
                   </label>
@@ -223,17 +235,17 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
                     value={formData.email}
                     onChange={handleInputChange}
                     className={`w-full px-4 py-3 rounded-xl border ${
-                      errors.email ? "border-red-500" : "border-gray-700"
-                    } bg-gray-800/50 text-white focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all`}
+                      errors.email ? "border-red-500" : "border-gray-300"
+                    } bg-white text-gray-900 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all shadow-sm`}
                     placeholder="your@email.com"
                   />
                   {errors.email && (
-                    <p className="mt-1 text-sm text-red-400">{errors.email}</p>
+                    <p className="mt-1 text-sm text-red-600">{errors.email}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     <Phone className="w-4 h-4 inline mr-2" />
                     Phone Number
                   </label>
@@ -243,12 +255,12 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
                     value={formData.phone}
                     onChange={handleInputChange}
                     className={`w-full px-4 py-3 rounded-xl border ${
-                      errors.phone ? "border-red-500" : "border-gray-700"
-                    } bg-gray-800/50 text-white focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all`}
+                      errors.phone ? "border-red-500" : "border-gray-300"
+                    } bg-white text-gray-900 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all shadow-sm`}
                     placeholder="+1 (555) 123-4567"
                   />
                   {errors.phone && (
-                    <p className="mt-1 text-sm text-red-400">{errors.phone}</p>
+                    <p className="mt-1 text-sm text-red-600">{errors.phone}</p>
                   )}
                 </div>
               </div>
@@ -260,15 +272,17 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
         return (
           <div className="space-y-6">
             <div className="text-center mb-6">
-              <h3 className="text-2xl font-bold mb-2">Shipping Details</h3>
-              <p className="text-gray-400">
+              <h3 className="text-2xl font-bold mb-2 text-gray-900">
+                Shipping Details
+              </h3>
+              <p className="text-gray-600">
                 Where should we deliver your fragment?
               </p>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   <MapPin className="w-4 h-4 inline mr-2" />
                   Street Address
                 </label>
@@ -278,18 +292,18 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
                   value={formData.address}
                   onChange={handleInputChange}
                   className={`w-full px-4 py-3 rounded-xl border ${
-                    errors.address ? "border-red-500" : "border-gray-700"
-                  } bg-gray-800/50 text-white focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all`}
+                    errors.address ? "border-red-500" : "border-gray-300"
+                  } bg-white text-gray-900 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all shadow-sm`}
                   placeholder="123 Main Street"
                 />
                 {errors.address && (
-                  <p className="mt-1 text-sm text-red-400">{errors.address}</p>
+                  <p className="mt-1 text-sm text-red-600">{errors.address}</p>
                 )}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     City
                   </label>
                   <input
@@ -298,17 +312,17 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
                     value={formData.city}
                     onChange={handleInputChange}
                     className={`w-full px-4 py-3 rounded-xl border ${
-                      errors.city ? "border-red-500" : "border-gray-700"
-                    } bg-gray-800/50 text-white focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all`}
+                      errors.city ? "border-red-500" : "border-gray-300"
+                    } bg-white text-gray-900 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all shadow-sm`}
                     placeholder="New York"
                   />
                   {errors.city && (
-                    <p className="mt-1 text-sm text-red-400">{errors.city}</p>
+                    <p className="mt-1 text-sm text-red-600">{errors.city}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     State
                   </label>
                   <input
@@ -317,17 +331,17 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
                     value={formData.state}
                     onChange={handleInputChange}
                     className={`w-full px-4 py-3 rounded-xl border ${
-                      errors.state ? "border-red-500" : "border-gray-700"
-                    } bg-gray-800/50 text-white focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all`}
+                      errors.state ? "border-red-500" : "border-gray-300"
+                    } bg-white text-gray-900 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all shadow-sm`}
                     placeholder="NY"
                   />
                   {errors.state && (
-                    <p className="mt-1 text-sm text-red-400">{errors.state}</p>
+                    <p className="mt-1 text-sm text-red-600">{errors.state}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
                     Postal Code
                   </label>
                   <input
@@ -336,12 +350,12 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
                     value={formData.postalCode}
                     onChange={handleInputChange}
                     className={`w-full px-4 py-3 rounded-xl border ${
-                      errors.postalCode ? "border-red-500" : "border-gray-700"
-                    } bg-gray-800/50 text-white focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all`}
+                      errors.postalCode ? "border-red-500" : "border-gray-300"
+                    } bg-white text-gray-900 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all shadow-sm`}
                     placeholder="10001"
                   />
                   {errors.postalCode && (
-                    <p className="mt-1 text-sm text-red-400">
+                    <p className="mt-1 text-sm text-red-600">
                       {errors.postalCode}
                     </p>
                   )}
@@ -349,14 +363,14 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Country
                 </label>
                 <select
                   name="country"
                   value={formData.country}
                   onChange={handleInputChange}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-700 bg-gray-800/50 text-white focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all shadow-sm"
                 >
                   {countryOptions.map((country) => (
                     <option key={country} value={country}>
@@ -373,44 +387,52 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
         return (
           <div className="space-y-6">
             <div className="text-center mb-6">
-              <h3 className="text-2xl font-bold mb-2">Payment Information</h3>
-              <p className="text-gray-400">
+              <h3 className="text-2xl font-bold mb-2 text-gray-900">
+                Payment Information
+              </h3>
+              <p className="text-gray-600">
                 Complete your claim with secure payment
               </p>
             </div>
 
             <div className="space-y-4">
               {/* Fragment Summary */}
-              <div className="bg-gradient-to-br from-gray-800/30 to-gray-900/30 rounded-xl p-6 border border-gray-700">
-                <h4 className="font-bold mb-4 flex items-center gap-2">
-                  <Key className="w-5 h-5 text-primary-400" />
+              <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-soft">
+                <h4 className="font-bold mb-4 flex items-center gap-2 text-gray-900">
+                  <Key className="w-5 h-5 text-primary-600" />
                   Fragment Summary
                 </h4>
                 <div className="space-y-3">
                   <div className="flex justify-between">
-                    <span className="text-gray-400">
+                    <span className="text-gray-600">
                       Fragment #{fragment?.number}
                     </span>
-                    <span className="font-bold">
+                    <span className="font-bold text-gray-900">
                       ${fragment?.price?.toFixed(2)}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-400">Size: {formData.size}</span>
-                    <span className="text-gray-400">Included</span>
+                    <span className="text-gray-600">Size: {formData.size}</span>
+                    <span className="text-gray-600">Included</span>
                   </div>
-                  <div className="border-t border-gray-700 pt-3">
+                  <div className="border-t border-gray-200 pt-3">
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Tax</span>
-                      <span>${taxAmount.toFixed(2)}</span>
+                      <span className="text-gray-600">Tax</span>
+                      <span className="text-gray-900">
+                        ${taxAmount.toFixed(2)}
+                      </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Shipping</span>
-                      <span>${shippingAmount.toFixed(2)}</span>
+                      <span className="text-gray-600">Shipping</span>
+                      <span className="text-gray-900">
+                        ${shippingAmount.toFixed(2)}
+                      </span>
                     </div>
-                    <div className="flex justify-between text-lg font-bold mt-3 pt-3 border-t border-gray-700">
-                      <span>Total</span>
-                      <span>${grandTotal.toFixed(2)}</span>
+                    <div className="flex justify-between text-lg font-bold mt-3 pt-3 border-t border-gray-200">
+                      <span className="text-gray-900">Total</span>
+                      <span className="text-gray-900">
+                        ${grandTotal.toFixed(2)}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -418,8 +440,8 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
 
               {/* Size Selection */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
-                  <Size className="w-4 h-4 inline mr-2" />
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <Maximize2 className="w-4 h-4 inline mr-2" />
                   Select Size
                 </label>
                 <div className="flex flex-wrap gap-2">
@@ -428,10 +450,10 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
                       key={size}
                       type="button"
                       onClick={() => setFormData((prev) => ({ ...prev, size }))}
-                      className={`px-4 py-2 rounded-lg transition-all ${
+                      className={`px-4 py-2 rounded-lg transition-all shadow-sm ${
                         formData.size === size
                           ? "bg-primary-500 text-white"
-                          : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                       }`}
                     >
                       {size}
@@ -442,7 +464,7 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
 
               {/* Customization */}
               <div>
-                <label className="block text-sm font-medium text-gray-300 mb-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Customization Requests (Optional)
                 </label>
                 <textarea
@@ -450,11 +472,125 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
                   value={formData.customization}
                   onChange={handleInputChange}
                   rows="3"
-                  className="w-full px-4 py-3 rounded-xl border border-gray-700 bg-gray-800/50 text-white focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all shadow-sm"
                   placeholder="Any special customization requests..."
                 />
               </div>
+              {/* ===== NEW PAYMENT FORM SECTION ===== */}
+              <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-soft">
+                <h4 className="font-bold mb-4 flex items-center gap-2 text-gray-900">
+                  <CreditCard className="w-5 h-5 text-primary-600" />
+                  Payment Details
+                </h4>
 
+                {/* Payment Method Selection */}
+                <div className="mb-4">
+                  <div className="flex gap-4">
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value="card"
+                        checked={formData.paymentMethod === "card"}
+                        onChange={handleInputChange}
+                        className="text-primary-600"
+                      />
+                      <span>Credit Card</span>
+                    </label>
+                    <label className="flex items-center gap-2">
+                      <input
+                        type="radio"
+                        name="paymentMethod"
+                        value="paypal"
+                        checked={formData.paymentMethod === "paypal"}
+                        onChange={handleInputChange}
+                        className="text-primary-600"
+                      />
+                      <span>PayPal</span>
+                    </label>
+                  </div>
+                </div>
+
+                {/* Credit Card Fields - Only show if card is selected */}
+                {formData.paymentMethod === "card" && (
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Cardholder Name
+                      </label>
+                      <input
+                        type="text"
+                        name="cardName"
+                        value={formData.cardName}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all shadow-sm"
+                        placeholder="Name on card"
+                        required={formData.paymentMethod === "card"}
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Card Number
+                      </label>
+                      <input
+                        type="text"
+                        name="cardNumber"
+                        value={formData.cardNumber}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all shadow-sm"
+                        placeholder="1234 5678 9012 3456"
+                        maxLength="19"
+                        required={formData.paymentMethod === "card"}
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Expiry Date
+                        </label>
+                        <input
+                          type="text"
+                          name="cardExpiry"
+                          value={formData.cardExpiry}
+                          onChange={handleInputChange}
+                          className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all shadow-sm"
+                          placeholder="MM/YY"
+                          maxLength="5"
+                          required={formData.paymentMethod === "card"}
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          CVC
+                        </label>
+                        <input
+                          type="text"
+                          name="cardCvc"
+                          value={formData.cardCvc}
+                          onChange={handleInputChange}
+                          className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all shadow-sm"
+                          placeholder="123"
+                          maxLength="4"
+                          required={formData.paymentMethod === "card"}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* PayPal Message */}
+                {formData.paymentMethod === "paypal" && (
+                  <div className="bg-blue-50 p-4 rounded-xl text-blue-800">
+                    <p>
+                      You will be redirected to PayPal to complete your payment.
+                    </p>
+                  </div>
+                )}
+              </div>
+              {/* ===== END NEW PAYMENT FORM SECTION ===== */}
               {/* Terms */}
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
@@ -464,16 +600,16 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
                     name="acceptTerms"
                     checked={formData.acceptTerms}
                     onChange={handleInputChange}
-                    className="mt-1"
+                    className="mt-1 text-primary-600 focus:ring-primary-200"
                   />
                   <label
                     htmlFor="acceptTerms"
-                    className="text-sm text-gray-300"
+                    className="text-sm text-gray-700"
                   >
                     I agree to the{" "}
                     <a
                       href="/terms"
-                      className="text-primary-400 hover:text-primary-300"
+                      className="text-primary-600 hover:text-primary-500"
                     >
                       Terms & Conditions
                     </a>{" "}
@@ -482,7 +618,7 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
                   </label>
                 </div>
                 {errors.acceptTerms && (
-                  <p className="text-sm text-red-400">{errors.acceptTerms}</p>
+                  <p className="text-sm text-red-600">{errors.acceptTerms}</p>
                 )}
 
                 <div className="flex items-start gap-3">
@@ -492,11 +628,11 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
                     name="acceptUpdates"
                     checked={formData.acceptUpdates}
                     onChange={handleInputChange}
-                    className="mt-1"
+                    className="mt-1 text-primary-600 focus:ring-primary-200"
                   />
                   <label
                     htmlFor="acceptUpdates"
-                    className="text-sm text-gray-300"
+                    className="text-sm text-gray-700"
                   >
                     I want to receive updates about this fragment's production
                     progress and puzzle clues.
@@ -512,21 +648,23 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
           <div className="text-center py-8">
             {submissionSuccess ? (
               <div className="space-y-6">
-                <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto">
+                <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-md">
                   <CheckCircle className="w-10 h-10 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold mb-2">Claim Successful!</h3>
-                  <p className="text-gray-400 mb-6">
+                  <h3 className="text-2xl font-bold mb-2 text-gray-900">
+                    Claim Successful!
+                  </h3>
+                  <p className="text-gray-600 mb-6">
                     You are now a guardian of Fragment #{fragment?.number}
                   </p>
                 </div>
-                <div className="bg-gradient-to-br from-gray-800/30 to-gray-900/30 rounded-xl p-6 border border-gray-700 max-w-md mx-auto">
-                  <div className="text-sm text-gray-400 mb-2">Claim ID</div>
-                  <div className="font-mono text-lg font-bold text-primary-300">
+                <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 max-w-md mx-auto shadow-soft">
+                  <div className="text-sm text-gray-600 mb-2">Claim ID</div>
+                  <div className="font-mono text-lg font-bold text-primary-600">
                     CLAIM-{Date.now().toString().slice(-8)}
                   </div>
-                  <div className="mt-4 text-sm text-gray-300">
+                  <div className="mt-4 text-sm text-gray-700">
                     You will receive a confirmation email with next steps.
                   </div>
                 </div>
@@ -536,32 +674,34 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
               </div>
             ) : (
               <div className="space-y-6">
-                <div className="w-20 h-20 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-full flex items-center justify-center mx-auto">
+                <div className="w-20 h-20 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-full flex items-center justify-center mx-auto shadow-md">
                   <Shield className="w-10 h-10 text-white" />
                 </div>
                 <div>
-                  <h3 className="text-2xl font-bold mb-2">
+                  <h3 className="text-2xl font-bold mb-2 text-gray-900">
                     Confirm Your Claim
                   </h3>
-                  <p className="text-gray-400">
+                  <p className="text-gray-600">
                     Review your details before submitting
                   </p>
                 </div>
-                <div className="bg-gradient-to-br from-gray-800/30 to-gray-900/30 rounded-xl p-6 border border-gray-700 text-left">
+                <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 text-left shadow-soft">
                   <div className="space-y-3">
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Fragment:</span>
-                      <span className="font-bold">#{fragment?.number}</span>
+                      <span className="text-gray-600">Fragment:</span>
+                      <span className="font-bold text-gray-900">
+                        #{fragment?.number}
+                      </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Total Amount:</span>
-                      <span className="font-bold">
+                      <span className="text-gray-600">Total Amount:</span>
+                      <span className="font-bold text-gray-900">
                         ${grandTotal.toFixed(2)}
                       </span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-gray-400">Delivery to:</span>
-                      <span className="font-bold">
+                      <span className="text-gray-600">Delivery to:</span>
+                      <span className="font-bold text-gray-900">
                         {formData.city}, {formData.country}
                       </span>
                     </div>
@@ -578,20 +718,20 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-gradient-to-br from-gray-900 to-black rounded-3xl border border-gray-700 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl border border-gray-200 w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-xl">
         {/* Header */}
-        <div className="sticky top-0 bg-gray-900/90 backdrop-blur-sm border-b border-gray-700 p-6 rounded-t-3xl">
+        <div className="sticky top-0 bg-white/95 backdrop-blur-sm border-b border-gray-200 p-6 rounded-t-2xl shadow-sm">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-2xl font-bold">
+              <h2 className="text-2xl font-bold text-gray-900">
                 Claim Fragment #{fragment?.number}
               </h2>
-              <p className="text-gray-400">{fragment?.name}</p>
+              <p className="text-gray-600">{fragment?.name}</p>
             </div>
             <button
               onClick={onClose}
-              className="p-2 rounded-full hover:bg-gray-800 transition-colors"
+              className="p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-600 hover:text-gray-900"
             >
               <X className="w-5 h-5" />
             </button>
@@ -607,13 +747,13 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
 
             {/* Navigation Buttons */}
             {step < 4 && !submissionSuccess && (
-              <div className="flex justify-between mt-8 pt-6 border-t border-gray-700">
+              <div className="flex justify-between mt-8 pt-6 border-t border-gray-200">
                 <div>
                   {step > 1 && (
                     <button
                       type="button"
                       onClick={handleBack}
-                      className="px-6 py-3 rounded-xl border border-gray-700 text-gray-300 hover:bg-gray-800 transition-colors"
+                      className="px-6 py-3 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors shadow-sm"
                     >
                       Back
                     </button>
@@ -622,8 +762,8 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
 
                 <div className="flex items-center gap-4">
                   <div className="text-right">
-                    <div className="text-sm text-gray-400">Total</div>
-                    <div className="text-2xl font-bold">
+                    <div className="text-sm text-gray-600">Total</div>
+                    <div className="text-2xl font-bold text-gray-900">
                       ${grandTotal.toFixed(2)}
                     </div>
                   </div>
@@ -663,7 +803,7 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
 
         {/* Security Footer */}
         {step < 4 && (
-          <div className="p-6 border-t border-gray-700">
+          <div className="p-6 border-t border-gray-200">
             <div className="flex items-center justify-center gap-4 text-sm text-gray-500">
               <Shield className="w-4 h-4" />
               <span>Secure payment processed by Stripe</span>

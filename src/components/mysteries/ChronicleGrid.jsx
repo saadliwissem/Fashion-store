@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import {
   Puzzle,
@@ -8,281 +8,299 @@ import {
   Lock,
   Sparkles,
   Eye,
+  Loader,
 } from "lucide-react";
 import ChronicleCard from "./ChronicleCard";
+import { chronicleAPI } from "../../services/api";
+import toast from "react-hot-toast";
 
-const ChronicleGrid = ({ chronicles: propChronicles }) => {
-  const { enigmaId } = useParams();
+const ChronicleGrid = ({ enigmaId: propEnigmaId }) => {
+  const params = useParams();
+  // Use prop if provided, otherwise get from URL params
+  const enigmaId = propEnigmaId || params.enigmaId;
+
+  const [chronicles, setChronicles] = useState([]);
+  const [filteredChronicles, setFilteredChronicles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState("all"); // all, available, forging, cipher, solved
-
-  // Sample data if none provided
-  const sampleChronicles = [
-    {
-      id: 1,
-      enigmaId: parseInt(enigmaId) || 1,
-      name: "The Straw Hat Legacy",
-      description: "Unravel the mysteries of the Nine Straw Hats crew members",
-      status: "available",
-      coverImage:
-        "https://images.unsplash.com/photo-1635805737707-575885ab0820",
-      fragmentCount: 9,
-      fragmentsClaimed: 3,
-      requiredFragments: 9,
-      difficulty: "medium",
-      timeline: "6-8 weeks",
-      price: 299.99,
-    },
-    {
-      id: 2,
-      enigmaId: parseInt(enigmaId) || 1,
-      name: "Naruto's Seal Mystery",
-      description: "Decode the hidden seals across the ninja world",
-      status: "forging",
-      coverImage:
-        "https://images.unsplash.com/photo-1578662996442-48f60103fc96",
-      fragmentCount: 12,
-      fragmentsClaimed: 12,
-      requiredFragments: 12,
-      difficulty: "hard",
-      timeline: "In Production",
-      price: 349.99,
-    },
-    {
-      id: 3,
-      enigmaId: parseInt(enigmaId) || 1,
-      name: "Attack on Titan Walls",
-      description: "Discover what lies beyond the three walls",
-      status: "cipher",
-      coverImage:
-        "https://images.unsplash.com/photo-1531259683007-016a7b628fc3",
-      fragmentCount: 3,
-      fragmentsClaimed: 3,
-      requiredFragments: 3,
-      difficulty: "expert",
-      timeline: "Active Cipher",
-      price: 399.99,
-    },
-    {
-      id: 4,
-      enigmaId: parseInt(enigmaId) || 1,
-      name: "Demon Slayer Corps",
-      description: "Hunt demons with the breath techniques",
-      status: "available",
-      coverImage:
-        "https://images.unsplash.com/photo-1518709268805-4e9042af2176",
-      fragmentCount: 9,
-      fragmentsClaimed: 0,
-      requiredFragments: 9,
-      difficulty: "medium",
-      timeline: "8-10 weeks",
-      price: 279.99,
-    },
-    {
-      id: 5,
-      enigmaId: parseInt(enigmaId) || 1,
-      name: "Dragon Ball Wishes",
-      description: "Collect the dragon balls to unlock ultimate power",
-      status: "solved",
-      coverImage:
-        "https://images.unsplash.com/photo-1518709268805-4e9042af2176",
-      fragmentCount: 7,
-      fragmentsClaimed: 7,
-      requiredFragments: 7,
-      difficulty: "easy",
-      timeline: "Archived",
-      price: 249.99,
-    },
-    {
-      id: 6,
-      enigmaId: parseInt(enigmaId) || 1,
-      name: "One Piece Treasure Map",
-      description: "Follow the clues to the ultimate treasure",
-      status: "available",
-      coverImage:
-        "https://images.unsplash.com/photo-1518709268805-4e9042af2176",
-      fragmentCount: 15,
-      fragmentsClaimed: 2,
-      requiredFragments: 15,
-      difficulty: "hard",
-      timeline: "10-12 weeks",
-      price: 449.99,
-    },
-  ];
-
-  const chronicles = propChronicles || sampleChronicles;
-
-  const filteredChronicles = chronicles.filter((chronicle) => {
-    const matchesSearch =
-      chronicle.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      chronicle.description.toLowerCase().includes(searchTerm.toLowerCase());
-
-    if (filter === "all") return matchesSearch;
-    return matchesSearch && chronicle.status === filter;
+  const [stats, setStats] = useState({
+    total: 0,
+    available: 0,
+    forging: 0,
+    cipher: 0,
+    solved: 0,
   });
 
-  const getStatusCount = (status) => {
-    return chronicles.filter((c) => c.status === status).length;
+  useEffect(() => {
+    if (enigmaId) {
+      fetchChronicles();
+    } else {
+      setError("No enigma ID provided");
+      setLoading(false);
+    }
+  }, [enigmaId]);
+
+  useEffect(() => {
+    // Apply filters whenever chronicles, searchTerm, or filter changes
+    filterChronicles();
+  }, [chronicles, searchTerm, filter]);
+
+  const fetchChronicles = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      console.log("Fetching chronicles for enigma:", enigmaId);
+
+      // Fetch chronicles for this specific enigma
+      const response = await chronicleAPI.getAll({ enigma: enigmaId });
+
+      console.log("Chronicles response:", response.data);
+
+      const fetchedChronicles = response.data.data || [];
+      setChronicles(fetchedChronicles);
+
+      // Calculate stats
+      const newStats = {
+        total: fetchedChronicles.length,
+        available: fetchedChronicles.filter((c) => c.status === "available")
+          .length,
+        forging: fetchedChronicles.filter((c) => c.status === "forging").length,
+        cipher: fetchedChronicles.filter((c) => c.status === "cipher").length,
+        solved: fetchedChronicles.filter((c) => c.status === "solved").length,
+      };
+      setStats(newStats);
+    } catch (error) {
+      console.error("Failed to fetch chronicles:", error);
+      setError(error.response?.data?.message || "Failed to load chronicles");
+      toast.error("Failed to load chronicles");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filterChronicles = () => {
+    let filtered = [...chronicles];
+
+    // Apply search filter
+    if (searchTerm.trim()) {
+      filtered = filtered.filter(
+        (chronicle) =>
+          chronicle.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          chronicle.description
+            ?.toLowerCase()
+            .includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Apply status filter
+    if (filter !== "all") {
+      filtered = filtered.filter((chronicle) => chronicle.status === filter);
+    }
+
+    setFilteredChronicles(filtered);
   };
 
   const getTotalFragments = () => {
-    return chronicles.reduce((sum, c) => sum + c.fragmentCount, 0);
+    return chronicles.reduce(
+      (sum, c) => sum + (c.stats?.fragmentCount || 0),
+      0
+    );
   };
 
   const getClaimedFragments = () => {
-    return chronicles.reduce((sum, c) => sum + c.fragmentsClaimed, 0);
+    return chronicles.reduce(
+      (sum, c) => sum + (c.stats?.fragmentsClaimed || 0),
+      0
+    );
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader className="w-8 h-8 text-primary-600 animate-spin" />
+        <span className="ml-3 text-gray-600">Loading chronicles...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-12 bg-red-50 rounded-2xl border border-red-200">
+        <Puzzle className="w-16 h-16 text-red-400 mx-auto mb-4" />
+        <h3 className="text-xl font-bold mb-2 text-gray-900">
+          Error Loading Chronicles
+        </h3>
+        <p className="text-gray-600 max-w-md mx-auto">{error}</p>
+        <button
+          onClick={fetchChronicles}
+          className="mt-4 px-6 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+        >
+          Try Again
+        </button>
+      </div>
+    );
+  }
+
+  if (chronicles.length === 0) {
+    return (
+      <div className="text-center py-16 bg-gray-50 rounded-2xl border border-gray-200">
+        <Puzzle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+        <h3 className="text-xl font-bold mb-2 text-gray-900">
+          No Chronicles Found
+        </h3>
+        <p className="text-gray-600 max-w-md mx-auto">
+          This enigma doesn't have any chronicles yet. Check back soon for new
+          mysteries.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="py-8">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-3xl font-bold mb-2 flex items-center gap-2">
-              <Puzzle className="w-8 h-8 text-primary-500" />
-              Mystery Chronicles
-            </h1>
-            <p className="text-gray-400">
-              Each chronicle contains fragments waiting to be claimed and solved
-            </p>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="text-right">
-              <div className="text-2xl font-bold text-primary-400">
-                {getClaimedFragments()}/{getTotalFragments()}
-              </div>
-              <div className="text-sm text-gray-400">Fragments Claimed</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Search and Filters */}
-        <div className="flex flex-col lg:flex-row gap-4 mb-8">
-          <div className="flex-1 relative">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
-            <input
-              type="text"
-              placeholder="Search chronicles, fragments, or themes..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-700 bg-gray-800/50 text-white placeholder-gray-500 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
-            />
-          </div>
-
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => setFilter("all")}
-              className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-all ${
-                filter === "all"
-                  ? "bg-primary-500 text-white"
-                  : "bg-gray-800 text-gray-300 hover:bg-gray-700"
-              }`}
-            >
-              <Filter className="w-4 h-4" />
-              All ({chronicles.length})
-            </button>
-            <button
-              onClick={() => setFilter("available")}
-              className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-all ${
-                filter === "available"
-                  ? "bg-green-500 text-white"
-                  : "bg-gray-800 text-gray-300 hover:bg-gray-700"
-              }`}
-            >
-              <Lock className="w-4 h-4" />
-              Available ({getStatusCount("available")})
-            </button>
-            <button
-              onClick={() => setFilter("forging")}
-              className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-all ${
-                filter === "forging"
-                  ? "bg-orange-500 text-white"
-                  : "bg-gray-800 text-gray-300 hover:bg-gray-700"
-              }`}
-            >
-              <Sparkles className="w-4 h-4" />
-              Forging ({getStatusCount("forging")})
-            </button>
-            <button
-              onClick={() => setFilter("cipher")}
-              className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-all ${
-                filter === "cipher"
-                  ? "bg-purple-500 text-white"
-                  : "bg-gray-800 text-gray-300 hover:bg-gray-700"
-              }`}
-            >
-              <Puzzle className="w-4 h-4" />
-              Cipher ({getStatusCount("cipher")})
-            </button>
-          </div>
-        </div>
-      </div>
-
       {/* Stats Summary */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-xl p-6 border border-gray-700">
+        <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-soft">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-primary-500/20 rounded-lg">
-              <Puzzle className="w-6 h-6 text-primary-400" />
+            <div className="p-3 bg-primary-100 rounded-lg">
+              <Puzzle className="w-6 h-6 text-primary-600" />
             </div>
             <div>
-              <div className="text-2xl font-bold">{chronicles.length}</div>
-              <div className="text-sm text-gray-400">Active Chronicles</div>
+              <div className="text-2xl font-bold text-gray-900">
+                {stats.total}
+              </div>
+              <div className="text-sm text-gray-600">Total Chronicles</div>
             </div>
           </div>
         </div>
-        <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-xl p-6 border border-gray-700">
+        <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-soft">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-secondary-500/20 rounded-lg">
-              <Users className="w-6 h-6 text-secondary-400" />
+            <div className="p-3 bg-secondary-100 rounded-lg">
+              <Users className="w-6 h-6 text-secondary-600" />
             </div>
             <div>
-              <div className="text-2xl font-bold">{getClaimedFragments()}</div>
-              <div className="text-sm text-gray-400">Keepers</div>
+              <div className="text-2xl font-bold text-gray-900">
+                {getClaimedFragments()}
+              </div>
+              <div className="text-sm text-gray-600">Keepers</div>
             </div>
           </div>
         </div>
-        <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-xl p-6 border border-gray-700">
+        <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-soft">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-accent-500/20 rounded-lg">
-              <Lock className="w-6 h-6 text-accent-400" />
+            <div className="p-3 bg-accent-100 rounded-lg">
+              <Lock className="w-6 h-6 text-accent-600" />
             </div>
             <div>
-              <div className="text-2xl font-bold">
+              <div className="text-2xl font-bold text-gray-900">
                 {getTotalFragments() - getClaimedFragments()}
               </div>
-              <div className="text-sm text-gray-400">Fragments Available</div>
+              <div className="text-sm text-gray-600">Fragments Available</div>
             </div>
           </div>
         </div>
-        <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-xl p-6 border border-gray-700">
+        <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-soft">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-purple-500/20 rounded-lg">
-              <Eye className="w-6 h-6 text-purple-400" />
+            <div className="p-3 bg-purple-100 rounded-lg">
+              <Eye className="w-6 h-6 text-purple-600" />
             </div>
             <div>
-              <div className="text-2xl font-bold">
-                {chronicles.filter((c) => c.status === "solved").length}
+              <div className="text-2xl font-bold text-gray-900">
+                {stats.solved}
               </div>
-              <div className="text-sm text-gray-400">Solved Mysteries</div>
+              <div className="text-sm text-gray-600">Solved Mysteries</div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Results */}
+      {/* Search and Filters */}
+      <div className="flex flex-col lg:flex-row gap-4 mb-8">
+        <div className="flex-1 relative">
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Search chronicles, fragments, or themes..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all shadow-sm"
+          />
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => setFilter("all")}
+            className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-all ${
+              filter === "all"
+                ? "bg-primary-500 text-white shadow-sm"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm"
+            }`}
+          >
+            <Filter className="w-4 h-4" />
+            All ({stats.total})
+          </button>
+          <button
+            onClick={() => setFilter("available")}
+            className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-all ${
+              filter === "available"
+                ? "bg-green-500 text-white shadow-sm"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm"
+            }`}
+          >
+            <Lock className="w-4 h-4" />
+            Available ({stats.available})
+          </button>
+          <button
+            onClick={() => setFilter("forging")}
+            className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-all ${
+              filter === "forging"
+                ? "bg-orange-500 text-white shadow-sm"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm"
+            }`}
+          >
+            <Sparkles className="w-4 h-4" />
+            Forging ({stats.forging})
+          </button>
+          <button
+            onClick={() => setFilter("cipher")}
+            className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-all ${
+              filter === "cipher"
+                ? "bg-purple-500 text-white shadow-sm"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm"
+            }`}
+          >
+            <Puzzle className="w-4 h-4" />
+            Cipher ({stats.cipher})
+          </button>
+          <button
+            onClick={() => setFilter("solved")}
+            className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-all ${
+              filter === "solved"
+                ? "bg-gray-600 text-white shadow-sm"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm"
+            }`}
+          >
+            <Eye className="w-4 h-4" />
+            Solved ({stats.solved})
+          </button>
+        </div>
+      </div>
+
+      {/* Results Count */}
       <div className="mb-4">
-        <p className="text-gray-400">
+        <p className="text-gray-700">
           Showing{" "}
-          <span className="text-white font-bold">
+          <span className="text-gray-900 font-bold">
             {filteredChronicles.length}
           </span>{" "}
           chronicle{filteredChronicles.length !== 1 ? "s" : ""}
           {searchTerm && (
             <span>
               {" "}
-              for "<span className="text-primary-300">{searchTerm}</span>"
+              for "<span className="text-primary-600">{searchTerm}</span>"
             </span>
           )}
         </p>
@@ -290,18 +308,22 @@ const ChronicleGrid = ({ chronicles: propChronicles }) => {
 
       {/* Empty State */}
       {filteredChronicles.length === 0 ? (
-        <div className="text-center py-16 bg-gradient-to-br from-gray-800/30 to-gray-900/30 rounded-2xl border border-gray-700">
-          <Puzzle className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-          <h3 className="text-xl font-bold mb-2">No Chronicles Found</h3>
-          <p className="text-gray-400 max-w-md mx-auto">
+        <div className="text-center py-16 bg-gray-50 rounded-2xl border border-gray-200">
+          <Puzzle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-xl font-bold mb-2 text-gray-900">
+            No Chronicles Found
+          </h3>
+          <p className="text-gray-600 max-w-md mx-auto">
             {searchTerm
               ? `No chronicles match "${searchTerm}". Try another search.`
-              : `No chronicles available in this enigma. Check back soon for new mysteries.`}
+              : `No ${
+                  filter !== "all" ? filter : ""
+                } chronicles available in this enigma.`}
           </p>
           {searchTerm && (
             <button
               onClick={() => setSearchTerm("")}
-              className="mt-4 px-6 py-2 bg-primary-500 hover:bg-primary-600 rounded-lg transition-colors"
+              className="mt-4 px-6 py-2 btn-primary"
             >
               Clear Search
             </button>
@@ -311,50 +333,10 @@ const ChronicleGrid = ({ chronicles: propChronicles }) => {
         /* Chronicle Grid */
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {filteredChronicles.map((chronicle) => (
-            <ChronicleCard key={chronicle.id} chronicle={chronicle} />
+            <ChronicleCard key={chronicle._id} chronicle={chronicle} />
           ))}
         </div>
       )}
-
-      {/* Legend */}
-      <div className="mt-12 pt-8 border-t border-gray-800">
-        <h4 className="text-lg font-bold mb-4 flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-primary-500" />
-          Chronicle Status Legend
-        </h4>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="flex items-center gap-3 p-4 bg-gray-800/30 rounded-lg">
-            <div className="w-3 h-3 rounded-full bg-green-500"></div>
-            <div>
-              <div className="font-medium">Available</div>
-              <div className="text-sm text-gray-400">
-                Fragments can be claimed
-              </div>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 p-4 bg-gray-800/30 rounded-lg">
-            <div className="w-3 h-3 rounded-full bg-orange-500"></div>
-            <div>
-              <div className="font-medium">Forging</div>
-              <div className="text-sm text-gray-400">In production phase</div>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 p-4 bg-gray-800/30 rounded-lg">
-            <div className="w-3 h-3 rounded-full bg-purple-500"></div>
-            <div>
-              <div className="font-medium">Cipher Active</div>
-              <div className="text-sm text-gray-400">Puzzle being solved</div>
-            </div>
-          </div>
-          <div className="flex items-center gap-3 p-4 bg-gray-800/30 rounded-lg">
-            <div className="w-3 h-3 rounded-full bg-gray-500"></div>
-            <div>
-              <div className="font-medium">Solved</div>
-              <div className="text-sm text-gray-400">Mystery revealed</div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };

@@ -60,7 +60,7 @@ const featuredProducts = [
 
 const Home = () => {
   return (
-    <div className="fade-in">
+    <div className="fade-in ">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-purple-50 to-pink-50 py-20">
         <div className="container mx-auto px-4">
@@ -131,7 +131,7 @@ const Home = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-100 text-purple-700 font-semibold mb-4">
-              <Sparkles className="w-4 h-4" />
+              <span>✨</span>
               <span>Exclusive Experience</span>
             </div>
             <h2 className="text-3xl lg:text-4xl font-bold mb-4">
@@ -148,15 +148,16 @@ const Home = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            {/* Mystery Preview Card - FIXED: No dark backgrounds that overflow */}
-            <div className="rounded-3xl overflow-hidden border border-gray-200 group hover:shadow-2xl transition-all duration-300 bg-white">
+            {/* Mystery Preview Card - REMOVED bg-white and gradient overlay */}
+            <div className="rounded-3xl overflow-hidden border border-gray-200 group hover:shadow-2xl transition-all duration-300">
               <div className="h-48 overflow-hidden">
                 <img
                   src="https://images.unsplash.com/photo-1635805737707-575885ab0820?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
                   alt="Anime Chronicles Mystery"
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+                {/* REMOVED: This gradient overlay div that could affect page background */}
+                {/* <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" /> */}
               </div>
 
               <div className="p-8">
@@ -199,16 +200,16 @@ const Home = () => {
                     to="/mysteries"
                     className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-500 text-white font-medium hover:shadow-lg transition-all group-hover:scale-105"
                   >
-                    <Puzzle className="w-4 h-4" />
+                    <span>🧩</span>
                     Explore
                   </Link>
                 </div>
               </div>
             </div>
 
-            {/* How It Works */}
+            {/* How It Works - REMOVED glass-card class */}
             <div className="space-y-6">
-              <div className="glass-card p-8">
+              <div className="p-8">
                 <div className="flex items-center gap-4 mb-6">
                   <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center">
                     <span className="text-2xl">🔍</span>
@@ -229,10 +230,10 @@ const Home = () => {
                 </p>
               </div>
 
-              <div className="glass-card p-8">
+              <div className="p-8">
                 <div className="flex items-center gap-4 mb-6">
                   <div className="w-12 h-12 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-2xl flex items-center justify-center">
-                    <Users className="w-6 h-6 text-emerald-600" />
+                    <span className="w-6 h-6">👥</span>
                   </div>
                   <div>
                     <h4 className="text-xl font-bold mb-1">
@@ -250,10 +251,10 @@ const Home = () => {
                 </p>
               </div>
 
-              <div className="glass-card p-8">
+              <div className="p-8">
                 <div className="flex items-center gap-4 mb-6">
                   <div className="w-12 h-12 bg-gradient-to-br from-amber-100 to-amber-200 rounded-2xl flex items-center justify-center">
-                    <Sparkles className="w-6 h-6 text-amber-600" />
+                    <span className="w-6 h-6">✨</span>
                   </div>
                   <div>
                     <h4 className="text-xl font-bold mb-1">Earn Rewards</h4>
@@ -276,9 +277,9 @@ const Home = () => {
               to="/mysteries"
               className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-500 text-white font-bold text-lg hover:shadow-xl transition-all hover:scale-105"
             >
-              <Puzzle className="w-5 h-5" />
+              <span className="w-5 h-5">🧩</span>
               Explore All Mysteries
-              <ArrowRight className="w-5 h-5" />
+              <span className="w-5 h-5">→</span>
             </Link>
           </div>
         </div>

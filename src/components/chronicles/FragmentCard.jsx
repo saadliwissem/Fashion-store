@@ -1,278 +1,322 @@
-import React, { useState } from "react";
-import {
-  Lock,
-  CheckCircle,
-  Eye,
-  Users,
-  Sparkles,
-  Crown,
-  Shield,
-  Key,
-  ChevronRight,
-  AlertCircle,
-} from "lucide-react";
+import React from "react";
+import { Lock, Users, Crown, Sparkles, Eye } from "lucide-react";
 
-const FragmentCard = ({ fragment, onClick }) => {
-  const [isHovered, setIsHovered] = useState(false);
-
+const FragmentCard = ({ fragment = {}, onClick, viewMode = "grid" }) => {
+  // Safe destructuring with default values
   const {
-    id,
-    number,
-    name,
-    description,
-    status,
-    claimedBy,
-    price,
-    rarity,
-    features = [],
-    estimatedDelivery,
-    imageUrl,
+    number = 0,
+    name = "Unknown Fragment",
+    description = "No description available",
+    status = "unknown",
+    claimedBy = null,
+    price = 0,
+    rarity = "common",
+    imageUrl = "https://images.unsplash.com/photo-1635805737707?auto=format&fit=crop&w=400&h=300&q=80",
     cluesRevealed = 0,
-    totalClues = 5,
+    totalClues = 0,
     isFeatured = false,
+    estimatedDelivery = "TBD",
   } = fragment;
 
-  const isAvailable = status === "available";
-  const cluesPercentage =
-    totalClues > 0 ? (cluesRevealed / totalClues) * 100 : 0;
+  // Helper function to get claimed by display name
+  const getClaimedByName = () => {
+    if (!claimedBy) return "Unknown";
+
+    // If claimedBy is an object with user data (populated)
+    if (typeof claimedBy === "object") {
+      // Check if it has keeperProfile or direct user fields
+      if (claimedBy.keeperProfile?.displayName) {
+        return claimedBy.keeperProfile.displayName;
+      }
+      if (claimedBy.fullName) {
+        return claimedBy.fullName;
+      }
+      if (claimedBy.firstName && claimedBy.lastName) {
+        return `${claimedBy.firstName} ${claimedBy.lastName}`;
+      }
+      if (claimedBy.email) {
+        return claimedBy.email.split("@")[0]; // Use part before @ as name
+      }
+    }
+
+    // If it's a string (just the ID), return shortened version
+    if (typeof claimedBy === "string") {
+      return `Keeper ${claimedBy.slice(-4)}`; // Show last 4 chars of ID
+    }
+
+    return "Unknown";
+  };
+
+  // Ensure we have valid data before rendering
+  if (!fragment || Object.keys(fragment).length === 0) {
+    return null; // Don't render if no fragment data
+  }
+
+  const getStatusColor = () => {
+    if (isFeatured) return "yellow";
+    if (status === "claimed") return "purple";
+    if (status === "available") return "green";
+    return "gray";
+  };
 
   const getRarityColor = () => {
-    switch (rarity) {
-      case "common":
-        return "text-gray-400";
-      case "rare":
-        return "text-blue-400";
-      case "epic":
-        return "text-purple-400";
+    switch (rarity?.toLowerCase()) {
       case "legendary":
-        return "text-yellow-400";
-      default:
-        return "text-gray-400";
-    }
-  };
-
-  const getRarityBg = () => {
-    switch (rarity) {
-      case "common":
-        return "bg-gray-500/10";
+        return "from-yellow-400 to-orange-500";
       case "rare":
-        return "bg-blue-500/10";
-      case "epic":
-        return "bg-purple-500/10";
-      case "legendary":
-        return "bg-yellow-500/10";
+        return "from-purple-400 to-purple-600";
+      case "common":
       default:
-        return "bg-gray-500/10";
+        return "from-gray-400 to-gray-600";
     }
   };
 
-  const getStatusConfig = () => {
-    if (isAvailable) {
-      return {
-        label: "Available",
-        color: "bg-green-500/20 text-green-300",
-        icon: Lock,
-        actionLabel: "Claim Fragment",
-        actionColor: "btn-primary",
-      };
-    } else {
-      return {
-        label: "Claimed",
-        color: "bg-purple-500/20 text-purple-300",
-        icon: CheckCircle,
-        actionLabel: "View Details",
-        actionColor: "bg-gray-800 hover:bg-gray-700 text-gray-300",
-      };
-    }
+  // Handle image URL - could be string or object
+  const getImageUrl = () => {
+    if (!imageUrl)
+      return "https://images.unsplash.com/photo-1635805737707?auto=format&fit=crop&w=400&h=300&q=80";
+    if (typeof imageUrl === "string") return imageUrl;
+    if (imageUrl.url) return imageUrl.url;
+    return "https://images.unsplash.com/photo-1635805737707?auto=format&fit=crop&w=400&h=300&q=80";
   };
 
-  const statusConfig = getStatusConfig();
-  const StatusIcon = statusConfig.icon;
-
-  return (
-    <div
-      className={`group relative rounded-2xl overflow-hidden border transition-all duration-300 ${
-        isAvailable
-          ? "border-gray-700 bg-gradient-to-br from-gray-800 to-gray-900 hover:border-primary-500 hover:shadow-puzzle cursor-pointer"
-          : "border-gray-800 bg-gradient-to-br from-gray-900 to-black"
-      } ${isFeatured ? "border-yellow-500/30" : ""}`}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      onClick={isAvailable ? onClick : undefined}
-    >
-      {/* Featured Badge */}
-      {isFeatured && (
-        <div className="absolute top-4 left-4 z-10">
-          <span className="px-3 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r from-yellow-500 to-orange-500 text-black flex items-center gap-1">
-            <Crown className="w-3.5 h-3.5" />
-            Featured
-          </span>
+  if (viewMode === "list") {
+    return (
+      <div
+        onClick={status === "available" ? onClick : undefined}
+        className={`group flex items-center gap-4 p-3 rounded-xl border transition-all ${
+          status === "available"
+            ? "cursor-pointer hover:shadow-md hover:border-primary-300 bg-white"
+            : "cursor-default bg-gray-50 border-gray-200 opacity-75"
+        }`}
+        role={status === "available" ? "button" : "article"}
+        tabIndex={status === "available" ? 0 : -1}
+        onKeyPress={(e) => {
+          if (
+            status === "available" &&
+            (e.key === "Enter" || e.key === " ") &&
+            onClick
+          ) {
+            onClick();
+          }
+        }}
+      >
+        {/* Image */}
+        <div className="relative w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100">
+          <img
+            src={getImageUrl()}
+            alt={name}
+            className="w-full h-full object-cover"
+            loading="lazy"
+            onError={(e) => {
+              e.target.src =
+                "https://images.unsplash.com/photo-1635805737707?auto=format&fit=crop&w=400&h=300&q=80";
+            }}
+          />
+          {isFeatured && (
+            <div className="absolute top-1 right-1">
+              <Crown className="w-3 h-3 text-yellow-500" />
+            </div>
+          )}
         </div>
-      )}
 
-      {/* Rarity Badge */}
-      <div className="absolute top-4 right-4 z-10">
-        <span
-          className={`px-3 py-1.5 rounded-full text-xs font-bold ${getRarityBg()} ${getRarityColor()}`}
-        >
-          {rarity.charAt(0).toUpperCase() + rarity.slice(1)}
-        </span>
-      </div>
-
-      {/* Background Image */}
-      <div className="h-48 overflow-hidden relative">
-        <img
-          src={imageUrl}
-          alt={name}
-          className={`w-full h-full object-cover transition-transform duration-700 ${
-            isHovered && isAvailable ? "scale-110" : ""
-          }`}
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent" />
-
-        {/* Fragment Number */}
-        <div className="absolute bottom-4 left-4">
-          <div className="text-4xl font-bold text-white/90">#{number}</div>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="p-6">
-        {/* Header */}
-        <div className="mb-4">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-xl font-bold group-hover:text-primary-300 transition-colors">
-              {name}
-            </h3>
-            <span
-              className={`px-3 py-1 rounded-full text-xs font-bold ${statusConfig.color} flex items-center gap-1`}
-            >
-              <StatusIcon className="w-3 h-3" />
-              {statusConfig.label}
-            </span>
+        {/* Content */}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <h4 className="font-medium text-gray-900 truncate">
+              #{number} {name}
+            </h4>
+            {isFeatured && (
+              <span className="px-1.5 py-0.5 bg-yellow-100 text-yellow-700 text-xs rounded-full whitespace-nowrap">
+                Featured
+              </span>
+            )}
           </div>
-          <p className="text-gray-400 text-sm line-clamp-2">{description}</p>
+
+          <p className="text-xs text-gray-600 line-clamp-1 mb-2">
+            {description}
+          </p>
+
+          <div className="flex items-center gap-3 text-xs flex-wrap">
+            {status === "claimed" ? (
+              <div className="flex items-center gap-1 text-purple-600">
+                <Users className="w-3 h-3" />
+                <span className="truncate max-w-[100px]">
+                  {getClaimedByName()}
+                </span>
+              </div>
+            ) : status === "available" ? (
+              <div className="flex items-center gap-1 text-green-600">
+                <Lock className="w-3 h-3" />
+                <span>Available</span>
+              </div>
+            ) : null}
+
+            <div className="flex items-center gap-1 text-gray-500">
+              <Sparkles className="w-3 h-3" />
+              <span className="capitalize">{rarity}</span>
+            </div>
+
+            {cluesRevealed > 0 && totalClues > 0 && (
+              <div className="flex items-center gap-1 text-primary-600">
+                <Eye className="w-3 h-3" />
+                <span>
+                  {cluesRevealed}/{totalClues}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Keeper Info (if claimed) */}
-        {claimedBy && (
-          <div className="mb-4 p-3 bg-gradient-to-br from-purple-500/10 to-purple-600/10 rounded-xl border border-purple-500/20">
-            <div className="flex items-center gap-3">
-              <div className="p-1.5 bg-purple-500/20 rounded-lg">
-                <Users className="w-4 h-4 text-purple-400" />
-              </div>
-              <div>
-                <div className="text-sm text-gray-400">Guarded by</div>
-                <div className="font-medium">{claimedBy}</div>
-              </div>
+        {/* Price */}
+        {status === "available" && (
+          <div className="text-right flex-shrink-0">
+            <div className="font-bold text-primary-600">
+              ${typeof price === "number" ? price.toFixed(2) : "0.00"}
+            </div>
+            <div className="text-xs text-gray-500 whitespace-nowrap">
+              {estimatedDelivery}
             </div>
           </div>
         )}
+      </div>
+    );
+  }
 
-        {/* Clues Progress (if claimed) */}
-        {!isAvailable && totalClues > 0 && (
-          <div className="mb-4">
-            <div className="flex justify-between text-sm mb-2">
-              <span className="text-gray-300">Clues Revealed</span>
-              <span className="font-bold">
+  // Grid View (compact for sidebar)
+  return (
+    <div
+      onClick={status === "available" ? onClick : undefined}
+      className={`group relative rounded-xl overflow-hidden border transition-all ${
+        status === "available"
+          ? "cursor-pointer hover:shadow-lg hover:scale-[1.02] hover:border-primary-300 bg-white"
+          : "cursor-default bg-gray-50 border-gray-200 opacity-75"
+      }`}
+      role={status === "available" ? "button" : "article"}
+      tabIndex={status === "available" ? 0 : -1}
+      onKeyPress={(e) => {
+        if (
+          status === "available" &&
+          (e.key === "Enter" || e.key === " ") &&
+          onClick
+        ) {
+          onClick();
+        }
+      }}
+    >
+      {/* Image Container */}
+      <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
+        <img
+          src={getImageUrl()}
+          alt={name}
+          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+          loading="lazy"
+          onError={(e) => {
+            e.target.src =
+              "https://images.unsplash.com/photo-1635805737707?auto=format&fit=crop&w=400&h=300&q=80";
+          }}
+        />
+
+        {/* Status Badge */}
+        <div className="absolute top-2 left-2 flex gap-1">
+          <span
+            className={`px-2 py-1 text-xs font-medium rounded-full shadow-sm ${
+              isFeatured
+                ? "bg-yellow-100 text-yellow-700 border border-yellow-300"
+                : status === "claimed"
+                ? "bg-purple-100 text-purple-700 border border-purple-300"
+                : status === "available"
+                ? "bg-green-100 text-green-700 border border-green-300"
+                : "bg-gray-100 text-gray-700 border border-gray-300"
+            }`}
+          >
+            {isFeatured ? "Featured" : status}
+          </span>
+        </div>
+
+        {/* Rarity Badge */}
+        <div
+          className={`absolute top-2 right-2 px-2 py-1 text-xs font-medium rounded-full bg-gradient-to-r ${getRarityColor()} text-white shadow-sm`}
+        >
+          {rarity}
+        </div>
+
+        {/* Overlay for claimed fragments */}
+        {status === "claimed" && (
+          <div className="absolute inset-0 bg-black/5 backdrop-blur-[1px] flex items-center justify-center">
+            <div className="bg-white/90 rounded-full px-3 py-1.5 shadow-lg">
+              <span className="text-xs font-medium text-purple-600 flex items-center gap-1">
+                <Users className="w-3 h-3" />
+                {getClaimedByName()}
+              </span>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Content */}
+      <div className="p-3">
+        <div className="flex items-start justify-between mb-2">
+          <div className="min-w-0 flex-1">
+            <h4 className="font-bold text-gray-900 text-sm truncate">
+              #{number} {name}
+            </h4>
+            <p className="text-xs text-gray-600 line-clamp-2 mt-1">
+              {description}
+            </p>
+          </div>
+        </div>
+
+        {/* Progress */}
+        {cluesRevealed > 0 && totalClues > 0 && (
+          <div className="mb-2">
+            <div className="flex items-center justify-between text-xs mb-1">
+              <span className="text-gray-600">Clues Revealed</span>
+              <span className="font-medium text-primary-600">
                 {cluesRevealed}/{totalClues}
               </span>
             </div>
-            <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
+            <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-primary-500 to-secondary-500 transition-all duration-1000"
-                style={{ width: `${cluesPercentage}%` }}
+                className="h-full bg-primary-500 rounded-full transition-all"
+                style={{ width: `${(cluesRevealed / totalClues) * 100}%` }}
               />
             </div>
           </div>
         )}
 
-        {/* Features */}
-        {features.length > 0 && (
-          <div className="mb-6">
-            <div className="text-sm text-gray-400 mb-2">Arcane Features:</div>
-            <div className="flex flex-wrap gap-2">
-              {features.slice(0, 3).map((feature, index) => (
-                <span
-                  key={index}
-                  className="px-2 py-1 bg-gray-800/50 rounded-lg text-xs text-gray-300"
-                >
-                  {feature}
+        {/* Footer */}
+        <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-100">
+          {status === "available" ? (
+            <>
+              <div>
+                <span className="text-xs text-gray-500 block">Price</span>
+                <span className="font-bold text-primary-600 text-sm">
+                  ${typeof price === "number" ? price.toFixed(2) : "0.00"}
                 </span>
-              ))}
-              {features.length > 3 && (
-                <span className="px-2 py-1 bg-gray-800/50 rounded-lg text-xs text-gray-300">
-                  +{features.length - 3} more
-                </span>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 gap-4 mb-6">
-          <div className="text-center p-3 bg-gray-800/30 rounded-xl">
-            <div className="text-2xl font-bold">${price}</div>
-            <div className="text-xs text-gray-400">Price</div>
-          </div>
-          <div className="text-center p-3 bg-gray-800/30 rounded-xl">
-            <div className="text-lg font-bold">{estimatedDelivery}</div>
-            <div className="text-xs text-gray-400">Delivery</div>
-          </div>
-        </div>
-
-        {/* Action Button */}
-        <button
-          className={`w-full flex items-center justify-between p-4 rounded-xl transition-all duration-300 ${
-            isAvailable ? "btn-primary" : "bg-gray-800 hover:bg-gray-700"
-          }`}
-          disabled={!isAvailable}
-        >
-          <div className="flex items-center gap-3">
-            <div
-              className={`p-2 rounded-lg ${
-                isAvailable ? "bg-primary-500/20" : "bg-gray-700"
-              }`}
-            >
-              {isAvailable ? (
-                <Key className="w-5 h-5 text-primary-400" />
-              ) : (
-                <Eye className="w-5 h-5 text-gray-400" />
-              )}
-            </div>
-            <div className="text-left">
-              <div className="font-bold">{statusConfig.actionLabel}</div>
-              <div className="text-sm text-gray-400">
-                {isAvailable ? "Secure this fragment" : "View keeper details"}
               </div>
+              <div className="text-right">
+                <span className="text-xs text-gray-500 block">Delivery</span>
+                <span className="text-xs font-medium text-gray-700 whitespace-nowrap">
+                  {estimatedDelivery}
+                </span>
+              </div>
+            </>
+          ) : status === "claimed" ? (
+            <div className="w-full flex items-center justify-between">
+              <span className="text-xs text-gray-500">Claimed by</span>
+              <span className="text-xs font-medium text-purple-600 truncate ml-2 max-w-[120px]">
+                {getClaimedByName()}
+              </span>
             </div>
-          </div>
-          <ChevronRight
-            className={`w-5 h-5 ${
-              isAvailable ? "text-white" : "text-gray-500"
-            }`}
-          />
-        </button>
-
-        {/* Security Badge */}
-        <div className="mt-4 flex items-center justify-center gap-2 text-xs text-gray-500">
-          <Shield className="w-3 h-3" />
-          <span>NFT Authentication Included</span>
+          ) : null}
         </div>
+
+        {/* Hover effect for available fragments */}
+        {status === "available" && (
+          <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-primary-500 to-secondary-500 transform scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+        )}
       </div>
-
-      {/* Hover Effects */}
-      {isAvailable && (
-        <>
-          <div className="absolute inset-0 border-2 border-transparent group-hover:border-primary-500/30 rounded-2xl pointer-events-none transition-all duration-300" />
-          {isHovered && (
-            <div className="absolute -inset-0.5 bg-gradient-to-r from-primary-500/10 via-transparent to-secondary-500/10 rounded-2xl blur-sm opacity-50 pointer-events-none" />
-          )}
-        </>
-      )}
-
-      {/* Fragment Number Glow */}
-      <div className="absolute -bottom-2 -right-2 w-16 h-16 bg-gradient-to-br from-primary-500/5 to-secondary-500/5 rounded-full blur-xl pointer-events-none" />
     </div>
   );
 };
