@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Button from "../components/common/Button";
 import {
@@ -12,6 +12,9 @@ import {
   Users,
 } from "lucide-react";
 import ProductCard from "../components/products/ProductCard";
+import axios from "axios";
+const API_BASE_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 // Mock data - will be replaced with real API data
 const featuredProducts = [
   {
@@ -59,6 +62,30 @@ const featuredProducts = [
 ];
 
 const Home = () => {
+  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState([]);
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    setLoading(true);
+
+    try {
+      let url = `${API_BASE_URL}/products/featured`;
+
+      // Make API call
+      const response = await axios.get(url);
+
+      setProducts(response.data.products || response.data);
+      console.log(response.data.products);
+    } catch (err) {
+      console.error("Error fetching products:", err);
+      setProducts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div className="fade-in ">
       {/* Hero Section */}
@@ -341,9 +368,11 @@ const Home = () => {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {featuredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+            {loading
+              ? "Loading products..."
+              : products.map((product) => (
+                  <ProductCard key={product._id} product={product} />
+                ))}
           </div>
         </div>
       </section>

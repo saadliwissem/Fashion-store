@@ -18,6 +18,16 @@ api.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    // Log admin actions in development
+    if (
+      process.env.NODE_ENV === "development" &&
+      config.url?.startsWith("/admin")
+    ) {
+      console.log(
+        `🚀 Admin API Request: ${config.method?.toUpperCase()} ${config.url}`,
+        config.data || config.params
+      );
+    }
     return config;
   },
   (error) => {
@@ -29,6 +39,11 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Handle 403 Forbidden (admin access denied)
+    if (error.response?.status === 403) {
+      console.error("⛔ Admin access denied");
+      // You could redirect to a "not authorized" page or show a toast
+    }
     // Handle 401 Unauthorized
     if (error.response?.status === 401) {
       localStorage.removeItem("token");

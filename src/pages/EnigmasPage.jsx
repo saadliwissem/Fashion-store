@@ -65,15 +65,15 @@ const EnigmasPage = () => {
   }, [activeFilter, searchQuery]);
 
   // Hide hero after 10 seconds of inactivity
-  useEffect(() => {
-    if (!showHero) return;
+  // useEffect(() => {
+  //   if (!showHero) return;
 
-    const timer = setTimeout(() => {
-      setShowHero(false);
-    }, 10000);
+  //   const timer = setTimeout(() => {
+  //     setShowHero(false);
+  //   }, 10000);
 
-    return () => clearTimeout(timer);
-  }, [showHero]);
+  //   return () => clearTimeout(timer);
+  // }, [showHero]);
 
   if (loading && !enigmas.length) {
     return (

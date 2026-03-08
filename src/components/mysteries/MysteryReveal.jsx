@@ -17,22 +17,38 @@ const MysteryReveal = ({ enigma }) => {
   const [activeTab, setActiveTab] = useState("overview");
   const [scrollProgress, setScrollProgress] = useState(0);
 
+  // Destructure with proper MongoDB field names and fallbacks
   const {
-    id,
+    _id,
     name,
     description,
     lore,
     status,
     coverImage,
-    totalChronicles,
-    totalFragments,
-    fragmentsClaimed,
+    metadata = {},
+    stats = {},
     difficulty,
     featured,
     startDate,
     estimatedEnd,
-    rewards,
+    rewards = [],
   } = enigma;
+
+  // Use metadata for fragment stats (from your data structure)
+  const totalChronicles = metadata?.totalChronicles ?? 0;
+  const totalFragments = metadata?.totalFragments ?? 0;
+  const fragmentsClaimed = metadata?.fragmentsClaimed ?? 0;
+
+  // Handle cover image (could be string or object)
+  const getCoverImage = () => {
+    if (!coverImage)
+      return "https://images.unsplash.com/photo-1635805737707-575885ab0820";
+    if (typeof coverImage === "string") return coverImage;
+    return (
+      coverImage.url ||
+      "https://images.unsplash.com/photo-1635805737707-575885ab0820"
+    );
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -59,15 +75,15 @@ const MysteryReveal = ({ enigma }) => {
   const getStatusColor = () => {
     switch (status) {
       case "active":
-        return "from-green-500 to-emerald-600";
+        return "from-green-600 to-emerald-700";
       case "upcoming":
-        return "from-blue-500 to-cyan-600";
+        return "from-blue-600 to-cyan-700";
       case "archived":
-        return "from-gray-500 to-gray-600";
+        return "from-gray-600 to-gray-700";
       case "solved":
-        return "from-purple-500 to-pink-600";
+        return "from-purple-600 to-pink-700";
       default:
-        return "from-primary-500 to-secondary-500";
+        return "from-primary-600 to-secondary-700";
     }
   };
 
@@ -79,17 +95,14 @@ const MysteryReveal = ({ enigma }) => {
   ];
 
   return (
-    <div className="relative overflow-hidden">
-      {/* Background Glow */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-900" />
-
+    <div className="relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-100">
       {/* Animated Grid Background */}
-      <div className="absolute inset-0 opacity-5">
+      <div className="absolute inset-0 opacity-10">
         <div
           className="absolute inset-0"
           style={{
-            backgroundImage: `linear-gradient(to right, #8b5cf6 1px, transparent 1px),
-                           linear-gradient(to bottom, #8b5cf6 1px, transparent 1px)`,
+            backgroundImage: `linear-gradient(to right, #D4AF37 1px, transparent 1px),
+                           linear-gradient(to bottom, #D4AF37 1px, transparent 1px)`,
             backgroundSize: "50px 50px",
           }}
         />
@@ -116,17 +129,17 @@ const MysteryReveal = ({ enigma }) => {
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="relative">
                   {/* Outer Ring */}
-                  <div className="w-64 h-64 border-4 border-dashed border-primary-500/30 rounded-full animate-spin-slow" />
+                  <div className="w-64 h-64 border-4 border-dashed border-primary-400/40 rounded-full animate-spin-slow" />
 
                   {/* Middle Ring */}
                   <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                    <div className="w-48 h-48 border-2 border-primary-500/50 rounded-full animate-spin-slower" />
+                    <div className="w-48 h-48 border-2 border-primary-500/40 rounded-full animate-spin-slower" />
                   </div>
 
                   {/* Inner Lock */}
                   <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                    <div className="w-32 h-32 bg-gradient-to-br from-primary-600/20 to-secondary-600/20 backdrop-blur-sm border border-primary-500/30 rounded-2xl flex items-center justify-center">
-                      <Lock className="w-16 h-16 text-primary-400" />
+                    <div className="w-32 h-32 bg-gradient-to-br from-primary-100/90 to-secondary-100/90 backdrop-blur-sm border border-primary-300/50 rounded-2xl flex items-center justify-center shadow-xl">
+                      <Lock className="w-16 h-16 text-primary-600" />
                     </div>
                   </div>
 
@@ -134,7 +147,7 @@ const MysteryReveal = ({ enigma }) => {
                   {[0, 1, 2, 3].map((i) => (
                     <div
                       key={i}
-                      className="absolute w-8 h-8 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-lg animate-float"
+                      className="absolute w-8 h-8 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-lg animate-float shadow-lg"
                       style={{
                         top: `${Math.sin(i * 90) * 100 + 50}px`,
                         left: `${Math.cos(i * 90) * 100 + 50}px`,
@@ -152,14 +165,14 @@ const MysteryReveal = ({ enigma }) => {
                 <div className="relative z-10 pt-80 text-center">
                   <button
                     onClick={handleReveal}
-                    className="group px-8 py-4 bg-gradient-to-r from-primary-600 to-secondary-600 rounded-2xl font-bold text-lg hover:shadow-puzzle hover:scale-105 transition-all duration-300 animate-pulse-slow"
+                    className="group px-8 py-4 bg-gradient-to-r from-primary-600 to-secondary-600 rounded-2xl font-bold text-lg hover:shadow-xl hover:scale-105 transition-all duration-300 animate-pulse-slow text-white shadow-md"
                   >
                     <div className="flex items-center gap-3">
                       <Sparkles className="w-6 h-6 group-hover:rotate-180 transition-transform duration-500" />
                       <span>Unveil the Mystery</span>
                       <Sparkles className="w-6 h-6 group-hover:-rotate-180 transition-transform duration-500" />
                     </div>
-                    <div className="text-sm opacity-70 mt-2">
+                    <div className="text-sm opacity-90 mt-2">
                       Click to reveal the arcane secrets
                     </div>
                   </button>
@@ -178,45 +191,49 @@ const MysteryReveal = ({ enigma }) => {
             >
               {/* Header */}
               <div className="text-center mb-12">
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary-500/20 to-secondary-500/20 border border-primary-500/30 mb-4">
-                  <Zap className="w-4 h-4 text-primary-400" />
-                  <span className="text-sm font-medium">Arcane Enigma</span>
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary-100 to-secondary-100 border border-primary-200 mb-4 shadow-sm">
+                  <Zap className="w-4 h-4 text-primary-600" />
+                  <span className="text-sm font-medium text-gray-700">
+                    Arcane Enigma
+                  </span>
                 </div>
-                <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary-400 via-white to-secondary-400 bg-clip-text text-transparent">
+                <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-primary-600 via-gray-900 to-secondary-600 bg-clip-text text-transparent">
                   {name}
                 </h1>
-                <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+                <p className="text-xl text-gray-700 max-w-3xl mx-auto">
                   {description}
                 </p>
               </div>
 
               {/* Stats Banner */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-                <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl p-6 border border-gray-700 text-center">
-                  <div className="text-3xl font-bold text-primary-400 mb-2">
+                <div className="bg-white rounded-2xl p-6 border border-gray-200 text-center shadow-soft">
+                  <div className="text-3xl font-bold text-primary-600 mb-2">
                     {totalChronicles}
                   </div>
-                  <div className="text-gray-400">Chronicles</div>
+                  <div className="text-gray-600">Chronicles</div>
                 </div>
-                <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl p-6 border border-gray-700 text-center">
-                  <div className="text-3xl font-bold text-secondary-400 mb-2">
+                <div className="bg-white rounded-2xl p-6 border border-gray-200 text-center shadow-soft">
+                  <div className="text-3xl font-bold text-secondary-600 mb-2">
                     {totalFragments}
                   </div>
-                  <div className="text-gray-400">Fragments</div>
+                  <div className="text-gray-600">Fragments</div>
                 </div>
-                <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl p-6 border border-gray-700 text-center">
-                  <div className="text-3xl font-bold text-accent-400 mb-2">
+                <div className="bg-white rounded-2xl p-6 border border-gray-200 text-center shadow-soft">
+                  <div className="text-3xl font-bold text-accent-600 mb-2">
                     {fragmentsClaimed}
                   </div>
-                  <div className="text-gray-400">Keepers</div>
+                  <div className="text-gray-600">Keepers</div>
                 </div>
-                <div className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl p-6 border border-gray-700 text-center">
+                <div className="bg-white rounded-2xl p-6 border border-gray-200 text-center shadow-soft">
                   <div
                     className={`text-3xl font-bold mb-2 bg-gradient-to-r ${getStatusColor()} bg-clip-text text-transparent`}
                   >
-                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                    {status
+                      ? status.charAt(0).toUpperCase() + status.slice(1)
+                      : "Unknown"}
                   </div>
-                  <div className="text-gray-400">Status</div>
+                  <div className="text-gray-600">Status</div>
                 </div>
               </div>
 
@@ -231,8 +248,8 @@ const MysteryReveal = ({ enigma }) => {
                         onClick={() => setActiveTab(tab.id)}
                         className={`flex items-center gap-2 px-6 py-3 rounded-xl transition-all ${
                           activeTab === tab.id
-                            ? "bg-gradient-to-r from-primary-500 to-secondary-500 text-white"
-                            : "bg-gray-800/50 text-gray-400 hover:bg-gray-700/50 hover:text-white"
+                            ? "bg-gradient-to-r from-primary-500 to-secondary-500 text-white shadow-sm"
+                            : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm"
                         }`}
                       >
                         <Icon className="w-4 h-4" />
@@ -243,13 +260,13 @@ const MysteryReveal = ({ enigma }) => {
                 </div>
 
                 {/* Tab Content */}
-                <div className="bg-gradient-to-br from-gray-800/30 to-gray-900/30 rounded-2xl border border-gray-700 p-8">
+                <div className="bg-white rounded-2xl border border-gray-200 p-8 shadow-soft">
                   {activeTab === "overview" && (
                     <div className="space-y-6">
-                      <h3 className="text-2xl font-bold mb-4">
+                      <h3 className="text-2xl font-bold mb-4 text-gray-900">
                         The Enigma Unveiled
                       </h3>
-                      <p className="text-gray-300 leading-relaxed">
+                      <p className="text-gray-700 leading-relaxed">
                         This arcane mystery spans multiple dimensions, weaving
                         together fragments of reality into a tapestry of
                         secrets. Each chronicle represents a chapter in this
@@ -259,24 +276,24 @@ const MysteryReveal = ({ enigma }) => {
                       <div className="grid md:grid-cols-2 gap-6 mt-8">
                         <div className="space-y-3">
                           <div className="flex items-center gap-3">
-                            <Users className="w-5 h-5 text-primary-400" />
+                            <Users className="w-5 h-5 text-primary-600" />
                             <div>
-                              <div className="font-medium">
+                              <div className="font-medium text-gray-900">
                                 Collaborative Solving
                               </div>
-                              <div className="text-sm text-gray-400">
+                              <div className="text-sm text-gray-600">
                                 All keepers must work together to solve the
                                 cipher
                               </div>
                             </div>
                           </div>
                           <div className="flex items-center gap-3">
-                            <Lock className="w-5 h-5 text-secondary-400" />
+                            <Lock className="w-5 h-5 text-secondary-600" />
                             <div>
-                              <div className="font-medium">
+                              <div className="font-medium text-gray-900">
                                 Exclusive Ownership
                               </div>
-                              <div className="text-sm text-gray-400">
+                              <div className="text-sm text-gray-600">
                                 Each fragment is globally unique to its keeper
                               </div>
                             </div>
@@ -284,22 +301,24 @@ const MysteryReveal = ({ enigma }) => {
                         </div>
                         <div className="space-y-3">
                           <div className="flex items-center gap-3">
-                            <Star className="w-5 h-5 text-accent-400" />
+                            <Star className="w-5 h-5 text-accent-600" />
                             <div>
-                              <div className="font-medium">Arcane Rewards</div>
-                              <div className="text-sm text-gray-400">
+                              <div className="font-medium text-gray-900">
+                                Arcane Rewards
+                              </div>
+                              <div className="text-sm text-gray-600">
                                 Solve the puzzle for exclusive prizes and
                                 recognition
                               </div>
                             </div>
                           </div>
                           <div className="flex items-center gap-3">
-                            <Sparkles className="w-5 h-5 text-purple-400" />
+                            <Sparkles className="w-5 h-5 text-purple-600" />
                             <div>
-                              <div className="font-medium">
+                              <div className="font-medium text-gray-900">
                                 Progressive Clues
                               </div>
-                              <div className="text-sm text-gray-400">
+                              <div className="text-sm text-gray-600">
                                 Clues unlock as more fragments are claimed
                               </div>
                             </div>
@@ -311,30 +330,30 @@ const MysteryReveal = ({ enigma }) => {
 
                   {activeTab === "chronicles" && (
                     <div>
-                      <h3 className="text-2xl font-bold mb-6">
+                      <h3 className="text-2xl font-bold mb-6 text-gray-900">
                         Available Chronicles
                       </h3>
                       <div className="space-y-4">
-                        <p className="text-gray-300">
+                        <p className="text-gray-700">
                           Each chronicle represents a distinct chapter in this
                           enigma, containing its own set of fragments and
                           mysteries to solve.
                         </p>
-                        <button className="w-full flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-gray-800 to-gray-900 border border-gray-700 hover:border-primary-500 transition-all">
+                        <button className="w-full flex items-center justify-between p-4 rounded-xl bg-gradient-to-r from-gray-50 to-white border border-gray-300 hover:border-primary-400 hover:shadow-md transition-all group">
                           <div className="flex items-center gap-4">
-                            <div className="p-3 bg-primary-500/20 rounded-lg">
-                              <Puzzle className="w-6 h-6 text-primary-400" />
+                            <div className="p-3 bg-primary-100 rounded-lg">
+                              <Puzzle className="w-6 h-6 text-primary-600" />
                             </div>
                             <div className="text-left">
-                              <div className="font-bold">
+                              <div className="font-bold text-gray-900">
                                 Explore Chronicles
                               </div>
-                              <div className="text-sm text-gray-400">
+                              <div className="text-sm text-gray-600">
                                 View all {totalChronicles} available chronicles
                               </div>
                             </div>
                           </div>
-                          <ChevronRight className="w-5 h-5 text-gray-500" />
+                          <ChevronRight className="w-5 h-5 text-gray-500 group-hover:text-primary-600 transition-colors" />
                         </button>
                       </div>
                     </div>
@@ -342,35 +361,58 @@ const MysteryReveal = ({ enigma }) => {
 
                   {activeTab === "rewards" && (
                     <div>
-                      <h3 className="text-2xl font-bold mb-6">
+                      <h3 className="text-2xl font-bold mb-6 text-gray-900">
                         Arcane Treasures
                       </h3>
-                      <div className="grid md:grid-cols-2 gap-6">
-                        {rewards?.map((reward, index) => (
-                          <div
-                            key={index}
-                            className="bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-xl p-6 border border-gray-700"
-                          >
-                            <div className="flex items-center gap-3 mb-4">
-                              <div className="p-2 bg-gradient-to-r from-primary-500/20 to-secondary-500/20 rounded-lg">
-                                <Star className="w-5 h-5 text-yellow-400" />
+                      {rewards.length > 0 ? (
+                        <div className="grid md:grid-cols-2 gap-6">
+                          {rewards.map((reward, index) => (
+                            <div
+                              key={index}
+                              className="bg-gray-50 rounded-xl p-6 border border-gray-200 shadow-soft"
+                            >
+                              <div className="flex items-center gap-3 mb-4">
+                                <div className="p-2 bg-gradient-to-r from-primary-100 to-secondary-100 rounded-lg">
+                                  <Star className="w-5 h-5 text-yellow-600" />
+                                </div>
+                                <div className="font-bold text-gray-900">
+                                  {reward.name || reward.title}
+                                </div>
                               </div>
-                              <div className="font-bold">{reward.title}</div>
+                              <p className="text-gray-600 text-sm">
+                                {reward.description}
+                              </p>
+                              {reward.rarity && (
+                                <span
+                                  className={`mt-3 inline-block px-2 py-1 rounded-full text-xs font-medium ${
+                                    reward.rarity === "legendary"
+                                      ? "bg-yellow-100 text-yellow-700"
+                                      : reward.rarity === "rare"
+                                      ? "bg-purple-100 text-purple-700"
+                                      : "bg-gray-100 text-gray-700"
+                                  }`}
+                                >
+                                  {reward.rarity}
+                                </span>
+                              )}
                             </div>
-                            <p className="text-gray-400 text-sm">
-                              {reward.description}
-                            </p>
-                          </div>
-                        ))}
-                      </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-gray-600 text-center py-8">
+                          No rewards information available yet.
+                        </p>
+                      )}
                     </div>
                   )}
 
                   {activeTab === "lore" && (
                     <div>
-                      <h3 className="text-2xl font-bold mb-6">Deep Lore</h3>
-                      <div className="prose prose-invert max-w-none">
-                        <p className="text-gray-300 leading-relaxed whitespace-pre-line">
+                      <h3 className="text-2xl font-bold mb-6 text-gray-900">
+                        Deep Lore
+                      </h3>
+                      <div className="prose max-w-none">
+                        <p className="text-gray-700 leading-relaxed whitespace-pre-line">
                           {lore ||
                             "The full lore of this enigma is still being uncovered. As more fragments are claimed, additional lore will be revealed to the keepers."}
                         </p>
@@ -382,11 +424,14 @@ const MysteryReveal = ({ enigma }) => {
 
               {/* CTA */}
               <div className="text-center mt-12">
-                <button className="group px-8 py-4 bg-gradient-to-r from-primary-600 to-secondary-600 rounded-2xl font-bold text-lg hover:shadow-puzzle hover:scale-105 transition-all duration-300 inline-flex items-center gap-3">
+                <button
+                  onClick={() => (window.location.href = `/enigmas/${_id}`)}
+                  className="group px-8 py-4 bg-gradient-to-r from-primary-600 to-secondary-600 rounded-2xl font-bold text-lg hover:shadow-xl hover:scale-105 transition-all duration-300 inline-flex items-center gap-3 text-white shadow-md"
+                >
                   <span>Begin Your Journey</span>
                   <ChevronRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
                 </button>
-                <p className="text-gray-400 mt-4">
+                <p className="text-gray-600 mt-4">
                   Join the {fragmentsClaimed} keepers already on this quest
                 </p>
               </div>
@@ -396,48 +441,11 @@ const MysteryReveal = ({ enigma }) => {
       </div>
 
       {/* Floating Elements */}
-      <div className="absolute top-20 right-10 w-4 h-4 bg-primary-500 rounded-full animate-pulse" />
-      <div className="absolute bottom-40 left-10 w-3 h-3 bg-secondary-500 rounded-full animate-pulse" />
-      <div className="absolute top-1/3 left-1/4 w-2 h-2 bg-accent-500 rounded-full animate-pulse" />
+      <div className="absolute top-20 right-10 w-4 h-4 bg-primary-500 rounded-full animate-pulse shadow-sm" />
+      <div className="absolute bottom-40 left-10 w-3 h-3 bg-secondary-500 rounded-full animate-pulse shadow-sm" />
+      <div className="absolute top-1/3 left-1/4 w-2 h-2 bg-accent-500 rounded-full animate-pulse shadow-sm" />
     </div>
   );
-};
-
-// Default props
-MysteryReveal.defaultProps = {
-  enigma: {
-    id: 1,
-    name: "Anime Chronicles",
-    description: "Unravel the hidden truths behind legendary anime worlds",
-    lore: "In the beginning, there were stories. Stories that transcended reality, creating worlds where the impossible became possible. These stories contained fragments of truth, pieces of a larger puzzle scattered across dimensions.\n\nThose who possess the fragments become keepers of these truths. Each fragment holds a clue, and only when all fragments are united can the full mystery be revealed.\n\nThe journey begins with a single fragment, but it takes a community of keepers to piece together the complete picture. Will you be among those who solve the ultimate mystery?",
-    status: "active",
-    coverImage: "https://images.unsplash.com/photo-1635805737707-575885ab0820",
-    totalChronicles: 5,
-    totalFragments: 45,
-    fragmentsClaimed: 32,
-    difficulty: "medium",
-    featured: true,
-    startDate: "2024-01-15",
-    estimatedEnd: "2024-06-30",
-    rewards: [
-      {
-        title: "Arcane Artifact",
-        description: "Limited edition physical artifact from the solved puzzle",
-      },
-      {
-        title: "Digital Grimoire",
-        description: "Exclusive digital content and behind-the-scenes lore",
-      },
-      {
-        title: "Keeper's Badge",
-        description: "Special recognition on the leaderboard and community",
-      },
-      {
-        title: "Next Enigma Access",
-        description: "Early access to the next mystery before public release",
-      },
-    ],
-  },
 };
 
 export default MysteryReveal;

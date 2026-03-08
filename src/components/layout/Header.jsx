@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom"; // Add useLocation
 import {
   ShoppingBag,
   User,
@@ -27,10 +27,49 @@ const Header = () => {
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [featuredCategories, setFeaturedCategories] = useState([]);
   const navigate = useNavigate();
+  const location = useLocation(); // Get current location
 
   const { user, logout, isAuthenticated } = useAuth();
   const { cart, cartTotal } = useCart();
   const { getWishlistCount } = useWishlist();
+
+  // Helper function to check if a link is active
+  const isActiveLink = (path) => {
+    if (path === "/") {
+      return location.pathname === "/";
+    }
+    // For nested routes like /shop?category=men, check if path starts with the base route
+    return location.pathname.startsWith(path);
+  };
+
+  // Helper function to check if shop/category links are active
+  const isShopActive = () => {
+    return (
+      location.pathname === "/shop" ||
+      location.pathname.startsWith("/shop?") ||
+      location.pathname === "/categories"
+    );
+  };
+
+  // Helper function to get the appropriate class for nav links
+  const getNavLinkClass = (path) => {
+    const isActive = isActiveLink(path);
+    return `nav-link transition-colors ${
+      isActive
+        ? "text-[#C9A24D] font-semibold"
+        : "text-gray-700 hover:text-[#C9A24D]"
+    }`;
+  };
+
+  // Helper function for shop link with special handling
+  const getShopLinkClass = () => {
+    const isActive = isShopActive();
+    return `flex items-center space-x-1 nav-link transition-colors ${
+      isActive
+        ? "text-[#C9A24D] font-semibold"
+        : "text-gray-700 hover:text-[#C9A24D]"
+    }`;
+  };
 
   // Fetch categories on component mount
   useEffect(() => {
@@ -177,7 +216,11 @@ const Header = () => {
           {/* All Products */}
           <Link
             to="/shop"
-            className="flex items-center gap-3 px-6 py-4 text-gray-700 hover:bg-[#FAF6E8] hover:text-[#C9A24D] transition-colors first:rounded-t-2xl border-b border-gray-100"
+            className={`flex items-center gap-3 px-6 py-4 transition-colors first:rounded-t-2xl border-b border-gray-100 ${
+              location.pathname === "/shop"
+                ? "bg-[#FAF6E8] text-[#C9A24D]"
+                : "text-gray-700 hover:bg-[#FAF6E8] hover:text-[#C9A24D]"
+            }`}
             onClick={() => setIsUserDropdownOpen(false)}
           >
             <span className="text-xl">🛍️</span>
@@ -190,25 +233,36 @@ const Header = () => {
           </Link>
 
           {/* Dynamic Categories */}
-          {categories.map((category) => (
-            <Link
-              key={category.id}
-              to={`/shop?category=${category.slug}`}
-              className="flex items-center gap-3 px-6 py-4 text-gray-700 hover:bg-[#FAF6E8] hover:text-[#C9A24D] transition-colors last:rounded-b-2xl"
-              onClick={() => setIsUserDropdownOpen(false)}
-            >
-              <span className="text-xl">{category.icon}</span>
-              <div className="flex-1">
-                <span className="font-medium">{category.name}</span>
-                {category.productCount > 0 && (
-                  <p className="text-xs text-gray-500 mt-1">
-                    {category.productCount} products
-                  </p>
-                )}
-              </div>
-              <ChevronDown className="w-4 h-4 text-gray-400" />
-            </Link>
-          ))}
+          {categories.map((category) => {
+            const isCategoryActive =
+              location.pathname === "/shop" &&
+              new URLSearchParams(location.search).get("category") ===
+                category.slug;
+
+            return (
+              <Link
+                key={category.id}
+                to={`/shop?category=${category.slug}`}
+                className={`flex items-center gap-3 px-6 py-4 transition-colors last:rounded-b-2xl ${
+                  isCategoryActive
+                    ? "bg-[#FAF6E8] text-[#C9A24D]"
+                    : "text-gray-700 hover:bg-[#FAF6E8] hover:text-[#C9A24D]"
+                }`}
+                onClick={() => setIsUserDropdownOpen(false)}
+              >
+                <span className="text-xl">{category.icon}</span>
+                <div className="flex-1">
+                  <span className="font-medium">{category.name}</span>
+                  {category.productCount > 0 && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      {category.productCount} products
+                    </p>
+                  )}
+                </div>
+                <ChevronDown className="w-4 h-4 text-gray-400" />
+              </Link>
+            );
+          })}
         </>
       )}
     </div>
@@ -232,34 +286,53 @@ const Header = () => {
           <>
             <Link
               to="/shop"
-              className="flex items-center gap-2 py-3 text-gray-600 hover:text-[#C9A24D] transition-colors border-b border-gray-100"
+              className={`flex items-center gap-2 py-3 transition-colors border-b border-gray-100 ${
+                location.pathname === "/shop"
+                  ? "text-[#C9A24D] font-medium"
+                  : "text-gray-600 hover:text-[#C9A24D]"
+              }`}
               onClick={() => setIsMenuOpen(false)}
             >
               <span>🛍️</span>
               <span>All Products</span>
             </Link>
 
-            {categoriesToShow.map((category) => (
-              <Link
-                key={category.id}
-                to={`/shop?category=${category.slug}`}
-                className="flex items-center gap-2 py-3 text-gray-600 hover:text-[#C9A24D] transition-colors border-b border-gray-100 last:border-b-0"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <span>{getCategoryIcon(category.name)}</span>
-                <span>{category.name}</span>
-                {category.productCount > 0 && (
-                  <span className="ml-auto text-xs text-gray-500">
-                    ({category.productCount})
-                  </span>
-                )}
-              </Link>
-            ))}
+            {categoriesToShow.map((category) => {
+              const isCategoryActive =
+                location.pathname === "/shop" &&
+                new URLSearchParams(location.search).get("category") ===
+                  category.slug;
+
+              return (
+                <Link
+                  key={category.id}
+                  to={`/shop?category=${category.slug}`}
+                  className={`flex items-center gap-2 py-3 transition-colors border-b border-gray-100 last:border-b-0 ${
+                    isCategoryActive
+                      ? "text-[#C9A24D] font-medium"
+                      : "text-gray-600 hover:text-[#C9A24D]"
+                  }`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <span>{getCategoryIcon(category.name)}</span>
+                  <span>{category.name}</span>
+                  {category.productCount > 0 && (
+                    <span className="ml-auto text-xs text-gray-500">
+                      ({category.productCount})
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
 
             {categories.length > 6 && (
               <Link
                 to="/categories"
-                className="block py-3 text-[#C9A24D] hover:text-[#C9A24D] transition-colors font-medium text-center"
+                className={`block py-3 transition-colors font-medium text-center ${
+                  location.pathname === "/categories"
+                    ? "text-[#C9A24D]"
+                    : "text-[#C9A24D] hover:text-[#C9A24D]"
+                }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 View All Categories →
@@ -284,39 +357,42 @@ const Header = () => {
                 className="w-full h-full object-contain"
               />
             </div>
-
             <span className="text-2xl font-bold bg-gradient-to-r from-black to-[#C9A24D] bg-clip-text text-transparent">
               Puzzle
             </span>
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex  items-center space-x-8">
-            <Link to="/" className="nav-link text-[#C9A24D]">
+          <nav className="hidden md:flex items-center space-x-8">
+            <Link to="/" className={getNavLinkClass("/")}>
               Home
             </Link>
 
             {/* Categories Dropdown */}
             <div className="relative group">
-              <button className="flex items-center space-x-1 nav-link">
+              <button className={getShopLinkClass()}>
                 <span>Shop</span>
                 <ChevronDown className="w-4 h-4" />
               </button>
               {renderCategoriesDropdown()}
             </div>
-            <Link to="/mysteries" className="nav-link">
+            <Link to="/mysteries" className={getNavLinkClass("/mysteries")}>
               Mysteries
             </Link>
-            <Link to="/about" className="nav-link">
+            <Link to="/about" className={getNavLinkClass("/about")}>
               About
             </Link>
-            <Link to="/contact" className="nav-link">
+            <Link to="/contact" className={getNavLinkClass("/contact")}>
               Contact
             </Link>
             {user?.role === "admin" && (
               <Link
                 to="/admin"
-                className="nav-link text-[#C9A24D] font-semibold"
+                className={`nav-link transition-colors ${
+                  isActiveLink("/admin")
+                    ? "text-[#C9A24D] font-semibold"
+                    : "text-[#C9A24D] hover:text-[#C9A24D]"
+                }`}
               >
                 Admin Dashboard
               </Link>
@@ -403,25 +479,41 @@ const Header = () => {
                       </div>
                       <Link
                         to="/profile"
-                        className="block px-6 py-3 text-gray-700 hover:bg-[#FAF6E8] hover:text-[#C9A24D] transition-colors"
+                        className={`block px-6 py-3 transition-colors ${
+                          isActiveLink("/profile")
+                            ? "bg-[#FAF6E8] text-[#C9A24D]"
+                            : "text-gray-700 hover:bg-[#FAF6E8] hover:text-[#C9A24D]"
+                        }`}
                       >
                         Profile
                       </Link>
                       <Link
                         to="/orders"
-                        className="block px-6 py-3 text-gray-700 hover:bg-[#FAF6E8] hover:text-[#C9A24D] transition-colors"
+                        className={`block px-6 py-3 transition-colors ${
+                          isActiveLink("/orders")
+                            ? "bg-[#FAF6E8] text-[#C9A24D]"
+                            : "text-gray-700 hover:bg-[#FAF6E8] hover:text-[#C9A24D]"
+                        }`}
                       >
                         My Orders
                       </Link>
                       <Link
                         to="/wishlist"
-                        className="block px-6 py-3 text-gray-700 hover:bg-[#FAF6E8] hover:text-[#C9A24D] transition-colors"
+                        className={`block px-6 py-3 transition-colors ${
+                          isActiveLink("/wishlist")
+                            ? "bg-[#FAF6E8] text-[#C9A24D]"
+                            : "text-gray-700 hover:bg-[#FAF6E8] hover:text-[#C9A24D]"
+                        }`}
                       >
                         Wishlist ({getWishlistCount()})
                       </Link>
                       <Link
                         to="/cart"
-                        className="block px-6 py-3 text-gray-700 hover:bg-[#FAF6E8] hover:text-[#C9A24D] transition-colors"
+                        className={`block px-6 py-3 transition-colors ${
+                          isActiveLink("/cart")
+                            ? "bg-[#FAF6E8] text-[#C9A24D]"
+                            : "text-gray-700 hover:bg-[#FAF6E8] hover:text-[#C9A24D]"
+                        }`}
                       >
                         Cart ({getTotalCartItems()})
                       </Link>
@@ -441,14 +533,22 @@ const Header = () => {
                     <>
                       <Link
                         to="/login"
-                        className="block px-6 py-3 text-gray-700 hover:bg-[#FAF6E8] hover:text-[#C9A24D] transition-colors"
+                        className={`block px-6 py-3 transition-colors ${
+                          isActiveLink("/login")
+                            ? "bg-[#FAF6E8] text-[#C9A24D]"
+                            : "text-gray-700 hover:bg-[#FAF6E8] hover:text-[#C9A24D]"
+                        }`}
                         onClick={() => setIsUserDropdownOpen(false)}
                       >
                         Sign In
                       </Link>
                       <Link
                         to="/register"
-                        className="block px-6 py-3 text-gray-700 hover:bg-[#FAF6E8] hover:text-[#C9A24D] transition-colors"
+                        className={`block px-6 py-3 transition-colors ${
+                          isActiveLink("/register")
+                            ? "bg-[#FAF6E8] text-[#C9A24D]"
+                            : "text-gray-700 hover:bg-[#FAF6E8] hover:text-[#C9A24D]"
+                        }`}
                         onClick={() => setIsUserDropdownOpen(false)}
                       >
                         Create Account
@@ -484,14 +584,22 @@ const Header = () => {
 
               <Link
                 to="/"
-                className="nav-link py-2"
+                className={`nav-link py-2 transition-colors ${
+                  isActiveLink("/")
+                    ? "text-[#C9A24D] font-semibold"
+                    : "text-gray-700 hover:text-[#C9A24D]"
+                }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Home
               </Link>
               <Link
                 to="/shop"
-                className="nav-link py-2"
+                className={`nav-link py-2 transition-colors ${
+                  isShopActive()
+                    ? "text-[#C9A24D] font-semibold"
+                    : "text-gray-700 hover:text-[#C9A24D]"
+                }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Shop All
@@ -500,21 +608,33 @@ const Header = () => {
               {renderMobileCategories()}
               <Link
                 to="/mysteries"
-                className="nav-link py-2"
+                className={`nav-link py-2 transition-colors ${
+                  isActiveLink("/mysteries")
+                    ? "text-[#C9A24D] font-semibold"
+                    : "text-gray-700 hover:text-[#C9A24D]"
+                }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Mysteries
               </Link>
               <Link
                 to="/about"
-                className="nav-link py-2"
+                className={`nav-link py-2 transition-colors ${
+                  isActiveLink("/about")
+                    ? "text-[#C9A24D] font-semibold"
+                    : "text-gray-700 hover:text-[#C9A24D]"
+                }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 About
               </Link>
               <Link
                 to="/contact"
-                className="nav-link py-2"
+                className={`nav-link py-2 transition-colors ${
+                  isActiveLink("/contact")
+                    ? "text-[#C9A24D] font-semibold"
+                    : "text-gray-700 hover:text-[#C9A24D]"
+                }`}
                 onClick={() => setIsMenuOpen(false)}
               >
                 Contact
@@ -523,7 +643,11 @@ const Header = () => {
               {user?.role === "admin" && (
                 <Link
                   to="/admin"
-                  className="nav-link py-2 text-[#C9A24D] font-semibold"
+                  className={`nav-link py-2 transition-colors ${
+                    isActiveLink("/admin")
+                      ? "text-[#C9A24D] font-semibold"
+                      : "text-[#C9A24D] hover:text-[#C9A24D]"
+                  }`}
                   onClick={() => setIsMenuOpen(false)}
                 >
                   Admin Dashboard

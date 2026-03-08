@@ -8,7 +8,7 @@ import toast from "react-hot-toast";
 const ProductCard = ({ product, viewMode = "grid" }) => {
   const { addToCart, isInCart } = useCart();
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist();
-
+  const imgSrc = product.images[0];
   const handleAddToWishlist = (e) => {
     e.preventDefault();
     if (isInWishlist(product.id)) {
@@ -33,7 +33,7 @@ const ProductCard = ({ product, viewMode = "grid" }) => {
         {/* Product Image */}
         <div className="flex-shrink-0 w-48 h-48 rounded-xl overflow-hidden bg-gray-100">
           <img
-            src={product.image}
+            src={imgSrc}
             alt={product.name}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
           />
