@@ -288,7 +288,6 @@ const Products = () => {
 
       const response = await adminAPI.getProducts(params);
       const productsData = response.data.products || response.data;
-
       setProducts(productsData);
       setCurrentPage(response.data.page || page);
       setTotalPages(response.data.pages || 1);

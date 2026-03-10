@@ -154,20 +154,19 @@ const Shop = () => {
       // Make API call
       const response = await axios.get(url, { params });
 
-      setProducts(response.data.products || response.data);
-      setTotalProducts(
-        response.data.total || response.data.count || response.data.length || 0
-      );
+      setProducts(response.data.products);
+      console.log(response.data.products);
+      setTotalProducts(response.data.count || 0);
       setTotalPages(
         response.data.pages ||
           Math.ceil((response.data.total || 0) / itemsPerPage)
       );
 
       // Update categories count with actual product counts from this query
-      if (response.data.total !== undefined) {
+      if (response.data.pages !== undefined) {
         setCategories((prev) =>
           prev.map((cat) =>
-            cat.id === "all" ? { ...cat, count: response.data.total } : cat
+            cat.id === "all" ? { ...cat, count: response.data.pages } : cat
           )
         );
       }

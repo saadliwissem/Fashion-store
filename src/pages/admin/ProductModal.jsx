@@ -496,7 +496,7 @@ const ProductModal = ({
             : [],
         },
       };
-
+      console.log(productData);
       await onSave(productData);
       onClose();
     } catch (error) {

@@ -334,6 +334,8 @@ const Categories = () => {
       });
 
       const categoriesData = response.data.data;
+      console.log(response.data.data);
+
       const treeData = buildCategoryTree(categoriesData);
       const flattened = flattenCategories(treeData);
 
