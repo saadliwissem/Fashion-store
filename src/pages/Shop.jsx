@@ -471,15 +471,15 @@ const Shop = () => {
                     <ProductCard
                       key={product._id}
                       product={{
-                        id: product._id,
+                        _id: product._id,
                         name: product.name,
                         price: product.price,
                         originalPrice: product.originalPrice,
                         image: product.images?.[0] || product.image,
                         category: product.category?.name || product.category,
                         rating: product.rating || product.averageRating || 0,
-                        isNew: product.isNewArrival || product.isNew,
-                        isSale: product.onSale,
+                        isNewArrival: product.isNewArrival || product.isNew,
+                        onSale: product.onSale,
                         tags: product.tags,
                         slug: product.slug,
                         description: product.description,

@@ -162,7 +162,7 @@ const EnigmaGrid = ({ enigmas }) => {
         </div>
         <div className="text-center p-6 bg-gray-50 rounded-xl border border-gray-200 shadow-soft">
           <div className="text-3xl font-bold text-secondary-600 mb-2">
-            {enigmas.reduce((sum, e) => sum + e.totalFragments, 0)}
+            {enigmas.reduce((sum, e) => sum + e.metadata.totalFragments, 0)}
           </div>
           <div className="text-gray-600">Fragments Waiting</div>
         </div>

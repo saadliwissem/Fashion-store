@@ -15,51 +15,6 @@ import ProductCard from "../components/products/ProductCard";
 import axios from "axios";
 const API_BASE_URL =
   import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-// Mock data - will be replaced with real API data
-const featuredProducts = [
-  {
-    id: 1,
-    name: "Premium Cotton T-Shirt",
-    price: 29.99,
-    originalPrice: 39.99,
-    image:
-      "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=500&fit=crop",
-    category: "men",
-    rating: 4.8,
-    isNew: true,
-  },
-  {
-    id: 2,
-    name: "Elegant Summer Dress",
-    price: 59.99,
-    originalPrice: 79.99,
-    image:
-      "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=400&h=500&fit=crop",
-    category: "women",
-    rating: 4.9,
-    isSale: true,
-  },
-  {
-    id: 3,
-    name: "Designer Denim Jacket",
-    price: 89.99,
-    image:
-      "https://images.unsplash.com/photo-1551028719-00167b16eac5?w-400&h=500&fit=crop",
-    category: "women",
-    rating: 4.7,
-  },
-  {
-    id: 4,
-    name: "Classic Polo Shirt",
-    price: 34.99,
-    originalPrice: 44.99,
-    image:
-      "https://images.unsplash.com/photo-1586790170083-2f9ceadc732d?w=400&h=500&fit=crop",
-    category: "men",
-    rating: 4.6,
-    isNew: true,
-  },
-];
 
 const Home = () => {
   const [loading, setLoading] = useState(true);
@@ -78,7 +33,6 @@ const Home = () => {
       const response = await axios.get(url);
 
       setProducts(response.data.products || response.data);
-      console.log(response.data.products);
     } catch (err) {
       console.error("Error fetching products:", err);
       setProducts([]);

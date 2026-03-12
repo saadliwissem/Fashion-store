@@ -144,35 +144,6 @@ const Header = () => {
     return "🛒";
   };
 
-  // Static fallback categories
-  const getStaticCategories = () => {
-    return [
-      {
-        id: "new",
-        name: "New Arrivals",
-        slug: "new",
-        productCount: 0,
-        icon: "🆕",
-      },
-      { id: "men", name: "Men's", slug: "men", productCount: 0, icon: "👔" },
-      {
-        id: "women",
-        name: "Women's",
-        slug: "women",
-        productCount: 0,
-        icon: "👗",
-      },
-      { id: "kids", name: "Kids", slug: "kids", productCount: 0, icon: "👶" },
-      {
-        id: "accessories",
-        name: "Accessories",
-        slug: "accessories",
-        productCount: 0,
-        icon: "💎",
-      },
-    ];
-  };
-
   // Calculate total items in cart
   const getTotalCartItems = () => {
     if (!cart || !Array.isArray(cart) || cart.length === 0) return 0;
