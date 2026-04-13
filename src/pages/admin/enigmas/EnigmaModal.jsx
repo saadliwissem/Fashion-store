@@ -16,6 +16,7 @@ import {
   AlertCircle,
   ChevronDown,
   ChevronUp,
+  AlertTriangle,
 } from "lucide-react";
 import Button from "../../../components/common/Button";
 import toast from "react-hot-toast";
@@ -65,6 +66,8 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
     },
   });
 
+  const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
   const [tagInput, setTagInput] = useState("");
   const [seoKeywordInput, setSeoKeywordInput] = useState("");
   const [rewardForm, setRewardForm] = useState({
@@ -88,6 +91,7 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
   });
   const [coverPreview, setCoverPreview] = useState("");
   const [bannerPreview, setBannerPreview] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (mode === "edit" && enigma) {
@@ -119,7 +123,6 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
       setCoverPreview(enigma.coverImage?.url || "");
       setBannerPreview(enigma.bannerImage?.url || "");
     } else {
-      // Reset form for add mode
       setFormData({
         name: "",
         description: "",
@@ -155,10 +158,19 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
         image: "",
       });
     }
+    setErrors({});
+    setTouched({});
+    setIsSubmitting(false);
   }, [mode, enigma, isOpen]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+
+    setTouched((prev) => ({ ...prev, [name]: true }));
+
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: undefined }));
+    }
 
     if (name.includes(".")) {
       const [parent, child] = name.split(".");
@@ -177,20 +189,26 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
     }
   };
 
-  const handleArrayChange = (field, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
-
   const handleAddTag = () => {
-    if (tagInput.trim() && !formData.tags.includes(tagInput.trim())) {
-      setFormData((prev) => ({
-        ...prev,
-        tags: [...prev.tags, tagInput.trim()],
-      }));
-      setTagInput("");
+    if (tagInput.trim()) {
+      if (formData.tags.length >= 20) {
+        toast.error("Maximum 20 tags allowed");
+        return;
+      }
+      if (tagInput.trim().length > 30) {
+        toast.error("Tag cannot exceed 30 characters");
+        return;
+      }
+      if (!formData.tags.includes(tagInput.trim())) {
+        setFormData((prev) => ({
+          ...prev,
+          tags: [...prev.tags, tagInput.trim()],
+        }));
+        setTagInput("");
+        if (errors.tags) {
+          setErrors((prev) => ({ ...prev, tags: undefined }));
+        }
+      }
     }
   };
 
@@ -202,18 +220,21 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
   };
 
   const handleAddSeoKeyword = () => {
-    if (
-      seoKeywordInput.trim() &&
-      !formData.seo.keywords.includes(seoKeywordInput.trim())
-    ) {
-      setFormData((prev) => ({
-        ...prev,
-        seo: {
-          ...prev.seo,
-          keywords: [...prev.seo.keywords, seoKeywordInput.trim()],
-        },
-      }));
-      setSeoKeywordInput("");
+    if (seoKeywordInput.trim()) {
+      if (seoKeywordInput.trim().length > 30) {
+        toast.error("Keyword cannot exceed 30 characters");
+        return;
+      }
+      if (!formData.seo.keywords.includes(seoKeywordInput.trim())) {
+        setFormData((prev) => ({
+          ...prev,
+          seo: {
+            ...prev.seo,
+            keywords: [...prev.seo.keywords, seoKeywordInput.trim()],
+          },
+        }));
+        setSeoKeywordInput("");
+      }
     }
   };
 
@@ -229,6 +250,14 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
 
   const handleAddReward = () => {
     if (rewardForm.name && rewardForm.description) {
+      if (rewardForm.name.length > 100) {
+        toast.error("Reward name cannot exceed 100 characters");
+        return;
+      }
+      if (rewardForm.description.length > 500) {
+        toast.error("Reward description cannot exceed 500 characters");
+        return;
+      }
       setFormData((prev) => ({
         ...prev,
         rewards: [
@@ -278,9 +307,13 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
         coverImage: {
           ...prev.coverImage,
           url: reader.result,
-          alt: formData.name || "Cover image",
+          alt: prev.name || "Cover image",
+          publicId: "",
         },
       }));
+      if (errors["coverImage.url"]) {
+        setErrors((prev) => ({ ...prev, "coverImage.url": undefined }));
+      }
     };
     reader.readAsDataURL(file);
   };
@@ -307,27 +340,128 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
         bannerImage: {
           ...prev.bannerImage,
           url: reader.result,
-          alt: formData.name || "Banner image",
+          alt: prev.name || "Banner image",
+          publicId: "",
         },
       }));
+      if (errors["bannerImage.url"]) {
+        setErrors((prev) => ({ ...prev, "bannerImage.url": undefined }));
+      }
     };
     reader.readAsDataURL(file);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate required fields
-    if (!formData.name) {
-      toast.error("Enigma name is required");
-      return;
-    }
-    if (!formData.description) {
-      toast.error("Description is required");
+    const validationErrors = {};
+    if (!formData.name) validationErrors.name = "Enigma name is required";
+    if (!formData.description)
+      validationErrors.description = "Description is required";
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      toast.error("Please fill in all required fields");
       return;
     }
 
-    onSave(formData);
+    setIsSubmitting(true);
+
+    try {
+      await onSave(formData);
+    } catch (error) {
+      console.log("Error response:", error.response?.data); // Debug log
+
+      // Check if the error has the validation errors structure
+      if (error.response?.data?.errors) {
+        const backendErrors = {};
+
+        error.response.data.errors.forEach((err) => {
+          // Try to get field from different possible properties
+          let fieldName = err.field || err.param || err.path;
+
+          // If no field name, try to infer from message
+          if (!fieldName) {
+            const message = err.message.toLowerCase();
+            if (message.includes("description")) fieldName = "description";
+            else if (message.includes("name")) fieldName = "name";
+            else if (message.includes("avatar")) fieldName = "creator.avatar";
+            else if (message.includes("reward image"))
+              fieldName = "rewards.0.image";
+            else fieldName = "general";
+          }
+
+          backendErrors[fieldName] = err.message;
+        });
+
+        setErrors(backendErrors);
+
+        // Auto-expand sections with errors
+        const sectionsToExpand = new Set();
+        Object.keys(backendErrors).forEach((field) => {
+          if (
+            field === "name" ||
+            field === "description" ||
+            field === "lore" ||
+            field === "status" ||
+            field === "difficulty"
+          ) {
+            sectionsToExpand.add("basic");
+          } else if (
+            field.includes("coverImage") ||
+            field.includes("bannerImage")
+          ) {
+            sectionsToExpand.add("media");
+          } else if (field.includes("creator")) {
+            sectionsToExpand.add("creator");
+          } else if (field.includes("location")) {
+            sectionsToExpand.add("location");
+          } else if (field === "tags") {
+            sectionsToExpand.add("tags");
+          } else if (field.includes("rewards")) {
+            sectionsToExpand.add("rewards");
+          } else if (
+            field.includes("startDate") ||
+            field.includes("estimatedEnd")
+          ) {
+            sectionsToExpand.add("dates");
+          } else if (field.includes("seo")) {
+            sectionsToExpand.add("seo");
+          } else if (field.includes("stats")) {
+            sectionsToExpand.add("stats");
+          }
+        });
+
+        setExpandedSections((prev) => ({
+          ...prev,
+          ...Object.fromEntries([...sectionsToExpand].map((s) => [s, true])),
+        }));
+
+        toast.error("Please fix the validation errors");
+      } else {
+        toast.error(error.response?.data?.message || "Failed to save enigma");
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const getFieldError = (fieldName) => {
+    return errors[fieldName];
+  };
+
+  const isFieldInvalid = (fieldName) => {
+    // Check if this specific field has an error
+    if (touched[fieldName] && errors[fieldName]) {
+      return true;
+    }
+
+    // For nested fields, also check if the error exists
+    if (errors[fieldName]) {
+      return true;
+    }
+
+    return false;
   };
 
   const toggleSection = (section) => {
@@ -337,12 +471,80 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
     }));
   };
 
+  const renderInput = (
+    name,
+    type = "text",
+    placeholder,
+    required = false,
+    options = {}
+  ) => {
+    const error = getFieldError(name);
+    const isInvalid = isFieldInvalid(name);
+
+    const inputProps = {
+      type,
+      name,
+      value: name.includes(".")
+        ? name.split(".").reduce((obj, key) => obj?.[key], formData) || ""
+        : formData[name],
+      onChange: handleChange,
+      onBlur: () => setTouched((prev) => ({ ...prev, [name]: true })),
+      className: `w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none transition-colors ${
+        isInvalid
+          ? "border-red-500 focus:border-red-500 bg-red-50"
+          : "border-gray-300 focus:border-purple-500"
+      }`,
+      placeholder,
+      ...options,
+    };
+
+    return (
+      <div>
+        <input {...inputProps} />
+        {error && (
+          <div className="flex items-center gap-1 mt-1 text-red-600 text-sm">
+            <AlertTriangle className="w-3 h-3" />
+            <span>{error}</span>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const renderTextarea = (name, rows, placeholder, required = false) => {
+    const error = getFieldError(name);
+    const isInvalid = isFieldInvalid(name);
+
+    return (
+      <div>
+        <textarea
+          name={name}
+          value={formData[name]}
+          onChange={handleChange}
+          onBlur={() => setTouched((prev) => ({ ...prev, [name]: true }))}
+          rows={rows}
+          className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none transition-colors ${
+            isInvalid
+              ? "border-red-500 focus:border-red-500 bg-red-50"
+              : "border-gray-300 focus:border-purple-500"
+          }`}
+          placeholder={placeholder}
+        />
+        {error && (
+          <div className="flex items-center gap-1 mt-1 text-red-600 text-sm">
+            <AlertTriangle className="w-3 h-3" />
+            <span>{error}</span>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
       <div className="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-xl">
-        {/* Header */}
         <div className="sticky top-0 bg-white border-b border-gray-200 p-6 rounded-t-2xl z-10">
           <div className="flex items-center justify-between">
             <div>
@@ -364,20 +566,34 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
           </div>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* Basic Information */}
-          <div className="border border-gray-200 rounded-xl overflow-hidden">
+          <div
+            className={`border rounded-xl overflow-hidden ${
+              getFieldError("name") || getFieldError("description")
+                ? "border-red-200 bg-red-50/50"
+                : "border-gray-200"
+            }`}
+          >
             <button
               type="button"
               onClick={() => toggleSection("basic")}
               className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
             >
               <div className="flex items-center gap-3">
-                <FileText className="w-5 h-5 text-purple-600" />
+                <FileText
+                  className={`w-5 h-5 ${
+                    getFieldError("name") ? "text-red-500" : "text-purple-600"
+                  }`}
+                />
                 <span className="font-semibold text-gray-900">
                   Basic Information
                 </span>
+                {(getFieldError("name") || getFieldError("description")) && (
+                  <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full">
+                    Has errors
+                  </span>
+                )}
               </div>
               {expandedSections.basic ? (
                 <ChevronUp className="w-5 h-5 text-gray-500" />
@@ -392,44 +608,29 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Enigma Name *
                   </label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
-                    placeholder="e.g., Anime Chronicles"
-                    required
-                  />
+                  {renderInput("name", "text", "e.g., Anime Chronicles", true)}
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Description *
                   </label>
-                  <textarea
-                    name="description"
-                    value={formData.description}
-                    onChange={handleChange}
-                    rows="3"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
-                    placeholder="Brief description of the enigma..."
-                    required
-                  />
+                  {renderTextarea(
+                    "description",
+                    3,
+                    "Brief description of the enigma..."
+                  )}
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Lore
                   </label>
-                  <textarea
-                    name="lore"
-                    value={formData.lore}
-                    onChange={handleChange}
-                    rows="5"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
-                    placeholder="The deep story and mythology of this enigma..."
-                  />
+                  {renderTextarea(
+                    "lore",
+                    5,
+                    "The deep story and mythology of this enigma..."
+                  )}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -441,13 +642,26 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
                       name="status"
                       value={formData.status}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                      onBlur={() =>
+                        setTouched((prev) => ({ ...prev, status: true }))
+                      }
+                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none ${
+                        isFieldInvalid("status")
+                          ? "border-red-500 focus:border-red-500 bg-red-50"
+                          : "border-gray-300 focus:border-purple-500"
+                      }`}
                     >
                       <option value="upcoming">Upcoming</option>
                       <option value="active">Active</option>
                       <option value="solved">Solved</option>
                       <option value="archived">Archived</option>
                     </select>
+                    {getFieldError("status") && (
+                      <div className="flex items-center gap-1 mt-1 text-red-600 text-sm">
+                        <AlertTriangle className="w-3 h-3" />
+                        <span>{getFieldError("status")}</span>
+                      </div>
+                    )}
                   </div>
 
                   <div>
@@ -458,13 +672,26 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
                       name="difficulty"
                       value={formData.difficulty}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                      onBlur={() =>
+                        setTouched((prev) => ({ ...prev, difficulty: true }))
+                      }
+                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none ${
+                        isFieldInvalid("difficulty")
+                          ? "border-red-500 focus:border-red-500 bg-red-50"
+                          : "border-gray-300 focus:border-purple-500"
+                      }`}
                     >
                       <option value="beginner">Beginner</option>
                       <option value="intermediate">Intermediate</option>
                       <option value="advanced">Advanced</option>
                       <option value="expert">Expert</option>
                     </select>
+                    {getFieldError("difficulty") && (
+                      <div className="flex items-center gap-1 mt-1 text-red-600 text-sm">
+                        <AlertTriangle className="w-3 h-3" />
+                        <span>{getFieldError("difficulty")}</span>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -489,15 +716,35 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
           </div>
 
           {/* Media */}
-          <div className="border border-gray-200 rounded-xl overflow-hidden">
+          <div
+            className={`border rounded-xl overflow-hidden ${
+              getFieldError("coverImage.url") ||
+              getFieldError("bannerImage.url")
+                ? "border-red-200 bg-red-50/50"
+                : "border-gray-200"
+            }`}
+          >
             <button
               type="button"
               onClick={() => toggleSection("media")}
               className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
             >
               <div className="flex items-center gap-3">
-                <ImageIcon className="w-5 h-5 text-purple-600" />
+                <ImageIcon
+                  className={`w-5 h-5 ${
+                    getFieldError("coverImage.url") ||
+                    getFieldError("bannerImage.url")
+                      ? "text-red-500"
+                      : "text-purple-600"
+                  }`}
+                />
                 <span className="font-semibold text-gray-900">Media</span>
+                {(getFieldError("coverImage.url") ||
+                  getFieldError("bannerImage.url")) && (
+                  <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full">
+                    Has errors
+                  </span>
+                )}
               </div>
               {expandedSections.media ? (
                 <ChevronUp className="w-5 h-5 text-gray-500" />
@@ -508,13 +755,18 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
 
             {expandedSections.media && (
               <div className="p-4 space-y-6">
-                {/* Cover Image */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Cover Image
                   </label>
                   <div className="flex items-start gap-4">
-                    <div className="w-32 h-32 bg-gray-100 rounded-xl overflow-hidden border border-gray-200">
+                    <div
+                      className={`w-32 h-32 bg-gray-100 rounded-xl overflow-hidden border ${
+                        getFieldError("coverImage.url")
+                          ? "border-red-500"
+                          : "border-gray-200"
+                      }`}
+                    >
                       {coverPreview ? (
                         <img
                           src={coverPreview}
@@ -548,24 +800,32 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
                     </div>
                   </div>
                   <div className="mt-3">
-                    <input
-                      type="text"
-                      name="coverImage.alt"
-                      value={formData.coverImage.alt}
-                      onChange={handleChange}
-                      placeholder="Alt text for cover image"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
-                    />
+                    {renderInput(
+                      "coverImage.alt",
+                      "text",
+                      "Alt text for cover image"
+                    )}
                   </div>
+                  {getFieldError("coverImage.url") && (
+                    <div className="flex items-center gap-1 mt-2 text-red-600 text-sm">
+                      <AlertTriangle className="w-3 h-3" />
+                      <span>{getFieldError("coverImage.url")}</span>
+                    </div>
+                  )}
                 </div>
 
-                {/* Banner Image */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Banner Image
                   </label>
                   <div className="flex items-start gap-4">
-                    <div className="w-32 h-32 bg-gray-100 rounded-xl overflow-hidden border border-gray-200">
+                    <div
+                      className={`w-32 h-32 bg-gray-100 rounded-xl overflow-hidden border ${
+                        getFieldError("bannerImage.url")
+                          ? "border-red-500"
+                          : "border-gray-200"
+                      }`}
+                    >
                       {bannerPreview ? (
                         <img
                           src={bannerPreview}
@@ -599,15 +859,18 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
                     </div>
                   </div>
                   <div className="mt-3">
-                    <input
-                      type="text"
-                      name="bannerImage.alt"
-                      value={formData.bannerImage.alt}
-                      onChange={handleChange}
-                      placeholder="Alt text for banner image"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
-                    />
+                    {renderInput(
+                      "bannerImage.alt",
+                      "text",
+                      "Alt text for banner image"
+                    )}
                   </div>
+                  {getFieldError("bannerImage.url") && (
+                    <div className="flex items-center gap-1 mt-2 text-red-600 text-sm">
+                      <AlertTriangle className="w-3 h-3" />
+                      <span>{getFieldError("bannerImage.url")}</span>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -639,42 +902,33 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Creator Name
                   </label>
-                  <input
-                    type="text"
-                    name="creator.name"
-                    value={formData.creator.name}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
-                    placeholder="e.g., Arcane Weavers Collective"
-                  />
+                  {renderInput(
+                    "creator.name",
+                    "text",
+                    "e.g., Arcane Weavers Collective"
+                  )}
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Creator Avatar URL
                   </label>
-                  <input
-                    type="url"
-                    name="creator.avatar"
-                    value={formData.creator.avatar}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
-                    placeholder="https://example.com/avatar.jpg"
-                  />
+                  {renderInput(
+                    "creator.avatar",
+                    "url",
+                    "https://example.com/avatar.jpg"
+                  )}
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Creator Bio
                   </label>
-                  <textarea
-                    name="creator.bio"
-                    value={formData.creator.bio}
-                    onChange={handleChange}
-                    rows="3"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
-                    placeholder="Brief bio of the creator..."
-                  />
+                  {renderTextarea(
+                    "creator.bio",
+                    3,
+                    "Brief bio of the creator..."
+                  )}
                 </div>
               </div>
             )}
@@ -720,28 +974,14 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Country
                       </label>
-                      <input
-                        type="text"
-                        name="location.country"
-                        value={formData.location.country}
-                        onChange={handleChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
-                        placeholder="e.g., Japan"
-                      />
+                      {renderInput("location.country", "text", "e.g., Japan")}
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         City
                       </label>
-                      <input
-                        type="text"
-                        name="location.city"
-                        value={formData.location.city}
-                        onChange={handleChange}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
-                        placeholder="e.g., Tokyo"
-                      />
+                      {renderInput("location.city", "text", "e.g., Tokyo")}
                     </div>
                   </>
                 )}
@@ -833,7 +1073,6 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
 
             {expandedSections.rewards && (
               <div className="p-4">
-                {/* Existing Rewards */}
                 <div className="space-y-3 mb-4">
                   {formData.rewards.map((reward, index) => (
                     <div
@@ -875,7 +1114,6 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
                   ))}
                 </div>
 
-                {/* Add Reward Form */}
                 {showRewardForm ? (
                   <div className="border border-gray-200 rounded-lg p-4 mb-4">
                     <h4 className="font-medium text-gray-900 mb-3">
@@ -1002,26 +1240,14 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Start Date
                   </label>
-                  <input
-                    type="date"
-                    name="startDate"
-                    value={formData.startDate}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
-                  />
+                  {renderInput("startDate", "date", "")}
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Estimated End Date
                   </label>
-                  <input
-                    type="date"
-                    name="estimatedEnd"
-                    value={formData.estimatedEnd}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
-                  />
+                  {renderInput("estimatedEnd", "date", "")}
                 </div>
               </div>
             )}
@@ -1053,15 +1279,13 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     SEO Title
                   </label>
-                  <input
-                    type="text"
-                    name="seo.title"
-                    value={formData.seo.title}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
-                    placeholder="SEO optimized title (max 60 chars)"
-                    maxLength="60"
-                  />
+                  {renderInput(
+                    "seo.title",
+                    "text",
+                    "SEO optimized title (max 60 chars)",
+                    false,
+                    { maxLength: 60 }
+                  )}
                   <p className="text-xs text-gray-500 mt-1">
                     {formData.seo.title.length}/60 characters
                   </p>
@@ -1071,15 +1295,11 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     SEO Description
                   </label>
-                  <textarea
-                    name="seo.description"
-                    value={formData.seo.description}
-                    onChange={handleChange}
-                    rows="2"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
-                    placeholder="SEO meta description (max 160 chars)"
-                    maxLength="160"
-                  />
+                  {renderTextarea(
+                    "seo.description",
+                    2,
+                    "SEO meta description (max 160 chars)"
+                  )}
                   <p className="text-xs text-gray-500 mt-1">
                     {formData.seo.description.length}/160 characters
                   </p>
@@ -1159,58 +1379,45 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Active Keepers
                     </label>
-                    <input
-                      type="number"
-                      name="stats.activeKeepers"
-                      value={formData.stats.activeKeepers}
-                      onChange={handleChange}
-                      min="0"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
-                    />
+                    {renderInput("stats.activeKeepers", "number", "", false, {
+                      min: 0,
+                    })}
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Total Value Locked ($)
                     </label>
-                    <input
-                      type="number"
-                      name="stats.totalValueLocked"
-                      value={formData.stats.totalValueLocked}
-                      onChange={handleChange}
-                      min="0"
-                      step="0.01"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
-                    />
+                    {renderInput(
+                      "stats.totalValueLocked",
+                      "number",
+                      "",
+                      false,
+                      { min: 0, step: 0.01 }
+                    )}
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Completion Rate (%)
                     </label>
-                    <input
-                      type="number"
-                      name="stats.completionRate"
-                      value={formData.stats.completionRate}
-                      onChange={handleChange}
-                      min="0"
-                      max="100"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
-                    />
+                    {renderInput("stats.completionRate", "number", "", false, {
+                      min: 0,
+                      max: 100,
+                    })}
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Average Time to Complete (days)
                     </label>
-                    <input
-                      type="number"
-                      name="stats.averageTimeToComplete"
-                      value={formData.stats.averageTimeToComplete}
-                      onChange={handleChange}
-                      min="0"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
-                    />
+                    {renderInput(
+                      "stats.averageTimeToComplete",
+                      "number",
+                      "",
+                      false,
+                      { min: 0 }
+                    )}
                   </div>
                 </div>
               )}
@@ -1219,15 +1426,30 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
 
           {/* Form Actions */}
           <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-200">
-            <Button type="button" variant="outline" onClick={onClose}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+              disabled={isSubmitting}
+            >
               Cancel
             </Button>
             <Button
               type="submit"
-              className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800"
+              disabled={isSubmitting}
+              className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Save className="w-4 h-4" />
-              {mode === "add" ? "Create Enigma" : "Save Changes"}
+              {isSubmitting ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  {mode === "add" ? "Creating..." : "Saving..."}
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4" />
+                  {mode === "add" ? "Create Enigma" : "Save Changes"}
+                </>
+              )}
             </Button>
           </div>
         </form>

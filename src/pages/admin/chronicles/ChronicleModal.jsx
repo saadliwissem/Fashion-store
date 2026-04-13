@@ -23,6 +23,7 @@ import {
   DollarSign,
   Hash,
   BookOpen,
+  AlertTriangle,
 } from "lucide-react";
 import Button from "../../../components/common/Button";
 import toast from "react-hot-toast";
@@ -84,6 +85,8 @@ const ChronicleModal = ({
     },
   });
 
+  const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
   const [rewardForm, setRewardForm] = useState({
     name: "",
     description: "",
@@ -105,6 +108,7 @@ const ChronicleModal = ({
     media: false,
   });
   const [coverPreview, setCoverPreview] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (mode === "edit" && chronicle) {
@@ -151,7 +155,6 @@ const ChronicleModal = ({
       });
       setCoverPreview(chronicle.coverImage?.url || "");
     } else {
-      // Reset form for add mode
       setFormData({
         enigma: enigmas?.length > 0 ? enigmas[0]._id : "",
         name: "",
@@ -199,10 +202,19 @@ const ChronicleModal = ({
         unlockThreshold: 1,
       });
     }
+    setErrors({});
+    setTouched({});
+    setIsSubmitting(false);
   }, [mode, chronicle, enigmas, isOpen]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+
+    setTouched((prev) => ({ ...prev, [name]: true }));
+
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: undefined }));
+    }
 
     if (name.includes(".")) {
       const parts = name.split(".");
@@ -240,6 +252,12 @@ const ChronicleModal = ({
     const { name, value } = e.target;
     const numValue = value === "" ? 0 : parseFloat(value);
 
+    setTouched((prev) => ({ ...prev, [name]: true }));
+
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: undefined }));
+    }
+
     if (name.includes(".")) {
       const [parent, child] = name.split(".");
       setFormData((prev) => ({
@@ -259,12 +277,23 @@ const ChronicleModal = ({
 
   const handleAddReward = () => {
     if (rewardForm.name && rewardForm.description) {
+      if (rewardForm.name.length > 100) {
+        toast.error("Reward name cannot exceed 100 characters");
+        return;
+      }
+      if (rewardForm.description.length > 500) {
+        toast.error("Reward description cannot exceed 500 characters");
+        return;
+      }
+      if (rewardForm.image && !rewardForm.image.match(/^https?:\/\/.+/)) {
+        toast.error(
+          "Reward image must be a valid URL starting with http:// or https://"
+        );
+        return;
+      }
       setFormData((prev) => ({
         ...prev,
-        rewards: [
-          ...prev.rewards,
-          { ...rewardForm, _id: Date.now().toString() },
-        ],
+        rewards: [...prev.rewards, { ...rewardForm }],
       }));
       setRewardForm({
         name: "",
@@ -280,10 +309,10 @@ const ChronicleModal = ({
     }
   };
 
-  const handleRemoveReward = (rewardToRemove) => {
+  const handleRemoveReward = (indexToRemove) => {
     setFormData((prev) => ({
       ...prev,
-      rewards: prev.rewards.filter((r) => r._id !== rewardToRemove._id),
+      rewards: prev.rewards.filter((_, index) => index !== indexToRemove),
     }));
   };
 
@@ -310,41 +339,142 @@ const ChronicleModal = ({
           ...prev.coverImage,
           url: reader.result,
           alt: formData.name || "Chronicle cover image",
+          publicId: "",
         },
       }));
+      if (errors["coverImage.url"]) {
+        setErrors((prev) => ({ ...prev, "coverImage.url": undefined }));
+      }
     };
     reader.readAsDataURL(file);
   };
-
-  const handleSubmit = (e) => {
+  // Add this function to ChronicleModal component
+  const handleRemoveCoverImage = () => {
+    setCoverPreview("");
+    setFormData((prev) => ({
+      ...prev,
+      coverImage: {
+        url: "",
+        alt: "",
+        publicId: "",
+      },
+    }));
+    // Clear any errors
+    if (errors["coverImage.url"]) {
+      setErrors((prev) => ({ ...prev, "coverImage.url": undefined }));
+    }
+  };
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Validate required fields
-    if (!formData.enigma) {
-      toast.error("Please select a parent enigma");
-      return;
-    }
-    if (!formData.name) {
-      toast.error("Chronicle name is required");
-      return;
-    }
-    if (!formData.description) {
-      toast.error("Description is required");
-      return;
-    }
-    if (!formData.basePrice || formData.basePrice <= 0) {
-      toast.error("Valid base price is required");
-      return;
-    }
+    const validationErrors = {};
+    if (!formData.enigma)
+      validationErrors.enigma = "Please select a parent enigma";
+    if (!formData.name) validationErrors.name = "Chronicle name is required";
+    if (!formData.description)
+      validationErrors.description = "Description is required";
+    if (!formData.basePrice || formData.basePrice <= 0)
+      validationErrors.basePrice = "Valid base price is required";
     if (
       !formData.stats.requiredFragments ||
       formData.stats.requiredFragments < 1
     ) {
-      toast.error("Required fragments must be at least 1");
+      validationErrors["stats.requiredFragments"] =
+        "Required fragments must be at least 1";
+    }
+
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      toast.error("Please fill in all required fields");
       return;
     }
 
-    onSave(formData);
+    setIsSubmitting(true);
+
+    try {
+      await onSave(formData);
+    } catch (error) {
+      if (error.response?.data?.errors) {
+        const backendErrors = {};
+        error.response.data.errors.forEach((err) => {
+          let fieldName = err.field || err.param || err.path;
+
+          if (!fieldName) {
+            const message = err.message.toLowerCase();
+            if (message.includes("name")) fieldName = "name";
+            else if (message.includes("description")) fieldName = "description";
+            else if (message.includes("enigma")) fieldName = "enigma";
+            else if (message.includes("price")) fieldName = "basePrice";
+            else if (message.includes("fragment"))
+              fieldName = "stats.requiredFragments";
+            else if (message.includes("avatar")) fieldName = "author.avatar";
+            else fieldName = "general";
+          }
+
+          backendErrors[fieldName] = err.message;
+        });
+        setErrors(backendErrors);
+
+        const sectionsToExpand = new Set();
+        Object.keys(backendErrors).forEach((field) => {
+          if (
+            field === "name" ||
+            field === "description" ||
+            field === "enigma" ||
+            field === "lore"
+          ) {
+            sectionsToExpand.add("basic");
+          } else if (
+            field === "difficulty" ||
+            field === "status" ||
+            field === "timeline" ||
+            field === "basePrice" ||
+            field === "featured"
+          ) {
+            sectionsToExpand.add("details");
+          } else if (
+            field === "productionStatus" ||
+            field === "estimatedStartDate" ||
+            field === "estimatedCompletion"
+          ) {
+            sectionsToExpand.add("production");
+          } else if (field.includes("location")) {
+            sectionsToExpand.add("location");
+          } else if (field.includes("author")) {
+            sectionsToExpand.add("author");
+          } else if (field.includes("stats")) {
+            sectionsToExpand.add("stats");
+          } else if (field.includes("rewards")) {
+            sectionsToExpand.add("rewards");
+          } else if (field.includes("waitlist")) {
+            sectionsToExpand.add("waitlist");
+          } else if (field.includes("coverImage")) {
+            sectionsToExpand.add("media");
+          }
+        });
+
+        setExpandedSections((prev) => ({
+          ...prev,
+          ...Object.fromEntries([...sectionsToExpand].map((s) => [s, true])),
+        }));
+
+        toast.error("Please fix the validation errors");
+      } else {
+        toast.error(
+          error.response?.data?.message || "Failed to save chronicle"
+        );
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const getFieldError = (fieldName) => {
+    return errors[fieldName];
+  };
+
+  const isFieldInvalid = (fieldName) => {
+    return touched[fieldName] && errors[fieldName];
   };
 
   const toggleSection = (section) => {
@@ -352,6 +482,87 @@ const ChronicleModal = ({
       ...prev,
       [section]: !prev[section],
     }));
+  };
+
+  const renderInput = (
+    name,
+    type = "text",
+    placeholder,
+    required = false,
+    options = {}
+  ) => {
+    const error = getFieldError(name);
+    const isInvalid = isFieldInvalid(name);
+
+    let value;
+    if (name.includes(".")) {
+      const parts = name.split(".");
+      if (parts.length === 2) {
+        value = formData[parts[0]]?.[parts[1]] || "";
+      } else if (parts.length === 3) {
+        value = formData[parts[0]]?.[parts[1]]?.[parts[2]] || "";
+      } else {
+        value = "";
+      }
+    } else {
+      value = formData[name];
+    }
+
+    const inputProps = {
+      type,
+      name,
+      value,
+      onChange: handleChange,
+      onBlur: () => setTouched((prev) => ({ ...prev, [name]: true })),
+      className: `w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none transition-colors ${
+        isInvalid
+          ? "border-red-500 focus:border-red-500 bg-red-50"
+          : "border-gray-300 focus:border-purple-500"
+      }`,
+      placeholder,
+      ...options,
+    };
+
+    return (
+      <div>
+        <input {...inputProps} />
+        {error && (
+          <div className="flex items-center gap-1 mt-1 text-red-600 text-sm">
+            <AlertTriangle className="w-3 h-3" />
+            <span>{error}</span>
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const renderTextarea = (name, rows, placeholder) => {
+    const error = getFieldError(name);
+    const isInvalid = isFieldInvalid(name);
+
+    return (
+      <div>
+        <textarea
+          name={name}
+          value={formData[name]}
+          onChange={handleChange}
+          onBlur={() => setTouched((prev) => ({ ...prev, [name]: true }))}
+          rows={rows}
+          className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none transition-colors ${
+            isInvalid
+              ? "border-red-500 focus:border-red-500 bg-red-50"
+              : "border-gray-300 focus:border-purple-500"
+          }`}
+          placeholder={placeholder}
+        />
+        {error && (
+          <div className="flex items-center gap-1 mt-1 text-red-600 text-sm">
+            <AlertTriangle className="w-3 h-3" />
+            <span>{error}</span>
+          </div>
+        )}
+      </div>
+    );
   };
 
   const getProductionStatusIcon = (status) => {
@@ -378,7 +589,6 @@ const ChronicleModal = ({
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 overflow-y-auto">
       <div className="bg-white rounded-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto shadow-xl">
-        {/* Header */}
         <div className="sticky top-0 bg-white border-b border-gray-200 p-6 rounded-t-2xl z-10">
           <div className="flex items-center justify-between">
             <div>
@@ -400,20 +610,40 @@ const ChronicleModal = ({
           </div>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* Basic Information */}
-          <div className="border border-gray-200 rounded-xl overflow-hidden">
+          <div
+            className={`border rounded-xl overflow-hidden ${
+              getFieldError("name") ||
+              getFieldError("description") ||
+              getFieldError("enigma")
+                ? "border-red-200 bg-red-50/50"
+                : "border-gray-200"
+            }`}
+          >
             <button
               type="button"
               onClick={() => toggleSection("basic")}
               className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
             >
               <div className="flex items-center gap-3">
-                <FileText className="w-5 h-5 text-purple-600" />
+                <FileText
+                  className={`w-5 h-5 ${
+                    getFieldError("name") || getFieldError("description")
+                      ? "text-red-500"
+                      : "text-purple-600"
+                  }`}
+                />
                 <span className="font-semibold text-gray-900">
                   Basic Information
                 </span>
+                {(getFieldError("name") ||
+                  getFieldError("description") ||
+                  getFieldError("enigma")) && (
+                  <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full">
+                    Has errors
+                  </span>
+                )}
               </div>
               {expandedSections.basic ? (
                 <ChevronUp className="w-5 h-5 text-gray-500" />
@@ -432,8 +662,14 @@ const ChronicleModal = ({
                     name="enigma"
                     value={formData.enigma}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
-                    required
+                    onBlur={() =>
+                      setTouched((prev) => ({ ...prev, enigma: true }))
+                    }
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none ${
+                      isFieldInvalid("enigma")
+                        ? "border-red-500 focus:border-red-500 bg-red-50"
+                        : "border-gray-300 focus:border-purple-500"
+                    }`}
                   >
                     <option value="">Select an enigma</option>
                     {enigmas?.map((enigma) => (
@@ -442,50 +678,46 @@ const ChronicleModal = ({
                       </option>
                     ))}
                   </select>
+                  {getFieldError("enigma") && (
+                    <div className="flex items-center gap-1 mt-1 text-red-600 text-sm">
+                      <AlertTriangle className="w-3 h-3" />
+                      <span>{getFieldError("enigma")}</span>
+                    </div>
+                  )}
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Chronicle Name *
                   </label>
-                  <input
-                    type="text"
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
-                    placeholder="e.g., The Straw Hat Legacy"
-                    required
-                  />
+                  {renderInput(
+                    "name",
+                    "text",
+                    "e.g., The Straw Hat Legacy",
+                    true
+                  )}
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Description *
                   </label>
-                  <textarea
-                    name="description"
-                    value={formData.description}
-                    onChange={handleChange}
-                    rows="3"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
-                    placeholder="Brief description of the chronicle..."
-                    required
-                  />
+                  {renderTextarea(
+                    "description",
+                    3,
+                    "Brief description of the chronicle..."
+                  )}
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Lore
                   </label>
-                  <textarea
-                    name="lore"
-                    value={formData.lore}
-                    onChange={handleChange}
-                    rows="4"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
-                    placeholder="The deep story and mythology of this chronicle..."
-                  />
+                  {renderTextarea(
+                    "lore",
+                    4,
+                    "The deep story and mythology of this chronicle..."
+                  )}
                 </div>
               </div>
             )}
@@ -519,13 +751,26 @@ const ChronicleModal = ({
                     name="difficulty"
                     value={formData.difficulty}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                    onBlur={() =>
+                      setTouched((prev) => ({ ...prev, difficulty: true }))
+                    }
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none ${
+                      isFieldInvalid("difficulty")
+                        ? "border-red-500 focus:border-red-500 bg-red-50"
+                        : "border-gray-300 focus:border-purple-500"
+                    }`}
                   >
                     <option value="beginner">Beginner</option>
                     <option value="intermediate">Intermediate</option>
                     <option value="advanced">Advanced</option>
                     <option value="expert">Expert</option>
                   </select>
+                  {getFieldError("difficulty") && (
+                    <div className="flex items-center gap-1 mt-1 text-red-600 text-sm">
+                      <AlertTriangle className="w-3 h-3" />
+                      <span>{getFieldError("difficulty")}</span>
+                    </div>
+                  )}
                 </div>
 
                 <div>
@@ -536,27 +781,33 @@ const ChronicleModal = ({
                     name="status"
                     value={formData.status}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                    onBlur={() =>
+                      setTouched((prev) => ({ ...prev, status: true }))
+                    }
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none ${
+                      isFieldInvalid("status")
+                        ? "border-red-500 focus:border-red-500 bg-red-50"
+                        : "border-gray-300 focus:border-purple-500"
+                    }`}
                   >
                     <option value="available">Available</option>
                     <option value="forging">Forging</option>
                     <option value="cipher">Cipher</option>
                     <option value="solved">Solved</option>
                   </select>
+                  {getFieldError("status") && (
+                    <div className="flex items-center gap-1 mt-1 text-red-600 text-sm">
+                      <AlertTriangle className="w-3 h-3" />
+                      <span>{getFieldError("status")}</span>
+                    </div>
+                  )}
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Timeline
                   </label>
-                  <input
-                    type="text"
-                    name="timeline"
-                    value={formData.timeline}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
-                    placeholder="e.g., 6-8 weeks"
-                  />
+                  {renderInput("timeline", "text", "e.g., 6-8 weeks")}
                 </div>
 
                 <div>
@@ -570,13 +821,25 @@ const ChronicleModal = ({
                       name="basePrice"
                       value={formData.basePrice}
                       onChange={handleNumberChange}
+                      onBlur={() =>
+                        setTouched((prev) => ({ ...prev, basePrice: true }))
+                      }
                       min="0"
                       step="0.01"
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                      className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none ${
+                        isFieldInvalid("basePrice")
+                          ? "border-red-500 focus:border-red-500 bg-red-50"
+                          : "border-gray-300 focus:border-purple-500"
+                      }`}
                       placeholder="299.99"
-                      required
                     />
                   </div>
+                  {getFieldError("basePrice") && (
+                    <div className="flex items-center gap-1 mt-1 text-red-600 text-sm">
+                      <AlertTriangle className="w-3 h-3" />
+                      <span>{getFieldError("basePrice")}</span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex items-center gap-3 md:col-span-2">
@@ -628,7 +891,17 @@ const ChronicleModal = ({
                       name="productionStatus"
                       value={formData.productionStatus}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                      onBlur={() =>
+                        setTouched((prev) => ({
+                          ...prev,
+                          productionStatus: true,
+                        }))
+                      }
+                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none ${
+                        isFieldInvalid("productionStatus")
+                          ? "border-red-500 focus:border-red-500 bg-red-50"
+                          : "border-gray-300 focus:border-purple-500"
+                      }`}
                     >
                       <option value="awaiting">Awaiting</option>
                       <option value="design">Design</option>
@@ -637,32 +910,26 @@ const ChronicleModal = ({
                       <option value="shipping">Shipping</option>
                       <option value="delivered">Delivered</option>
                     </select>
+                    {getFieldError("productionStatus") && (
+                      <div className="flex items-center gap-1 mt-1 text-red-600 text-sm">
+                        <AlertTriangle className="w-3 h-3" />
+                        <span>{getFieldError("productionStatus")}</span>
+                      </div>
+                    )}
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Estimated Start Date
                     </label>
-                    <input
-                      type="date"
-                      name="estimatedStartDate"
-                      value={formData.estimatedStartDate}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
-                    />
+                    {renderInput("estimatedStartDate", "date", "")}
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Estimated Completion
                     </label>
-                    <input
-                      type="date"
-                      name="estimatedCompletion"
-                      value={formData.estimatedCompletion}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
-                    />
+                    {renderInput("estimatedCompletion", "date", "")}
                   </div>
                 </div>
 
@@ -708,58 +975,40 @@ const ChronicleModal = ({
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Country
                   </label>
-                  <input
-                    type="text"
-                    name="location.country"
-                    value={formData.location.country}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
-                    placeholder="e.g., Japan"
-                  />
+                  {renderInput("location.country", "text", "e.g., Japan")}
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     City
                   </label>
-                  <input
-                    type="text"
-                    name="location.city"
-                    value={formData.location.city}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
-                    placeholder="e.g., Tokyo"
-                  />
+                  {renderInput("location.city", "text", "e.g., Tokyo")}
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Latitude
                   </label>
-                  <input
-                    type="number"
-                    name="location.coordinates.lat"
-                    value={formData.location.coordinates.lat}
-                    onChange={handleChange}
-                    step="any"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
-                    placeholder="35.6895"
-                  />
+                  {renderInput(
+                    "location.coordinates.lat",
+                    "number",
+                    "35.6895",
+                    false,
+                    { step: "any" }
+                  )}
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Longitude
                   </label>
-                  <input
-                    type="number"
-                    name="location.coordinates.lng"
-                    value={formData.location.coordinates.lng}
-                    onChange={handleChange}
-                    step="any"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
-                    placeholder="139.6917"
-                  />
+                  {renderInput(
+                    "location.coordinates.lng",
+                    "number",
+                    "139.6917",
+                    false,
+                    { step: "any" }
+                  )}
                 </div>
               </div>
             )}
@@ -789,42 +1038,29 @@ const ChronicleModal = ({
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Author Name
                   </label>
-                  <input
-                    type="text"
-                    name="author.name"
-                    value={formData.author.name}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
-                    placeholder="e.g., Mystery Weaver #42"
-                  />
+                  {renderInput(
+                    "author.name",
+                    "text",
+                    "e.g., Mystery Weaver #42"
+                  )}
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Author Avatar URL
                   </label>
-                  <input
-                    type="url"
-                    name="author.avatar"
-                    value={formData.author.avatar}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
-                    placeholder="https://example.com/avatar.jpg"
-                  />
+                  {renderInput(
+                    "author.avatar",
+                    "url",
+                    "https://example.com/avatar.jpg"
+                  )}
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Author Role
                   </label>
-                  <input
-                    type="text"
-                    name="author.role"
-                    value={formData.author.role}
-                    onChange={handleChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
-                    placeholder="e.g., Chronicle Keeper"
-                  />
+                  {renderInput("author.role", "text", "e.g., Chronicle Keeper")}
                 </div>
               </div>
             )}
@@ -861,14 +1097,30 @@ const ChronicleModal = ({
                     name="stats.fragmentCount"
                     value={formData.stats.fragmentCount}
                     onChange={handleNumberChange}
+                    onBlur={() =>
+                      setTouched((prev) => ({
+                        ...prev,
+                        "stats.fragmentCount": true,
+                      }))
+                    }
                     min="0"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none ${
+                      isFieldInvalid("stats.fragmentCount")
+                        ? "border-red-500 focus:border-red-500 bg-red-50"
+                        : "border-gray-300 focus:border-purple-500"
+                    }`}
                     readOnly={mode === "edit"}
                   />
                   {mode === "edit" && (
                     <p className="text-xs text-gray-500 mt-1">
                       Automatically updated based on fragments
                     </p>
+                  )}
+                  {getFieldError("stats.fragmentCount") && (
+                    <div className="flex items-center gap-1 mt-1 text-red-600 text-sm">
+                      <AlertTriangle className="w-3 h-3" />
+                      <span>{getFieldError("stats.fragmentCount")}</span>
+                    </div>
                   )}
                 </div>
 
@@ -881,10 +1133,26 @@ const ChronicleModal = ({
                     name="stats.fragmentsClaimed"
                     value={formData.stats.fragmentsClaimed}
                     onChange={handleNumberChange}
+                    onBlur={() =>
+                      setTouched((prev) => ({
+                        ...prev,
+                        "stats.fragmentsClaimed": true,
+                      }))
+                    }
                     min="0"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none ${
+                      isFieldInvalid("stats.fragmentsClaimed")
+                        ? "border-red-500 focus:border-red-500 bg-red-50"
+                        : "border-gray-300 focus:border-purple-500"
+                    }`}
                     readOnly={mode === "edit"}
                   />
+                  {getFieldError("stats.fragmentsClaimed") && (
+                    <div className="flex items-center gap-1 mt-1 text-red-600 text-sm">
+                      <AlertTriangle className="w-3 h-3" />
+                      <span>{getFieldError("stats.fragmentsClaimed")}</span>
+                    </div>
+                  )}
                 </div>
 
                 <div>
@@ -896,10 +1164,25 @@ const ChronicleModal = ({
                     name="stats.requiredFragments"
                     value={formData.stats.requiredFragments}
                     onChange={handleNumberChange}
+                    onBlur={() =>
+                      setTouched((prev) => ({
+                        ...prev,
+                        "stats.requiredFragments": true,
+                      }))
+                    }
                     min="1"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
-                    required
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none ${
+                      isFieldInvalid("stats.requiredFragments")
+                        ? "border-red-500 focus:border-red-500 bg-red-50"
+                        : "border-gray-300 focus:border-purple-500"
+                    }`}
                   />
+                  {getFieldError("stats.requiredFragments") && (
+                    <div className="flex items-center gap-1 mt-1 text-red-600 text-sm">
+                      <AlertTriangle className="w-3 h-3" />
+                      <span>{getFieldError("stats.requiredFragments")}</span>
+                    </div>
+                  )}
                 </div>
 
                 <div>
@@ -911,10 +1194,26 @@ const ChronicleModal = ({
                     name="stats.uniqueKeepers"
                     value={formData.stats.uniqueKeepers}
                     onChange={handleNumberChange}
+                    onBlur={() =>
+                      setTouched((prev) => ({
+                        ...prev,
+                        "stats.uniqueKeepers": true,
+                      }))
+                    }
                     min="0"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none ${
+                      isFieldInvalid("stats.uniqueKeepers")
+                        ? "border-red-500 focus:border-red-500 bg-red-50"
+                        : "border-gray-300 focus:border-purple-500"
+                    }`}
                     readOnly={mode === "edit"}
                   />
+                  {getFieldError("stats.uniqueKeepers") && (
+                    <div className="flex items-center gap-1 mt-1 text-red-600 text-sm">
+                      <AlertTriangle className="w-3 h-3" />
+                      <span>{getFieldError("stats.uniqueKeepers")}</span>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -940,7 +1239,6 @@ const ChronicleModal = ({
 
             {expandedSections.rewards && (
               <div className="p-4">
-                {/* Existing Rewards */}
                 <div className="space-y-3 mb-4">
                   {formData.rewards.map((reward, index) => (
                     <div
@@ -973,10 +1271,15 @@ const ChronicleModal = ({
                         <p className="text-sm text-gray-600 mt-1">
                           {reward.description}
                         </p>
+                        {reward.image && (
+                          <p className="text-xs text-gray-500 mt-1 truncate">
+                            {reward.image}
+                          </p>
+                        )}
                       </div>
                       <button
                         type="button"
-                        onClick={() => handleRemoveReward(reward)}
+                        onClick={() => handleRemoveReward(index)}
                         className="p-2 text-gray-500 hover:text-red-600"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -985,7 +1288,6 @@ const ChronicleModal = ({
                   ))}
                 </div>
 
-                {/* Add Reward Form */}
                 {showRewardForm ? (
                   <div className="border border-gray-200 rounded-lg p-4 mb-4">
                     <h4 className="font-medium text-gray-900 mb-3">
@@ -1152,15 +1454,13 @@ const ChronicleModal = ({
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Maximum Capacity
                       </label>
-                      <input
-                        type="number"
-                        name="waitlist.maxCapacity"
-                        value={formData.waitlist.maxCapacity}
-                        onChange={handleNumberChange}
-                        min="0"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
-                        placeholder="Leave empty for unlimited"
-                      />
+                      {renderInput(
+                        "waitlist.maxCapacity",
+                        "number",
+                        "Leave empty for unlimited",
+                        false,
+                        { min: 0 }
+                      )}
                     </div>
 
                     <div>
@@ -1172,14 +1472,30 @@ const ChronicleModal = ({
                         name="waitlist.currentCount"
                         value={formData.waitlist.currentCount}
                         onChange={handleNumberChange}
+                        onBlur={() =>
+                          setTouched((prev) => ({
+                            ...prev,
+                            "waitlist.currentCount": true,
+                          }))
+                        }
                         min="0"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                        className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none ${
+                          isFieldInvalid("waitlist.currentCount")
+                            ? "border-red-500 focus:border-red-500 bg-red-50"
+                            : "border-gray-300 focus:border-purple-500"
+                        }`}
                         readOnly={mode === "edit"}
                       />
                       {mode === "edit" && (
                         <p className="text-xs text-gray-500 mt-1">
                           Automatically updated when keepers join/leave
                         </p>
+                      )}
+                      {getFieldError("waitlist.currentCount") && (
+                        <div className="flex items-center gap-1 mt-1 text-red-600 text-sm">
+                          <AlertTriangle className="w-3 h-3" />
+                          <span>{getFieldError("waitlist.currentCount")}</span>
+                        </div>
                       )}
                     </div>
                   </>
@@ -1189,15 +1505,33 @@ const ChronicleModal = ({
           </div>
 
           {/* Media */}
-          <div className="border border-gray-200 rounded-xl overflow-hidden">
+          {/* Media */}
+          <div
+            className={`border rounded-xl overflow-hidden ${
+              getFieldError("coverImage.url")
+                ? "border-red-200 bg-red-50/50"
+                : "border-gray-200"
+            }`}
+          >
             <button
               type="button"
               onClick={() => toggleSection("media")}
               className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
             >
               <div className="flex items-center gap-3">
-                <ImageIcon className="w-5 h-5 text-purple-600" />
+                <ImageIcon
+                  className={`w-5 h-5 ${
+                    getFieldError("coverImage.url")
+                      ? "text-red-500"
+                      : "text-purple-600"
+                  }`}
+                />
                 <span className="font-semibold text-gray-900">Cover Image</span>
+                {getFieldError("coverImage.url") && (
+                  <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full">
+                    Has errors
+                  </span>
+                )}
               </div>
               {expandedSections.media ? (
                 <ChevronUp className="w-5 h-5 text-gray-500" />
@@ -1209,7 +1543,13 @@ const ChronicleModal = ({
             {expandedSections.media && (
               <div className="p-4">
                 <div className="flex items-start gap-4">
-                  <div className="w-32 h-32 bg-gray-100 rounded-xl overflow-hidden border border-gray-200">
+                  <div
+                    className={`w-32 h-32 bg-gray-100 rounded-xl overflow-hidden border ${
+                      getFieldError("coverImage.url")
+                        ? "border-red-500"
+                        : "border-gray-200"
+                    }`}
+                  >
                     {coverPreview ? (
                       <img
                         src={coverPreview}
@@ -1223,50 +1563,80 @@ const ChronicleModal = ({
                     )}
                   </div>
                   <div className="flex-1">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleCoverImageUpload}
-                      className="hidden"
-                      id="cover-upload"
-                    />
-                    <label
-                      htmlFor="cover-upload"
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg cursor-pointer hover:bg-purple-700 transition-colors"
-                    >
-                      <Upload className="w-4 h-4" />
-                      Upload Cover Image
-                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleCoverImageUpload}
+                        className="hidden"
+                        id="cover-upload"
+                      />
+                      <label
+                        htmlFor="cover-upload"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg cursor-pointer hover:bg-purple-700 transition-colors"
+                      >
+                        <Upload className="w-4 h-4" />
+                        Upload Cover Image
+                      </label>
+                      {coverPreview && (
+                        <button
+                          type="button"
+                          onClick={handleRemoveCoverImage}
+                          className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                          Remove
+                        </button>
+                      )}
+                    </div>
                     <p className="text-xs text-gray-500 mt-2">
                       Recommended size: 800x600px, max 5MB
                     </p>
                   </div>
                 </div>
                 <div className="mt-3">
-                  <input
-                    type="text"
-                    name="coverImage.alt"
-                    value={formData.coverImage.alt}
-                    onChange={handleChange}
-                    placeholder="Alt text for cover image"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
-                  />
+                  {renderInput(
+                    "coverImage.alt",
+                    "text",
+                    "Alt text for cover image"
+                  )}
                 </div>
+                {getFieldError("coverImage.url") && (
+                  <div className="flex items-center gap-1 mt-2 text-red-600 text-sm">
+                    <AlertTriangle className="w-3 h-3" />
+                    <span>{getFieldError("coverImage.url")}</span>
+                  </div>
+                )}
               </div>
             )}
           </div>
 
           {/* Form Actions */}
           <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-200">
-            <Button type="button" variant="outline" onClick={onClose}>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onClose}
+              disabled={isSubmitting}
+            >
               Cancel
             </Button>
             <Button
               type="submit"
-              className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800"
+              disabled={isSubmitting}
+              className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <Save className="w-4 h-4" />
-              {mode === "add" ? "Create Chronicle" : "Save Changes"}
+              {isSubmitting ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  {mode === "add" ? "Creating..." : "Saving..."}
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4" />
+                  {mode === "add" ? "Create Chronicle" : "Save Changes"}
+                </>
+              )}
             </Button>
           </div>
         </form>
