@@ -88,6 +88,7 @@ const ChronicleDetailPage = () => {
       ] = await Promise.all([...promises, analyticsPromise]);
 
       setChronicle(chronicleRes.data.data);
+      console.log(chronicleRes.data.data);
       setFragments(fragmentsRes.data.data);
       setWaitlistStats(waitlistRes.data.data);
       setProgress(progressRes.data.data);
@@ -325,7 +326,10 @@ const ChronicleDetailPage = () => {
               />
 
               {/* Fragment Grid */}
-              <div className="bg-white rounded-2xl border border-gray-200 p-8 shadow-soft">
+              <div
+                id="fragments-grid"
+                className="bg-white rounded-2xl border border-gray-200 p-8 shadow-soft"
+              >
                 <div className="flex items-center justify-between mb-8">
                   <div>
                     <h2 className="text-2xl font-bold mb-2 text-gray-900">

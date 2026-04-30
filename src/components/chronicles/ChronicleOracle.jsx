@@ -15,16 +15,17 @@ import {
 
 const ChronicleOracle = ({ chronicle }) => {
   const [stats, setStats] = useState({
-    fragmentsClaimed: chronicle?.fragmentsClaimed || 0,
+    fragmentsClaimed: chronicle?.stats.fragmentsClaimed || 0,
     fragmentsRemaining:
-      chronicle?.fragmentCount - chronicle?.fragmentsClaimed || 0,
-    requiredForProduction: chronicle?.requiredFragments || 0,
+      chronicle?.stats.fragmentCount - chronicle?.fragmentsClaimed || 0,
+    requiredForProduction: chronicle?.stats.requiredFragments || 0,
     daysUntilThreshold: 14,
     estimatedCompletion: "2024-03-15",
     averageClaimRate: 2.3,
     completionProbability: 85,
     totalValueLocked:
-      (chronicle?.fragmentsClaimed || 0) * (chronicle?.basePrice || 299.99),
+      (chronicle?.stats.fragmentsClaimed || 0) *
+      (chronicle?.basePrice || 299.99),
     recentActivity: 12,
   });
 

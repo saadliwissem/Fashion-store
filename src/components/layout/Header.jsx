@@ -30,7 +30,7 @@ const Header = () => {
   const location = useLocation(); // Get current location
 
   const { user, logout, isAuthenticated } = useAuth();
-  const { cart, cartTotal } = useCart();
+  const { cart, cartTotal, clearCart } = useCart();
   const { getWishlistCount } = useWishlist();
 
   // Helper function to check if a link is active
@@ -160,15 +160,15 @@ const Header = () => {
   };
 
   // Handle category click
-  const handleCategoryClick = (categorySlug) => {
-    if (categorySlug === "new") {
-      navigate("/shop?sort=newest");
-    } else {
-      navigate(`/shop?category=${categorySlug}`);
-    }
-    setIsMenuOpen(false);
-    setIsUserDropdownOpen(false);
-  };
+  // const handleCategoryClick = (categorySlug) => {
+  //   if (categorySlug === "new") {
+  //     navigate("/shop?sort=newest");
+  //   } else {
+  //     navigate(`/shop?category=${categorySlug}`);
+  //   }
+  //   setIsMenuOpen(false);
+  //   setIsUserDropdownOpen(false);
+  // };
 
   // Loading state for categories dropdown
   const renderCategoriesDropdown = () => (
@@ -419,7 +419,7 @@ const Header = () => {
             >
               <ShoppingBag className="w-6 h-6 text-gray-700 hover:text-[#C9A24D] transition-colors" />
               {getTotalCartItems() > 0 && (
-                <span className="absolute -top-1 -right-1 bg-[#FAF6E8] text-white text-xs min-w-5 h-5 rounded-full flex items-center justify-center px-1">
+                <span className="absolute -top-1 -right-1 bg-[smoke] text-[red] text-xs min-w-5 h-5 rounded-full flex items-center justify-center px-1">
                   {getTotalCartItems() > 99 ? "99+" : getTotalCartItems()}
                 </span>
               )}
@@ -492,6 +492,7 @@ const Header = () => {
                       <button
                         onClick={() => {
                           logout();
+                          clearCart();
                           setIsUserDropdownOpen(false);
                         }}
                         className="flex items-center gap-2 w-full text-left px-6 py-3 text-rose-600 hover:bg-rose-50 transition-colors"

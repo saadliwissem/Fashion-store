@@ -12,13 +12,16 @@ import {
   Users,
 } from "lucide-react";
 import ProductCard from "../components/products/ProductCard";
+import homeCover from "../assets/images/home_cover.jpg";
 import axios from "axios";
+import { useAuth } from "../context/AuthContext";
 const API_BASE_URL =
   import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 const Home = () => {
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState([]);
+  const { isAuthenticated } = useAuth();
   useEffect(() => {
     fetchProducts();
   }, []);
@@ -43,17 +46,17 @@ const Home = () => {
   return (
     <div className="fade-in ">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-purple-50 to-pink-50 py-20">
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary-50 to-pink-50 py-20">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div>
-                <span className="inline-block px-4 py-2 bg-purple-100 text-purple-700 rounded-full font-semibold mb-4">
+                <span className="inline-block px-4 py-2 bg-primary-100 text-primary-700 rounded-full font-semibold mb-4">
                   New Summer Collection 2024
                 </span>
                 <h1 className="text-5xl lg:text-6xl font-bold mb-6">
                   Elevate Your
-                  <span className="block bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">
+                  <span className="block bg-gradient-to-r from-primary-600 to-pink-500 bg-clip-text text-transparent">
                     Style Game
                   </span>
                 </h1>
@@ -79,15 +82,21 @@ const Home = () => {
 
               <div className="grid grid-cols-3 gap-6 pt-8">
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-purple-600">10K+</div>
+                  <div className="text-3xl font-bold text-primary-600">
+                    10K+
+                  </div>
                   <div className="text-gray-600">Happy Customers</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-purple-600">500+</div>
+                  <div className="text-3xl font-bold text-primary-600">
+                    500+
+                  </div>
                   <div className="text-gray-600">Premium Products</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-3xl font-bold text-purple-600">24/7</div>
+                  <div className="text-3xl font-bold text-primary-600">
+                    24/7
+                  </div>
                   <div className="text-gray-600">Customer Support</div>
                 </div>
               </div>
@@ -96,13 +105,13 @@ const Home = () => {
             <div className="relative">
               <div className="relative z-10">
                 <img
-                  src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=600&h=700&fit=crop"
+                  src={homeCover}
                   alt="Fashion Model"
                   className="rounded-3xl shadow-2xl w-full h-auto"
                 />
               </div>
               <div className="absolute -bottom-6 -left-6 w-64 h-64 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-3xl opacity-20 blur-2xl"></div>
-              <div className="absolute -top-6 -right-6 w-64 h-64 bg-gradient-to-br from-purple-500 to-pink-500 rounded-3xl opacity-20 blur-2xl"></div>
+              <div className="absolute -top-6 -right-6 w-64 h-64 bg-gradient-to-br from-primary-500 to-pink-500 rounded-3xl opacity-20 blur-2xl"></div>
             </div>
           </div>
         </div>
@@ -111,13 +120,13 @@ const Home = () => {
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-100 text-purple-700 font-semibold mb-4">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-100 text-primary-700 font-semibold mb-4">
               <span>✨</span>
               <span>Exclusive Experience</span>
             </div>
             <h2 className="text-3xl lg:text-4xl font-bold mb-4">
               Join Our
-              <span className="block bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">
+              <span className="block bg-gradient-to-r from-primary-600 to-pink-500 bg-clip-text text-transparent">
                 Puzzle Mysteries
               </span>
             </h2>
@@ -143,7 +152,7 @@ const Home = () => {
 
               <div className="p-8">
                 <div className="flex items-center gap-2 mb-4">
-                  <span className="px-3 py-1 rounded-full bg-purple-100 text-purple-700 text-sm font-medium">
+                  <span className="px-3 py-1 rounded-full bg-primary-100 text-primary-700 text-sm font-medium">
                     Active Mystery
                   </span>
                   <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-sm font-medium">
@@ -179,7 +188,7 @@ const Home = () => {
 
                   <Link
                     to="/mysteries"
-                    className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-500 text-white font-medium hover:shadow-lg transition-all group-hover:scale-105"
+                    className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-primary-600 to-pink-500 text-white font-medium hover:shadow-lg transition-all group-hover:scale-105"
                   >
                     <span>🧩</span>
                     Explore
@@ -192,7 +201,7 @@ const Home = () => {
             <div className="space-y-6">
               <div className="p-8">
                 <div className="flex items-center gap-4 mb-6">
-                  <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center">
+                  <div className="w-12 h-12 bg-gradient-to-br from-primary-100 to-primary-200 rounded-2xl flex items-center justify-center">
                     <span className="text-2xl">🔍</span>
                   </div>
                   <div>
@@ -256,7 +265,7 @@ const Home = () => {
           <div className="text-center">
             <Link
               to="/mysteries"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-500 text-white font-bold text-lg hover:shadow-xl transition-all hover:scale-105"
+              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-primary-600 to-pink-500 text-white font-bold text-lg hover:shadow-xl transition-all hover:scale-105"
             >
               <span className="w-5 h-5">🧩</span>
               Explore All Mysteries
@@ -270,8 +279,8 @@ const Home = () => {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="glass-card p-8 text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <Truck className="w-8 h-8 text-purple-600" />
+              <div className="w-16 h-16 bg-gradient-to-br from-primary-100 to-primary-200 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <Truck className="w-8 h-8 text-primary-600" />
               </div>
               <h3 className="text-xl font-bold mb-4">Free Shipping</h3>
               <p className="text-gray-600">
@@ -307,7 +316,7 @@ const Home = () => {
             <div>
               <h2 className="text-3xl lg:text-4xl font-bold mb-4">
                 Featured
-                <span className="block text-purple-600">Products</span>
+                <span className="block text-primary-600">Products</span>
               </h2>
               <p className="text-gray-600">
                 Handpicked collection of our best items
@@ -332,12 +341,12 @@ const Home = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-purple-600 to-pink-500 rounded-3xl mx-4 lg:mx-8">
+      <section className="py-20 bg-gradient-to-r from-primary-600 to-black rounded-3xl mx-4 lg:mx-8">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
             Ready to Transform Your Wardrobe?
           </h2>
-          <p className="text-xl text-purple-100 mb-8 max-w-2xl mx-auto">
+          <p className="text-xl text-primary-100 mb-8 max-w-2xl mx-auto">
             Join thousands of satisfied customers who have elevated their style
             with DAR ENNAR
           </p>
@@ -346,20 +355,22 @@ const Home = () => {
               <Button
                 variant="secondary"
                 size="large"
-                className="bg-white text-purple-600 hover:bg-gray-100"
+                className="bg-white text-primary-600 hover:bg-gray-100"
               >
                 Start Shopping
               </Button>
             </Link>
-            <Link to="/register">
-              <Button
-                variant="outline"
-                size="large"
-                className="border-white text-white hover:bg-white/10"
-              >
-                Create Account
-              </Button>
-            </Link>
+            {!isAuthenticated && (
+              <Link to="/register">
+                <Button
+                  variant="outline"
+                  size="large"
+                  className="border-white text-white hover:bg-white/10"
+                >
+                  Create Account
+                </Button>
+              </Link>
+            )}{" "}
           </div>
         </div>
       </section>

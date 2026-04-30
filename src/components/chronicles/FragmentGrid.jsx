@@ -26,38 +26,9 @@ const FragmentGrid = ({ fragments = [], onFragmentSelect }) => {
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
   const filterRef = useRef(null);
 
-  // Safe sample data creation with guaranteed properties
-  const createSampleFragments = () => {
-    return Array.from({ length: 9 }, (_, i) => ({
-      id: i + 1,
-      number: i + 1,
-      name: `Fragment #${i + 1}`,
-      description: `Represents crew member ${i + 1} with unique hidden clues`,
-      status: i < 3 ? "claimed" : "available",
-      claimedBy: i < 3 ? `Keeper_${String.fromCharCode(65 + i)}` : null,
-      price: 299.99 + i * 50,
-      rarity: i === 0 ? "legendary" : i < 3 ? "rare" : "common",
-      features: [
-        "Hidden QR code",
-        "UV-reactive ink",
-        "Embossed symbol",
-        "Numbered certificate",
-      ],
-      estimatedDelivery: "6-8 weeks",
-      imageUrl: `https://images.unsplash.com/photo-${
-        1635805737700 + i
-      }?auto=format&fit=crop&w=400&h=300&q=80`,
-      cluesRevealed: i < 3 ? Math.floor(Math.random() * 3) + 1 : 0,
-      totalClues: 5,
-      isFeatured: i === 4,
-    }));
-  };
-
   // Ensure we always have an array
   const fragmentData =
-    Array.isArray(fragments) && fragments.length > 0
-      ? fragments
-      : createSampleFragments();
+    Array.isArray(fragments) && fragments.length > 0 ? fragments : [];
 
   // Close mobile filter when clicking outside
   useEffect(() => {
