@@ -566,7 +566,7 @@ const ProductModal = ({
                     disabled={loading}
                     className={`flex items-center gap-2 px-6 py-4 border-b-2 transition-colors disabled:opacity-50 ${
                       activeTab === tab.id
-                        ? "border-purple-600 text-purple-600"
+                        ? "border-primary-600 text-primary-600"
                         : "border-transparent text-gray-600 hover:text-gray-900"
                     }`}
                   >
@@ -713,7 +713,7 @@ const ProductModal = ({
                         checked={formData.featured}
                         onChange={handleInputChange}
                         disabled={loading}
-                        className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                        className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                       />
                       <label
                         htmlFor="featured"
@@ -730,7 +730,7 @@ const ProductModal = ({
                         checked={formData.isNewArrival}
                         onChange={handleInputChange}
                         disabled={loading}
-                        className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                        className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                       />
                       <label
                         htmlFor="isNewArrival"
@@ -899,7 +899,7 @@ const ProductModal = ({
                           disabled={loading}
                           className={`p-3 rounded-xl border-2 transition-all disabled:opacity-50 ${
                             formData.status === status.value
-                              ? "border-purple-500 bg-purple-50"
+                              ? "border-primary-500 bg-primary-50"
                               : "border-gray-200 hover:border-gray-300"
                           }`}
                         >
@@ -941,7 +941,7 @@ const ProductModal = ({
                       Upload Images from Device
                     </label>
                     <div
-                      className="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center cursor-pointer hover:border-purple-500 transition-colors"
+                      className="border-2 border-dashed border-gray-300 rounded-2xl p-8 text-center cursor-pointer hover:border-primary-500 transition-colors"
                       onDragOver={handleDragOver}
                       onDrop={handleDrop}
                       onClick={() => fileInputRef.current?.click()}
@@ -988,7 +988,7 @@ const ProductModal = ({
                                 key={index}
                                 className="flex items-center gap-2 text-sm text-gray-500"
                               >
-                                <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
+                                <div className="w-2 h-2 bg-primary-500 rounded-full animate-pulse"></div>
                                 <span className="truncate">{filename}</span>
                               </div>
                             ))}
@@ -1305,7 +1305,7 @@ const ProductModal = ({
                         checked={formData.freeShipping}
                         onChange={handleInputChange}
                         disabled={loading}
-                        className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                        className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                       />
                       <label
                         htmlFor="freeShipping"

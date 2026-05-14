@@ -489,7 +489,7 @@ const Orders = () => {
     {
       value: "processing",
       label: "Processing",
-      color: "bg-purple-100 text-purple-800",
+      color: "bg-primary-100 text-primary-800",
       icon: RefreshCw,
     },
     {
@@ -636,7 +636,7 @@ const Orders = () => {
         return {
           icon: DollarSign,
           label: "Bank Transfer",
-          color: "text-purple-600",
+          color: "text-primary-600",
         };
       case "cash_on_delivery":
         return {
@@ -777,7 +777,7 @@ const Orders = () => {
             type="checkbox"
             checked={selectedOrders.includes(order.id)}
             onChange={() => handleSelectOrder(order.id)}
-            className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+            className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </td>
         <td className="p-4">
@@ -853,7 +853,7 @@ const Orders = () => {
             </button>
             <button
               onClick={() => handlePrintInvoice(order.id)}
-              className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg"
+              className="p-2 text-gray-600 hover:text-primary-600 hover:bg-primary-50 rounded-lg"
               title="Print Invoice"
             >
               <Printer className="w-4 h-4" />
@@ -1093,8 +1093,8 @@ const Orders = () => {
                       </h3>
                       <div className="bg-gray-50 rounded-xl p-6">
                         <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full flex items-center justify-center flex-shrink-0">
-                            <User className="w-6 h-6 text-purple-600" />
+                          <div className="w-12 h-12 bg-gradient-to-br from-primary-100 to-pink-100 rounded-full flex items-center justify-center flex-shrink-0">
+                            <User className="w-6 h-6 text-primary-600" />
                           </div>
                           <div>
                             <p className="font-bold text-gray-900">
@@ -1340,7 +1340,7 @@ const Orders = () => {
                       {selectedOrder.tags.map((tag, index) => (
                         <span
                           key={index}
-                          className="px-3 py-1.5 bg-gradient-to-r from-purple-50 to-indigo-50 text-purple-700 rounded-lg text-sm font-medium"
+                          className="px-3 py-1.5 bg-gradient-to-r from-primary-50 to-indigo-50 text-primary-700 rounded-lg text-sm font-medium"
                         >
                           {tag.replace("_", " ").toUpperCase()}
                         </span>
@@ -1392,8 +1392,8 @@ const Orders = () => {
                     {/* Order Updated */}
                     {selectedOrder.updatedAt !== selectedOrder.createdAt && (
                       <div className="flex items-start gap-4">
-                        <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
-                          <RefreshCw className="w-5 h-5 text-purple-600" />
+                        <div className="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center flex-shrink-0">
+                          <RefreshCw className="w-5 h-5 text-primary-600" />
                         </div>
                         <div>
                           <p className="font-medium text-gray-900">
@@ -1526,18 +1526,18 @@ const Orders = () => {
             </div>
           </div>
 
-          <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6">
+          <div className="bg-gradient-to-br from-primary-50 to-pink-50 rounded-2xl p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-purple-600 font-medium">
+                <p className="text-sm text-primary-600 font-medium">
                   Avg. Order Value
                 </p>
                 <p className="text-3xl font-bold text-gray-900 mt-2">
                   {averageOrderValue.toFixed(2)} DT
                 </p>
               </div>
-              <div className="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center">
-                <ArrowUp className="w-6 h-6 text-purple-600" />
+              <div className="w-12 h-12 rounded-xl bg-primary-100 flex items-center justify-center">
+                <ArrowUp className="w-6 h-6 text-primary-600" />
               </div>
             </div>
           </div>
@@ -1552,7 +1552,7 @@ const Orders = () => {
               <input
                 type="text"
                 placeholder="Search orders by ID, customer, or product..."
-                className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full pl-12 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -1564,7 +1564,7 @@ const Orders = () => {
                 onClick={() => setViewMode("table")}
                 className={`p-3 rounded-xl ${
                   viewMode === "table"
-                    ? "bg-purple-100 text-purple-700"
+                    ? "bg-primary-100 text-primary-700"
                     : "text-gray-500 hover:bg-gray-100"
                 }`}
               >
@@ -1586,7 +1586,7 @@ const Orders = () => {
                 onClick={() => setViewMode("cards")}
                 className={`p-3 rounded-xl ${
                   viewMode === "cards"
-                    ? "bg-purple-100 text-purple-700"
+                    ? "bg-primary-100 text-primary-700"
                     : "text-gray-500 hover:bg-gray-100"
                 }`}
               >
@@ -1614,7 +1614,7 @@ const Orders = () => {
                 Status
               </label>
               <select
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
               >
@@ -1632,7 +1632,7 @@ const Orders = () => {
                 Date
               </label>
               <select
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 value={filterDate}
                 onChange={(e) => setFilterDate(e.target.value)}
               >
@@ -1650,7 +1650,7 @@ const Orders = () => {
                 Sort By
               </label>
               <select
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
               >
@@ -1668,7 +1668,7 @@ const Orders = () => {
                 Bulk Actions
               </label>
               <select
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 onChange={(e) => handleBulkAction(e.target.value)}
                 defaultValue=""
               >
@@ -1685,17 +1685,17 @@ const Orders = () => {
 
           {/* Selected Orders Info */}
           {selectedOrders.length > 0 && (
-            <div className="flex items-center justify-between p-4 bg-purple-50 rounded-xl mb-6">
+            <div className="flex items-center justify-between p-4 bg-primary-50 rounded-xl mb-6">
               <div className="flex items-center gap-3">
-                <CheckSquare className="w-5 h-5 text-purple-600" />
-                <p className="text-purple-700 font-medium">
+                <CheckSquare className="w-5 h-5 text-primary-600" />
+                <p className="text-primary-700 font-medium">
                   {selectedOrders.length} order
                   {selectedOrders.length !== 1 ? "s" : ""} selected
                 </p>
               </div>
               <button
                 onClick={() => setSelectedOrders([])}
-                className="text-purple-600 hover:text-purple-700 text-sm font-medium"
+                className="text-primary-600 hover:text-primary-700 text-sm font-medium"
               >
                 Clear Selection
               </button>
@@ -1718,7 +1718,7 @@ const Orders = () => {
                           filteredOrders.length > 0
                         }
                         onChange={handleSelectAll}
-                        className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                        className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                       />
                     </th>
                     <th className="p-4 text-left text-sm font-semibold text-gray-900">

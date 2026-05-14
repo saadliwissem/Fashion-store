@@ -49,7 +49,7 @@ const ClaimCard = ({ claim, onView, onUpdateStatus, onDelete }) => {
       case "confirmed":
         return "bg-blue-100 text-blue-800 border-blue-200";
       case "processing":
-        return "bg-purple-100 text-purple-800 border-purple-200";
+        return "bg-primary-100 text-primary-800 border-primary-200";
       case "shipped":
         return "bg-cyan-100 text-cyan-800 border-cyan-200";
       case "delivered":
@@ -123,7 +123,7 @@ const ClaimCard = ({ claim, onView, onUpdateStatus, onDelete }) => {
             </p>
           </div>
           <div className="text-right">
-            <div className="text-xl font-bold text-purple-600">
+            <div className="text-xl font-bold text-primary-600">
               ${claim.payment?.amount?.toFixed(2)}
             </div>
             <p className="text-xs text-gray-500 mt-1">
@@ -135,8 +135,8 @@ const ClaimCard = ({ claim, onView, onUpdateStatus, onDelete }) => {
         {/* Fragment Info */}
         <div className="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-              <ShoppingBag className="w-6 h-6 text-purple-600" />
+            <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center">
+              <ShoppingBag className="w-6 h-6 text-primary-600" />
             </div>
             <div className="flex-1">
               <p className="font-medium text-gray-900">
@@ -227,7 +227,7 @@ const ClaimTableRow = ({
       case "confirmed":
         return "bg-blue-100 text-blue-800";
       case "processing":
-        return "bg-purple-100 text-purple-800";
+        return "bg-primary-100 text-primary-800";
       case "shipped":
         return "bg-cyan-100 text-cyan-800";
       case "delivered":
@@ -261,7 +261,7 @@ const ClaimTableRow = ({
           type="checkbox"
           checked={isSelected}
           onChange={() => onSelect(claim._id)}
-          className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+          className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
         />
       </td>
       <td className="p-4">
@@ -286,7 +286,7 @@ const ClaimTableRow = ({
         </div>
       </td>
       <td className="p-4">
-        <div className="font-bold text-purple-600">
+        <div className="font-bold text-primary-600">
           ${claim.payment?.amount?.toFixed(2)}
         </div>
         <div
@@ -326,7 +326,7 @@ const ClaimTableRow = ({
           </button>
           <button
             onClick={() => onUpdateStatus(claim)}
-            className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg"
+            className="p-2 text-gray-600 hover:text-primary-600 hover:bg-primary-50 rounded-lg"
             title="Update Status"
           >
             <Package className="w-4 h-4" />
@@ -583,7 +583,7 @@ const ClaimsManagement = () => {
                       claims.length > 0
                     }
                     onChange={handleSelectAll}
-                    className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                    className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                 </th>
                 <th className="text-left p-4 font-semibold text-gray-900">
@@ -733,8 +733,8 @@ const ClaimsManagement = () => {
                   {stats.byStatus?.delivered || 0} delivered
                 </p>
               </div>
-              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                <Package className="w-6 h-6 text-purple-600" />
+              <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
+                <Package className="w-6 h-6 text-primary-600" />
               </div>
             </div>
           </div>
@@ -812,7 +812,7 @@ const ClaimsManagement = () => {
                       placeholder="Search claims by ID, customer name, or email..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                     />
                   </div>
                 </div>
@@ -822,7 +822,7 @@ const ClaimsManagement = () => {
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
-                    className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                    className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                   >
                     <option value="all">All Status</option>
                     <option value="pending">Pending</option>
@@ -836,7 +836,7 @@ const ClaimsManagement = () => {
                   <select
                     value={paymentFilter}
                     onChange={(e) => setPaymentFilter(e.target.value)}
-                    className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                    className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                   >
                     <option value="all">All Payments</option>
                     <option value="pending">Pending</option>
@@ -854,7 +854,7 @@ const ClaimsManagement = () => {
                 onClick={() => setViewMode("list")}
                 className={`px-4 py-3 transition-colors ${
                   viewMode === "list"
-                    ? "bg-purple-600 text-white"
+                    ? "bg-primary-600 text-white"
                     : "hover:bg-gray-50 text-gray-700"
                 }`}
                 title="List View"
@@ -865,7 +865,7 @@ const ClaimsManagement = () => {
                 onClick={() => setViewMode("grid")}
                 className={`px-4 py-3 transition-colors ${
                   viewMode === "grid"
-                    ? "bg-purple-600 text-white"
+                    ? "bg-primary-600 text-white"
                     : "hover:bg-gray-50 text-gray-700"
                 }`}
                 title="Grid View"
@@ -878,10 +878,10 @@ const ClaimsManagement = () => {
 
         {/* Bulk Actions */}
         {selectedItems.length > 0 && (
-          <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-4 border border-purple-100">
+          <div className="bg-gradient-to-r from-primary-50 to-pink-50 rounded-2xl p-4 border border-primary-100">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg flex items-center justify-center font-semibold">
+                <div className="w-8 h-8 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-lg flex items-center justify-center font-semibold">
                   {selectedItems.length}
                 </div>
                 <span className="font-medium text-gray-900">
@@ -906,7 +906,7 @@ const ClaimsManagement = () => {
         {/* Claims Content */}
         {loading ? (
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
             <p className="mt-4 text-gray-600">Loading claims...</p>
           </div>
         ) : viewMode === "list" ? (

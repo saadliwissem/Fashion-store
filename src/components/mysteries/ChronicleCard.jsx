@@ -53,10 +53,10 @@ const ChronicleCard = ({ chronicle }) => {
       },
       cipher: {
         label: "Cipher Active",
-        color: "bg-purple-100 text-purple-700",
+        color: "bg-primary-100 text-primary-700",
         icon: Puzzle,
-        iconColor: "text-purple-600",
-        bgColor: "bg-purple-50",
+        iconColor: "text-primary-600",
+        bgColor: "bg-primary-50",
       },
       solved: {
         label: "Mystery Solved",

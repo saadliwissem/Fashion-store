@@ -230,8 +230,8 @@ const ChronicleDetailHero = ({
                   </div>
 
                   <div className="flex items-center gap-2">
-                    <div className="p-2 bg-purple-100 rounded-lg">
-                      <Trophy className="w-5 h-5 text-purple-600" />
+                    <div className="p-2 bg-primary-100 rounded-lg">
+                      <Trophy className="w-5 h-5 text-primary-600" />
                     </div>
                     <div>
                       <div

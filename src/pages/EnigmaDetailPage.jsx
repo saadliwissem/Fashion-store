@@ -248,7 +248,7 @@ const EnigmaDetailPage = () => {
                   <div className="text-sm text-gray-600">Progress</div>
                 </div>
                 <div className="bg-white rounded-2xl p-6 border border-gray-200 text-center shadow-soft">
-                  <div className="text-2xl font-bold text-purple-600 mb-2">
+                  <div className="text-2xl font-bold text-primary-600 mb-2">
                     {enigma.difficulty}
                   </div>
                   <div className="text-sm text-gray-600">Difficulty</div>

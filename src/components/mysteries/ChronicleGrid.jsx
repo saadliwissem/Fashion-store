@@ -204,8 +204,8 @@ const ChronicleGrid = ({ enigmaId: propEnigmaId }) => {
         </div>
         <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-soft">
           <div className="flex items-center gap-3">
-            <div className="p-3 bg-purple-100 rounded-lg">
-              <Eye className="w-6 h-6 text-purple-600" />
+            <div className="p-3 bg-primary-100 rounded-lg">
+              <Eye className="w-6 h-6 text-primary-600" />
             </div>
             <div>
               <div className="text-2xl font-bold text-gray-900">
@@ -268,7 +268,7 @@ const ChronicleGrid = ({ enigmaId: propEnigmaId }) => {
             onClick={() => setFilter("cipher")}
             className={`px-4 py-2 rounded-lg flex items-center gap-2 transition-all ${
               filter === "cipher"
-                ? "bg-purple-500 text-white shadow-sm"
+                ? "bg-primary-500 text-white shadow-sm"
                 : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm"
             }`}
           >

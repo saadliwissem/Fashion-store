@@ -88,7 +88,7 @@ const SortableCategoryItem = ({
       <div
         className={`flex items-center gap-3 p-4 rounded-xl transition-colors ${
           isSelected
-            ? "bg-purple-50 border border-purple-200"
+            ? "bg-primary-50 border border-primary-200"
             : "hover:bg-gray-50"
         }`}
       >
@@ -117,7 +117,7 @@ const SortableCategoryItem = ({
           type="checkbox"
           checked={isSelected}
           onChange={() => onSelect(category._id)}
-          className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+          className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
         />
 
         {/* Icon */}
@@ -179,7 +179,7 @@ const SortableCategoryItem = ({
           </button>
           <button
             onClick={() => onDuplicate(category)}
-            className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg"
+            className="p-2 text-gray-600 hover:text-primary-600 hover:bg-primary-50 rounded-lg"
             title="Duplicate"
           >
             <Copy className="w-4 h-4" />
@@ -219,7 +219,7 @@ const CategoryCard = ({ category, isSelected, onSelect, onEdit, onDelete }) => {
             type="checkbox"
             checked={isSelected}
             onChange={() => onSelect(category._id)}
-            className="w-5 h-5 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+            className="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
 
@@ -736,7 +736,7 @@ const Categories = () => {
                       filteredCategories.length > 0
                     }
                     onChange={handleSelectAll}
-                    className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                    className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                 </th>
                 <th className="text-left p-4 font-semibold text-gray-900">
@@ -773,7 +773,7 @@ const Categories = () => {
                       type="checkbox"
                       checked={selectedCategories.includes(category._id)}
                       onChange={() => handleSelectCategory(category._id)}
-                      className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                      className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                     />
                   </td>
                   <td className="p-4">
@@ -850,7 +850,7 @@ const Categories = () => {
                       </button>
                       <button
                         onClick={() => handleDuplicateCategory(category)}
-                        className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+                        className="p-2 text-gray-600 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
                         title="Duplicate"
                       >
                         <Copy className="w-4 h-4" />
@@ -877,7 +877,7 @@ const Categories = () => {
     if (loading) {
       return (
         <div className="text-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
           <p className="mt-4 text-gray-600">Loading categories...</p>
         </div>
       );
@@ -924,7 +924,7 @@ const Categories = () => {
                         filteredCategories.length > 0
                       }
                       onChange={handleSelectAll}
-                      className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                      className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                     />
                     <div className="w-10"></div>
                     <div className="flex-1 font-semibold text-gray-900">
@@ -1001,7 +1001,7 @@ const Categories = () => {
               Export
             </Button>
             <Button
-              className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800"
+              className="flex items-center gap-2 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
               onClick={() => setShowAddModal(true)}
             >
               <Plus className="w-4 h-4" />
@@ -1023,8 +1023,8 @@ const Categories = () => {
                   {loading ? "..." : `${stats.active} active`}
                 </p>
               </div>
-              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                <Folder className="w-6 h-6 text-purple-600" />
+              <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
+                <Folder className="w-6 h-6 text-primary-600" />
               </div>
             </div>
           </div>
@@ -1102,7 +1102,7 @@ const Categories = () => {
                       placeholder="Search categories by name, slug, or description..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                     />
                   </div>
                 </div>
@@ -1112,7 +1112,7 @@ const Categories = () => {
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
-                    className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                    className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                   >
                     <option value="all">All Status</option>
                     <option value="active">Active</option>
@@ -1123,7 +1123,7 @@ const Categories = () => {
                   <select
                     value={featuredFilter}
                     onChange={(e) => setFeaturedFilter(e.target.value)}
-                    className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                    className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                   >
                     <option value="all">All Featured</option>
                     <option value="featured">Featured</option>
@@ -1141,7 +1141,7 @@ const Categories = () => {
                   onClick={() => setViewMode("tree")}
                   className={`px-4 py-3 transition-colors ${
                     viewMode === "tree"
-                      ? "bg-purple-600 text-white"
+                      ? "bg-primary-600 text-white"
                       : "hover:bg-gray-50 text-gray-700"
                   }`}
                   title="Tree View"
@@ -1152,7 +1152,7 @@ const Categories = () => {
                   onClick={() => setViewMode("grid")}
                   className={`px-4 py-3 transition-colors ${
                     viewMode === "grid"
-                      ? "bg-purple-600 text-white"
+                      ? "bg-primary-600 text-white"
                       : "hover:bg-gray-50 text-gray-700"
                   }`}
                   title="Grid View"
@@ -1163,7 +1163,7 @@ const Categories = () => {
                   onClick={() => setViewMode("list")}
                   className={`px-4 py-3 transition-colors ${
                     viewMode === "list"
-                      ? "bg-purple-600 text-white"
+                      ? "bg-primary-600 text-white"
                       : "hover:bg-gray-50 text-gray-700"
                   }`}
                   title="List View"
@@ -1199,10 +1199,10 @@ const Categories = () => {
 
         {/* Bulk Actions */}
         {selectedCategories.length > 0 && (
-          <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-4 border border-purple-100">
+          <div className="bg-gradient-to-r from-primary-50 to-pink-50 rounded-2xl p-4 border border-primary-100">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg flex items-center justify-center font-semibold">
+                <div className="w-8 h-8 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-lg flex items-center justify-center font-semibold">
                   {selectedCategories.length}
                 </div>
                 <span className="font-medium text-gray-900">

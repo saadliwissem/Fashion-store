@@ -329,7 +329,7 @@ const CategoryModal = ({
                       value={formData.name}
                       onChange={handleInputChange}
                       disabled={loading}
-                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none ${
+                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none ${
                         errors.name ? "border-rose-500" : "border-gray-300"
                       } ${loading ? "bg-gray-50" : ""}`}
                       placeholder="e.g., Men's Fashion"
@@ -356,7 +356,7 @@ const CategoryModal = ({
                         value={formData.slug}
                         onChange={handleInputChange}
                         disabled={loading}
-                        className={`flex-1 px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none ${
+                        className={`flex-1 px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none ${
                           errors.slug ? "border-rose-500" : "border-gray-300"
                         } ${loading ? "bg-gray-50" : ""}`}
                         placeholder="mens-fashion"
@@ -383,7 +383,7 @@ const CategoryModal = ({
                       value={formData.parent}
                       onChange={handleInputChange}
                       disabled={loading}
-                      className={`w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none ${
+                      className={`w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none ${
                         loading ? "bg-gray-50" : ""
                       }`}
                     >
@@ -416,7 +416,7 @@ const CategoryModal = ({
                           value={formData.status}
                           onChange={handleInputChange}
                           disabled={loading}
-                          className={`w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none ${
+                          className={`w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none ${
                             loading ? "bg-gray-50" : ""
                           }`}
                         >
@@ -436,7 +436,7 @@ const CategoryModal = ({
                           onChange={handleInputChange}
                           disabled={loading}
                           min="1"
-                          className={`w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none ${
+                          className={`w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none ${
                             loading ? "bg-gray-50" : ""
                           }`}
                         />
@@ -453,7 +453,7 @@ const CategoryModal = ({
                           checked={formData.showInMenu}
                           onChange={handleInputChange}
                           disabled={loading}
-                          className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                          className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
                         />
                         <label
                           htmlFor="showInMenu"
@@ -470,7 +470,7 @@ const CategoryModal = ({
                           checked={formData.showInFooter}
                           onChange={handleInputChange}
                           disabled={loading}
-                          className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                          className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
                         />
                         <label
                           htmlFor="showInFooter"
@@ -491,7 +491,7 @@ const CategoryModal = ({
                       checked={formData.featured}
                       onChange={handleInputChange}
                       disabled={loading}
-                      className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                      className="w-4 h-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500"
                     />
                     <label
                       htmlFor="featured"
@@ -551,7 +551,7 @@ const CategoryModal = ({
                               className={`px-4 py-2 rounded-lg cursor-pointer ${
                                 loading
                                   ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                                  : "bg-purple-600 text-white hover:bg-purple-700"
+                                  : "bg-primary-600 text-white hover:bg-primary-700"
                               }`}
                             >
                               Choose Image
@@ -579,7 +579,7 @@ const CategoryModal = ({
                       onChange={handleInputChange}
                       rows="4"
                       disabled={loading}
-                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none ${
+                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none ${
                         errors.description
                           ? "border-rose-500"
                           : "border-gray-300"
@@ -615,7 +615,7 @@ const CategoryModal = ({
                   type="button"
                   onClick={() => setShowSeoFields(!showSeoFields)}
                   disabled={loading}
-                  className="flex items-center gap-2 text-gray-900 hover:text-purple-600 disabled:text-gray-400 disabled:hover:text-gray-400"
+                  className="flex items-center gap-2 text-gray-900 hover:text-primary-600 disabled:text-gray-400 disabled:hover:text-gray-400"
                 >
                   <Globe className="w-5 h-5" />
                   <span className="font-medium">SEO Settings</span>
@@ -652,7 +652,7 @@ const CategoryModal = ({
                         value={formData.seo.title}
                         onChange={handleInputChange}
                         disabled={loading}
-                        className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none ${
+                        className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none ${
                           errors["seo.title"]
                             ? "border-rose-500"
                             : "border-gray-300"
@@ -688,7 +688,7 @@ const CategoryModal = ({
                         onChange={handleInputChange}
                         rows="3"
                         disabled={loading}
-                        className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none ${
+                        className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none ${
                           errors["seo.description"]
                             ? "border-rose-500"
                             : "border-gray-300"
@@ -713,7 +713,7 @@ const CategoryModal = ({
                         value={formData.seo.keywords}
                         onChange={handleInputChange}
                         disabled={loading}
-                        className={`w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none ${
+                        className={`w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none ${
                           loading ? "bg-gray-50" : ""
                         }`}
                         placeholder="fashion, clothing, style (comma separated)"

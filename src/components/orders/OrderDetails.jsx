@@ -115,7 +115,7 @@ const OrderDetails = () => {
   const getPaymentMethodIcon = (method) => {
     switch (method) {
       case "card":
-        return <CreditCard className="w-5 h-5 text-purple-600" />;
+        return <CreditCard className="w-5 h-5 text-primary-600" />;
       case "mobile":
         return "📱";
       case "cod":

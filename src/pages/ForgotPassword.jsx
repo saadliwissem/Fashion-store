@@ -33,10 +33,10 @@ const ForgotPassword = () => {
         {/* Logo */}
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center justify-center">
-            <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-pink-500 rounded-xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-gradient-to-br from-primary-600 to-pink-500 rounded-xl flex items-center justify-center">
               <span className="text-white font-bold text-xl">F</span>
             </div>
-            <span className="ml-3 text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-500 bg-clip-text text-transparent">
+            <span className="ml-3 text-2xl font-bold bg-gradient-to-r from-primary-600 to-pink-500 bg-clip-text text-transparent">
               DAR ENNAR
             </span>
           </Link>
@@ -49,15 +49,15 @@ const ForgotPassword = () => {
               {/* Back Button */}
               <button
                 onClick={() => navigate(-1)}
-                className="flex items-center text-sm text-gray-600 hover:text-purple-600 mb-6"
+                className="flex items-center text-sm text-gray-600 hover:text-primary-600 mb-6"
               >
                 <ArrowLeft className="w-4 h-4 mr-1" />
                 Back
               </button>
 
               <div className="text-center mb-8">
-                <div className="w-16 h-16 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Mail className="w-8 h-8 text-purple-600" />
+                <div className="w-16 h-16 bg-gradient-to-br from-primary-100 to-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Mail className="w-8 h-8 text-primary-600" />
                 </div>
                 <h1 className="text-2xl font-bold text-gray-900">
                   Reset Your Password
@@ -122,7 +122,7 @@ const ForgotPassword = () => {
                   Remember your password?{" "}
                   <Link
                     to="/login"
-                    className="font-medium text-purple-600 hover:text-purple-500"
+                    className="font-medium text-primary-600 hover:text-primary-500"
                   >
                     Sign in
                   </Link>
@@ -180,7 +180,7 @@ const ForgotPassword = () => {
             Need help?{" "}
             <Link
               to="/contact"
-              className="font-medium text-purple-600 hover:text-purple-500"
+              className="font-medium text-primary-600 hover:text-primary-500"
             >
               Contact our support team
             </Link>

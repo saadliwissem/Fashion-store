@@ -418,7 +418,7 @@ const Wishlist = () => {
                           {/* Actions */}
                           <div className="flex gap-2">
                             <Link to={`/product/${item.id}`}>
-                              <button className="p-2 text-gray-600 hover:text-primary-600 hover:bg-purple-50 rounded-lg">
+                              <button className="p-2 text-gray-600 hover:text-primary-600 hover:bg-primary-50 rounded-lg">
                                 <Eye className="w-5 h-5" />
                               </button>
                             </Link>

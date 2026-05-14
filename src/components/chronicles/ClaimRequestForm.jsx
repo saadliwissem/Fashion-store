@@ -12,6 +12,8 @@ import {
   X,
   Loader,
   Key,
+  Smartphone,
+  Building,
 } from "lucide-react";
 
 const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
@@ -27,7 +29,7 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
     city: "",
     state: "",
     postalCode: "",
-    country: "US",
+    country: "TN", // Default to Tunisia
 
     // Fragment Details
     size: "M",
@@ -35,11 +37,15 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
     specialRequests: "",
 
     // Payment
-    paymentMethod: "card",
+    paymentMethod: "card", // card, edinar, cash_on_delivery
     cardNumber: "",
     cardExpiry: "",
     cardCvc: "",
     cardName: "",
+
+    // E-Dinar (Tunisian digital payment)
+    edinarPhone: "",
+    edinarCode: "",
 
     // Terms
     acceptTerms: false,
@@ -49,6 +55,7 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionSuccess, setSubmissionSuccess] = useState(false);
+  const [paymentSimulation, setPaymentSimulation] = useState(null);
 
   const validateStep = (stepNumber) => {
     const newErrors = {};
@@ -81,6 +88,11 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
         if (!formData.cardExpiry.trim())
           newErrors.cardExpiry = "Expiry date is required";
         if (!formData.cardCvc.trim()) newErrors.cardCvc = "CVC is required";
+      } else if (formData.paymentMethod === "edinar") {
+        if (!formData.edinarPhone.trim())
+          newErrors.edinarPhone = "E-Dinar phone number is required";
+        if (!formData.edinarCode.trim())
+          newErrors.edinarCode = "Confirmation code is required";
       }
 
       if (!formData.acceptTerms) {
@@ -115,37 +127,143 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
     setStep(step - 1);
   };
 
+  // Simulate payment processing
+  const simulatePayment = async () => {
+    // Simulate API call delay
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    // Generate random success (90% success rate for simulation)
+    const isSuccess = Math.random() < 0.9;
+
+    if (isSuccess) {
+      return {
+        success: true,
+        transactionId: `TXN-${Date.now()}-${Math.random()
+          .toString(36)
+          .substr(2, 9)}`,
+        message: "Payment processed successfully",
+      };
+    } else {
+      return {
+        success: false,
+        message:
+          "Payment failed. Please try again or use another payment method.",
+      };
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!validateStep(3)) return;
 
     setIsSubmitting(true);
+    setPaymentSimulation({
+      status: "processing",
+      message: "Processing payment...",
+    });
 
-    // Simulate API call
-    setTimeout(() => {
+    // Simulate payment processing
+    const paymentResult = await simulatePayment();
+
+    if (paymentResult.success) {
+      setPaymentSimulation({
+        status: "success",
+        message: "Payment successful!",
+      });
+
+      setTimeout(() => {
+        setIsSubmitting(false);
+        setSubmissionSuccess(true);
+
+        // Generate claim ID
+        const claimId = `CLM-${Date.now()}-${Math.random()
+          .toString(36)
+          .substr(2, 6)
+          .toUpperCase()}`;
+
+        // In ClaimRequestForm.jsx - around line 180-200
+        if (onSubmit) {
+          onSubmit({
+            fragment: fragment,
+            userData: {
+              fullName: formData.fullName,
+              email: formData.email,
+              phone: formData.phone,
+              address: formData.address,
+              city: formData.city,
+              state: formData.state,
+              postalCode: formData.postalCode,
+              country: formData.country,
+              size: formData.size,
+              customization: formData.customization,
+              specialRequests: formData.specialRequests,
+              acceptTerms: formData.acceptTerms,
+              acceptUpdates: formData.acceptUpdates,
+            },
+            paymentMethod: formData.paymentMethod, // ← CRITICAL: Send at root level
+            size: formData.size,
+            customization: formData.customization,
+            paymentDetails: {
+              method: formData.paymentMethod,
+              transactionId: paymentResult.transactionId,
+              amount: grandTotal,
+              currency: "TND",
+            },
+            timestamp: new Date().toISOString(),
+            claimId: claimId,
+          });
+        }
+      }, 1000);
+    } else {
+      setPaymentSimulation({
+        status: "failed",
+        message: paymentResult.message,
+      });
       setIsSubmitting(false);
-      setSubmissionSuccess(true);
+    }
+  };
 
-      if (onSubmit) {
-        onSubmit({
-          fragment,
-          userData: formData,
-          timestamp: new Date().toISOString(),
-          claimId: `CLAIM-${Date.now()}-${Math.random()
-            .toString(36)
-            .substr(2, 9)}`,
-        });
-      }
-    }, 2000);
+  const retryPayment = () => {
+    setPaymentSimulation(null);
+    // Reset payment fields
+    setFormData((prev) => ({
+      ...prev,
+      cardNumber: "",
+      cardExpiry: "",
+      cardCvc: "",
+      edinarPhone: "",
+      edinarCode: "",
+    }));
   };
 
   const sizeOptions = ["XS", "S", "M", "L", "XL", "XXL"];
-  const countryOptions = ["US", "UK", "CA", "AU", "DE", "FR", "JP"];
+
+  // Tunisian cities for autocomplete (optional)
+  const tunisianCities = [
+    "Tunis",
+    "Sfax",
+    "Sousse",
+    "Ettadhamen",
+    "Kairouan",
+    "Bizerte",
+    "Gabès",
+    "Ariana",
+    "Gafsa",
+    "La Marsa",
+    "Monastir",
+    "Zarzis",
+    "Ben Arous",
+    "Manouba",
+    "Medenine",
+    "Nabeul",
+    "Tataouine",
+    "Tozeur",
+  ];
 
   const totalAmount = fragment ? fragment.price : 0;
-  const taxAmount = totalAmount * 0.1; // 10% tax
-  const shippingAmount = 25.0;
+  const taxAmount = totalAmount * 0.19; // 19% TVA in Tunisia
+  const shippingAmount = 15.0; // Fixed shipping in TND
   const grandTotal = totalAmount + taxAmount + shippingAmount;
 
   const renderStepIndicator = () => (
@@ -187,6 +305,49 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
       ))}
     </div>
   );
+
+  const renderPaymentSimulation = () => {
+    if (paymentSimulation?.status === "processing") {
+      return (
+        <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-xl">
+          <div className="flex items-center gap-3">
+            <Loader className="w-5 h-5 text-blue-600 animate-spin" />
+            <div>
+              <p className="text-blue-800 font-medium">Processing Payment</p>
+              <p className="text-blue-600 text-sm">
+                Please don't close this window...
+              </p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    if (paymentSimulation?.status === "failed") {
+      return (
+        <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-xl">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-red-600 mt-0.5" />
+            <div className="flex-1">
+              <p className="text-red-800 font-medium">Payment Failed</p>
+              <p className="text-red-600 text-sm">
+                {paymentSimulation.message}
+              </p>
+              <button
+                type="button"
+                onClick={retryPayment}
+                className="mt-2 text-sm text-red-700 underline hover:text-red-800"
+              >
+                Try again
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    return null;
+  };
 
   const renderStepContent = () => {
     switch (step) {
@@ -257,7 +418,7 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
                     className={`w-full px-4 py-3 rounded-xl border ${
                       errors.phone ? "border-red-500" : "border-gray-300"
                     } bg-white text-gray-900 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all shadow-sm`}
-                    placeholder="+1 (555) 123-4567"
+                    placeholder="+216 XX XXX XXX"
                   />
                   {errors.phone && (
                     <p className="mt-1 text-sm text-red-600">{errors.phone}</p>
@@ -311,11 +472,17 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
                     name="city"
                     value={formData.city}
                     onChange={handleInputChange}
+                    list="tunisian-cities"
                     className={`w-full px-4 py-3 rounded-xl border ${
                       errors.city ? "border-red-500" : "border-gray-300"
                     } bg-white text-gray-900 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all shadow-sm`}
-                    placeholder="New York"
+                    placeholder="Tunis"
                   />
+                  <datalist id="tunisian-cities">
+                    {tunisianCities.map((city) => (
+                      <option key={city} value={city} />
+                    ))}
+                  </datalist>
                   {errors.city && (
                     <p className="mt-1 text-sm text-red-600">{errors.city}</p>
                   )}
@@ -323,7 +490,7 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    State
+                    Governorate
                   </label>
                   <input
                     type="text"
@@ -333,7 +500,7 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
                     className={`w-full px-4 py-3 rounded-xl border ${
                       errors.state ? "border-red-500" : "border-gray-300"
                     } bg-white text-gray-900 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all shadow-sm`}
-                    placeholder="NY"
+                    placeholder="Tunis"
                   />
                   {errors.state && (
                     <p className="mt-1 text-sm text-red-600">{errors.state}</p>
@@ -352,7 +519,7 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
                     className={`w-full px-4 py-3 rounded-xl border ${
                       errors.postalCode ? "border-red-500" : "border-gray-300"
                     } bg-white text-gray-900 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all shadow-sm`}
-                    placeholder="10001"
+                    placeholder="1000"
                   />
                   {errors.postalCode && (
                     <p className="mt-1 text-sm text-red-600">
@@ -372,11 +539,12 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
                   onChange={handleInputChange}
                   className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all shadow-sm"
                 >
-                  {countryOptions.map((country) => (
-                    <option key={country} value={country}>
-                      {country}
-                    </option>
-                  ))}
+                  <option value="TN">Tunisia</option>
+                  <option value="DZ">Algeria</option>
+                  <option value="MA">Morocco</option>
+                  <option value="LY">Libya</option>
+                  <option value="FR">France</option>
+                  <option value="IT">Italy</option>
                 </select>
               </div>
             </div>
@@ -391,24 +559,24 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
                 Payment Information
               </h3>
               <p className="text-gray-600">
-                Complete your claim with secure payment
+                Choose your payment method (All prices in TND)
               </p>
             </div>
 
             <div className="space-y-4">
               {/* Fragment Summary */}
-              <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-soft">
+              <div className="bg-gradient-to-r from-gray-50 to-white rounded-xl p-6 border border-gray-200 shadow-soft">
                 <h4 className="font-bold mb-4 flex items-center gap-2 text-gray-900">
                   <Key className="w-5 h-5 text-primary-600" />
-                  Fragment Summary
+                  Order Summary
                 </h4>
                 <div className="space-y-3">
                   <div className="flex justify-between">
                     <span className="text-gray-600">
-                      Fragment #{fragment?.number}
+                      Fragment #{fragment?.number} - {fragment?.name}
                     </span>
                     <span className="font-bold text-gray-900">
-                      ${fragment?.price?.toFixed(2)}
+                      {totalAmount.toFixed(2)} TND
                     </span>
                   </div>
                   <div className="flex justify-between">
@@ -417,21 +585,21 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
                   </div>
                   <div className="border-t border-gray-200 pt-3">
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Tax</span>
+                      <span className="text-gray-600">TVA (19%)</span>
                       <span className="text-gray-900">
-                        ${taxAmount.toFixed(2)}
+                        {taxAmount.toFixed(2)} TND
                       </span>
                     </div>
                     <div className="flex justify-between">
                       <span className="text-gray-600">Shipping</span>
                       <span className="text-gray-900">
-                        ${shippingAmount.toFixed(2)}
+                        {shippingAmount.toFixed(2)} TND
                       </span>
                     </div>
                     <div className="flex justify-between text-lg font-bold mt-3 pt-3 border-t border-gray-200">
                       <span className="text-gray-900">Total</span>
-                      <span className="text-gray-900">
-                        ${grandTotal.toFixed(2)}
+                      <span className="text-primary-600">
+                        {grandTotal.toFixed(2)} TND
                       </span>
                     </div>
                   </div>
@@ -476,44 +644,79 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
                   placeholder="Any special customization requests..."
                 />
               </div>
-              {/* ===== NEW PAYMENT FORM SECTION ===== */}
+
+              {/* Payment Method Selection */}
               <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-soft">
                 <h4 className="font-bold mb-4 flex items-center gap-2 text-gray-900">
                   <CreditCard className="w-5 h-5 text-primary-600" />
-                  Payment Details
+                  Payment Method
                 </h4>
 
-                {/* Payment Method Selection */}
-                <div className="mb-4">
-                  <div className="flex gap-4">
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="radio"
-                        name="paymentMethod"
-                        value="card"
-                        checked={formData.paymentMethod === "card"}
-                        onChange={handleInputChange}
-                        className="text-primary-600"
-                      />
-                      <span>Credit Card</span>
-                    </label>
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="radio"
-                        name="paymentMethod"
-                        value="paypal"
-                        checked={formData.paymentMethod === "paypal"}
-                        onChange={handleInputChange}
-                        className="text-primary-600"
-                      />
-                      <span>PayPal</span>
-                    </label>
-                  </div>
+                <div className="space-y-3">
+                  <label className="flex items-center gap-3 p-3 border rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="card"
+                      checked={formData.paymentMethod === "card"}
+                      onChange={handleInputChange}
+                      className="text-primary-600"
+                    />
+                    <div className="flex-1">
+                      <div className="font-medium text-gray-900">
+                        Credit / Debit Card
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        Visa, Mastercard, CIB, BIAT, UIB
+                      </div>
+                    </div>
+                    <div className="flex gap-1">
+                      <span className="text-xl">💳</span>
+                    </div>
+                  </label>
+
+                  <label className="flex items-center gap-3 p-3 border rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="edinar"
+                      checked={formData.paymentMethod === "edinar"}
+                      onChange={handleInputChange}
+                      className="text-primary-600"
+                    />
+                    <div className="flex-1">
+                      <div className="font-medium text-gray-900">E-Dinar</div>
+                      <div className="text-sm text-gray-500">
+                        Tunisian digital payment
+                      </div>
+                    </div>
+                    <Smartphone className="w-5 h-5 text-gray-400" />
+                  </label>
+
+                  <label className="flex items-center gap-3 p-3 border rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
+                    <input
+                      type="radio"
+                      name="paymentMethod"
+                      value="cash_on_delivery"
+                      checked={formData.paymentMethod === "cash_on_delivery"}
+                      onChange={handleInputChange}
+                      className="text-primary-600"
+                    />
+                    <div className="flex-1">
+                      <div className="font-medium text-gray-900">
+                        Cash on Delivery
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        Pay when you receive
+                      </div>
+                    </div>
+                    <Building className="w-5 h-5 text-gray-400" />
+                  </label>
                 </div>
 
-                {/* Credit Card Fields - Only show if card is selected */}
+                {/* Payment Details based on method */}
                 {formData.paymentMethod === "card" && (
-                  <div className="space-y-4">
+                  <div className="mt-6 space-y-4 border-t pt-6">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         Cardholder Name
@@ -523,9 +726,8 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
                         name="cardName"
                         value={formData.cardName}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all shadow-sm"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200"
                         placeholder="Name on card"
-                        required={formData.paymentMethod === "card"}
                       />
                     </div>
 
@@ -538,10 +740,9 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
                         name="cardNumber"
                         value={formData.cardNumber}
                         onChange={handleInputChange}
-                        className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all shadow-sm"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200"
                         placeholder="1234 5678 9012 3456"
                         maxLength="19"
-                        required={formData.paymentMethod === "card"}
                       />
                     </div>
 
@@ -555,10 +756,9 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
                           name="cardExpiry"
                           value={formData.cardExpiry}
                           onChange={handleInputChange}
-                          className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all shadow-sm"
+                          className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200"
                           placeholder="MM/YY"
                           maxLength="5"
-                          required={formData.paymentMethod === "card"}
                         />
                       </div>
 
@@ -571,26 +771,76 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
                           name="cardCvc"
                           value={formData.cardCvc}
                           onChange={handleInputChange}
-                          className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all shadow-sm"
+                          className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200"
                           placeholder="123"
                           maxLength="4"
-                          required={formData.paymentMethod === "card"}
                         />
                       </div>
+                    </div>
+
+                    <div className="bg-blue-50 p-3 rounded-lg">
+                      <p className="text-xs text-blue-800">
+                        🔒 Test Mode: Use any valid-looking card number (e.g.,
+                        4242 4242 4242 4242) for testing. No real charges will
+                        be made.
+                      </p>
                     </div>
                   </div>
                 )}
 
-                {/* PayPal Message */}
-                {formData.paymentMethod === "paypal" && (
-                  <div className="bg-blue-50 p-4 rounded-xl text-blue-800">
-                    <p>
-                      You will be redirected to PayPal to complete your payment.
-                    </p>
+                {formData.paymentMethod === "edinar" && (
+                  <div className="mt-6 space-y-4 border-t pt-6">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        E-Dinar Phone Number
+                      </label>
+                      <input
+                        type="tel"
+                        name="edinarPhone"
+                        value={formData.edinarPhone}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200"
+                        placeholder="+216 XX XXX XXX"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Confirmation Code
+                      </label>
+                      <input
+                        type="text"
+                        name="edinarCode"
+                        value={formData.edinarCode}
+                        onChange={handleInputChange}
+                        className="w-full px-4 py-3 rounded-xl border border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-200"
+                        placeholder="Enter code from SMS"
+                      />
+                    </div>
+                    <div className="bg-blue-50 p-3 rounded-lg">
+                      <p className="text-xs text-blue-800">
+                        🔒 Test Mode: Enter any 6-digit code (e.g., 123456) for
+                        testing.
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {formData.paymentMethod === "cash_on_delivery" && (
+                  <div className="mt-6 border-t pt-6">
+                    <div className="bg-green-50 p-4 rounded-lg">
+                      <p className="text-sm text-green-800">
+                        💰 You will pay {grandTotal.toFixed(2)} TND in cash when
+                        your fragment is delivered.
+                      </p>
+                      <p className="text-xs text-green-700 mt-2">
+                        A confirmation will be sent to your email with tracking
+                        information.
+                      </p>
+                    </div>
                   </div>
                 )}
               </div>
-              {/* ===== END NEW PAYMENT FORM SECTION ===== */}
+
               {/* Terms */}
               <div className="space-y-3">
                 <div className="flex items-start gap-3">
@@ -640,6 +890,8 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
                 </div>
               </div>
             </div>
+
+            {renderPaymentSimulation()}
           </div>
         );
 
@@ -656,59 +908,38 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
                     Claim Successful!
                   </h3>
                   <p className="text-gray-600 mb-6">
-                    You are now a guardian of Fragment #{fragment?.number}
+                    You are now a guardian of {fragment?.name}
                   </p>
                 </div>
                 <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 max-w-md mx-auto shadow-soft">
                   <div className="text-sm text-gray-600 mb-2">Claim ID</div>
                   <div className="font-mono text-lg font-bold text-primary-600">
-                    CLAIM-{Date.now().toString().slice(-8)}
+                    {`CLM-${Date.now().toString().slice(-8)}`}
                   </div>
                   <div className="mt-4 text-sm text-gray-700">
                     You will receive a confirmation email with next steps.
+                  </div>
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <div className="text-left text-sm">
+                      <p className="font-medium text-gray-900 mb-2">
+                        Next Steps:
+                      </p>
+                      <ul className="text-gray-600 space-y-1">
+                        <li>✓ Confirmation email sent to {formData.email}</li>
+                        <li>
+                          ✓ Production will begin when all fragments are sold
+                        </li>
+                        <li>✓ You'll be notified when manufacturing starts</li>
+                        <li>✓ Track progress in your dashboard</li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
                 <button onClick={onClose} className="btn-primary px-8 py-3">
                   Return to Chronicle
                 </button>
               </div>
-            ) : (
-              <div className="space-y-6">
-                <div className="w-20 h-20 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-full flex items-center justify-center mx-auto shadow-md">
-                  <Shield className="w-10 h-10 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-2xl font-bold mb-2 text-gray-900">
-                    Confirm Your Claim
-                  </h3>
-                  <p className="text-gray-600">
-                    Review your details before submitting
-                  </p>
-                </div>
-                <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 text-left shadow-soft">
-                  <div className="space-y-3">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Fragment:</span>
-                      <span className="font-bold text-gray-900">
-                        #{fragment?.number}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Total Amount:</span>
-                      <span className="font-bold text-gray-900">
-                        ${grandTotal.toFixed(2)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Delivery to:</span>
-                      <span className="font-bold text-gray-900">
-                        {formData.city}, {formData.country}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
+            ) : null}
           </div>
         );
 
@@ -725,9 +956,9 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h2 className="text-2xl font-bold text-gray-900">
-                Claim Fragment #{fragment?.number}
+                Claim {fragment?.name}
               </h2>
-              <p className="text-gray-600">{fragment?.name}</p>
+              <p className="text-gray-600">{fragment?.description}</p>
             </div>
             <button
               onClick={onClose}
@@ -737,7 +968,7 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
             </button>
           </div>
 
-          {step < 4 && renderStepIndicator()}
+          {step < 4 && !submissionSuccess && renderStepIndicator()}
         </div>
 
         {/* Content */}
@@ -746,71 +977,78 @@ const ClaimRequestForm = ({ fragment, onClose, onSubmit }) => {
             {renderStepContent()}
 
             {/* Navigation Buttons */}
-            {step < 4 && !submissionSuccess && (
-              <div className="flex justify-between mt-8 pt-6 border-t border-gray-200">
-                <div>
-                  {step > 1 && (
-                    <button
-                      type="button"
-                      onClick={handleBack}
-                      className="px-6 py-3 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors shadow-sm"
-                    >
-                      Back
-                    </button>
-                  )}
-                </div>
-
-                <div className="flex items-center gap-4">
-                  <div className="text-right">
-                    <div className="text-sm text-gray-600">Total</div>
-                    <div className="text-2xl font-bold text-gray-900">
-                      ${grandTotal.toFixed(2)}
-                    </div>
+            {/* Navigation Buttons */}
+            {step < 4 &&
+              !submissionSuccess &&
+              paymentSimulation?.status !== "processing" && (
+                <div className="flex justify-between mt-8 pt-6 border-t border-gray-200">
+                  <div>
+                    {step > 1 && (
+                      <button
+                        type="button"
+                        onClick={handleBack}
+                        className="px-6 py-3 rounded-xl border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors shadow-sm"
+                      >
+                        Back
+                      </button>
+                    )}
                   </div>
 
-                  {step < 3 ? (
-                    <button
-                      type="button"
-                      onClick={handleNext}
-                      className="btn-primary px-8 py-3"
-                    >
-                      Continue
-                    </button>
-                  ) : (
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="btn-primary px-8 py-3 flex items-center gap-2"
-                    >
-                      {isSubmitting ? (
-                        <>
-                          <Loader className="w-5 h-5 animate-spin" />
-                          Processing...
-                        </>
-                      ) : (
-                        <>
-                          <CreditCard className="w-5 h-5" />
-                          Complete Payment
-                        </>
-                      )}
-                    </button>
-                  )}
+                  <div className="flex items-center gap-4">
+                    <div className="text-right">
+                      <div className="text-sm text-gray-600">Total</div>
+                      <div className="text-2xl font-bold text-primary-600">
+                        {grandTotal.toFixed(2)} TND
+                      </div>
+                    </div>
+
+                    {step < 3 ? (
+                      <button
+                        type="button"
+                        onClick={handleNext}
+                        className="btn-primary px-8 py-3"
+                      >
+                        Continue
+                      </button>
+                    ) : (
+                      <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="btn-primary px-8 py-3 flex items-center gap-2"
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <Loader className="w-5 h-5 animate-spin" />
+                            Processing...
+                          </>
+                        ) : (
+                          <>
+                            <CreditCard className="w-5 h-5" />
+                            {formData.paymentMethod === "cash_on_delivery"
+                              ? "Place Order"
+                              : "Complete Payment"}
+                          </>
+                        )}
+                      </button>
+                    )}
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
           </form>
         </div>
 
         {/* Security Footer */}
         {step < 4 && (
-          <div className="p-6 border-t border-gray-200">
+          <div className="p-6 border-t border-gray-200 bg-gray-50 rounded-b-2xl">
             <div className="flex items-center justify-center gap-4 text-sm text-gray-500">
               <Shield className="w-4 h-4" />
-              <span>Secure payment processed by Stripe</span>
+              <span>Secure payment processing</span>
               <span>•</span>
               <span>256-bit encryption</span>
               <span>•</span>
               <span>PCI DSS compliant</span>
+              <span>•</span>
+              <span>Free delivery in Tunisia</span>
             </div>
           </div>
         )}
@@ -823,7 +1061,8 @@ ClaimRequestForm.defaultProps = {
   fragment: {
     id: 1,
     number: 4,
-    name: "Fragment #4 - The Navigator",
+    name: "The Navigator",
+    description: "A rare fragment featuring the navigator's compass",
     price: 299.99,
   },
   onClose: () => {},

@@ -82,7 +82,7 @@ const SortableChronicleItem = ({
       case "forging":
         return "bg-orange-100 text-orange-800";
       case "cipher":
-        return "bg-purple-100 text-purple-800";
+        return "bg-primary-100 text-primary-800";
       case "solved":
         return "bg-blue-100 text-blue-800";
       default:
@@ -140,7 +140,7 @@ const SortableChronicleItem = ({
       <div
         className={`flex items-center gap-3 p-4 rounded-xl transition-colors ${
           isSelected
-            ? "bg-purple-50 border border-purple-200"
+            ? "bg-primary-50 border border-primary-200"
             : "hover:bg-gray-50"
         }`}
       >
@@ -154,7 +154,7 @@ const SortableChronicleItem = ({
           type="checkbox"
           checked={isSelected}
           onChange={() => onSelect(chronicle._id)}
-          className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+          className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
         />
 
         {/* Icon */}
@@ -246,7 +246,7 @@ const SortableChronicleItem = ({
           </button>
           <button
             onClick={() => onDuplicate(chronicle)}
-            className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg"
+            className="p-2 text-gray-600 hover:text-primary-600 hover:bg-primary-50 rounded-lg"
             title="Duplicate"
           >
             <Copy className="w-4 h-4" />
@@ -279,7 +279,7 @@ const ChronicleCard = ({
       case "forging":
         return "bg-orange-100 text-orange-800";
       case "cipher":
-        return "bg-purple-100 text-purple-800";
+        return "bg-primary-100 text-primary-800";
       case "solved":
         return "bg-blue-100 text-blue-800";
       default:
@@ -296,7 +296,7 @@ const ChronicleCard = ({
       case "forging":
         return "bg-orange-100 text-orange-800";
       case "enchanting":
-        return "bg-purple-100 text-purple-800";
+        return "bg-primary-100 text-primary-800";
       case "shipping":
         return "bg-cyan-100 text-cyan-800";
       case "delivered":
@@ -333,7 +333,7 @@ const ChronicleCard = ({
             type="checkbox"
             checked={isSelected}
             onChange={() => onSelect(chronicle._id)}
-            className="w-5 h-5 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+            className="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
 
@@ -781,7 +781,7 @@ const ChroniclesManagement = () => {
                 chronicles.length > 0
               }
               onChange={handleSelectAll}
-              className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+              className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
             />
             <div className="w-10"></div>
             <div className="flex-1 font-semibold text-gray-900">Chronicle</div>
@@ -933,7 +933,7 @@ const ChroniclesManagement = () => {
               Export
             </Button>
             <Button
-              className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800"
+              className="flex items-center gap-2 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
               onClick={() => setShowAddModal(true)}
             >
               <Plus className="w-4 h-4" />
@@ -955,8 +955,8 @@ const ChroniclesManagement = () => {
                   {stats.byStatus?.available || 0} available
                 </p>
               </div>
-              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                <BookOpen className="w-6 h-6 text-purple-600" />
+              <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
+                <BookOpen className="w-6 h-6 text-primary-600" />
               </div>
             </div>
           </div>
@@ -1034,7 +1034,7 @@ const ChroniclesManagement = () => {
                       placeholder="Search chronicles by name or description..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                     />
                   </div>
                 </div>
@@ -1044,7 +1044,7 @@ const ChroniclesManagement = () => {
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
-                    className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                    className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                   >
                     <option value="all">All Status</option>
                     <option value="available">Available</option>
@@ -1056,7 +1056,7 @@ const ChroniclesManagement = () => {
                   <select
                     value={enigmaFilter}
                     onChange={(e) => setEnigmaFilter(e.target.value)}
-                    className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                    className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                   >
                     <option value="all">All Enigmas</option>
                     {enigmas.map((enigma) => (
@@ -1069,7 +1069,7 @@ const ChroniclesManagement = () => {
                   <select
                     value={featuredFilter}
                     onChange={(e) => setFeaturedFilter(e.target.value)}
-                    className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                    className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                   >
                     <option value="all">All Featured</option>
                     <option value="featured">Featured</option>
@@ -1085,7 +1085,7 @@ const ChroniclesManagement = () => {
                 onClick={() => setViewMode("list")}
                 className={`px-4 py-3 transition-colors ${
                   viewMode === "list"
-                    ? "bg-purple-600 text-white"
+                    ? "bg-primary-600 text-white"
                     : "hover:bg-gray-50 text-gray-700"
                 }`}
                 title="List View"
@@ -1096,7 +1096,7 @@ const ChroniclesManagement = () => {
                 onClick={() => setViewMode("grid")}
                 className={`px-4 py-3 transition-colors ${
                   viewMode === "grid"
-                    ? "bg-purple-600 text-white"
+                    ? "bg-primary-600 text-white"
                     : "hover:bg-gray-50 text-gray-700"
                 }`}
                 title="Grid View"
@@ -1109,10 +1109,10 @@ const ChroniclesManagement = () => {
 
         {/* Bulk Actions */}
         {selectedItems.length > 0 && (
-          <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-4 border border-purple-100">
+          <div className="bg-gradient-to-r from-primary-50 to-pink-50 rounded-2xl p-4 border border-primary-100">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg flex items-center justify-center font-semibold">
+                <div className="w-8 h-8 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-lg flex items-center justify-center font-semibold">
                   {selectedItems.length}
                 </div>
                 <span className="font-medium text-gray-900">
@@ -1157,7 +1157,7 @@ const ChroniclesManagement = () => {
         {/* Chronicles Content */}
         {loading ? (
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
             <p className="mt-4 text-gray-600">Loading chronicles...</p>
           </div>
         ) : viewMode === "list" ? (

@@ -81,7 +81,7 @@ const MysteryReveal = ({ enigma }) => {
       case "archived":
         return "from-gray-600 to-gray-700";
       case "solved":
-        return "from-purple-600 to-pink-700";
+        return "from-primary-600 to-pink-700";
       default:
         return "from-primary-600 to-secondary-700";
     }
@@ -313,7 +313,7 @@ const MysteryReveal = ({ enigma }) => {
                             </div>
                           </div>
                           <div className="flex items-center gap-3">
-                            <Sparkles className="w-5 h-5 text-purple-600" />
+                            <Sparkles className="w-5 h-5 text-primary-600" />
                             <div>
                               <div className="font-medium text-gray-900">
                                 Progressive Clues
@@ -388,7 +388,7 @@ const MysteryReveal = ({ enigma }) => {
                                     reward.rarity === "legendary"
                                       ? "bg-yellow-100 text-yellow-700"
                                       : reward.rarity === "rare"
-                                      ? "bg-purple-100 text-purple-700"
+                                      ? "bg-primary-100 text-primary-700"
                                       : "bg-gray-100 text-gray-700"
                                   }`}
                                 >

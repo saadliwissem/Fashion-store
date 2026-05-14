@@ -62,23 +62,11 @@ const AdminLayout = ({ children }) => {
           name: "Products",
           path: "/admin/products",
           icon: Package,
-          subItems: [
-            { name: "All Products", path: "/admin/products" },
-            { name: "Add New", path: "/admin/products/new" },
-            { name: "Categories", path: "/admin/products/categories" },
-            { name: "Inventory", path: "/admin/products/inventory" },
-          ],
         },
         {
           name: "Orders",
           path: "/admin/orders",
           icon: ShoppingCart,
-          subItems: [
-            { name: "All Orders", path: "/admin/orders" },
-            { name: "Pending", path: "/admin/orders/pending" },
-            { name: "Processing", path: "/admin/orders/processing" },
-            { name: "Completed", path: "/admin/orders/completed" },
-          ],
         },
         {
           name: "Customers",
@@ -89,11 +77,11 @@ const AdminLayout = ({ children }) => {
           name: "Analytics",
           path: "/admin/analytics",
           icon: BarChart3,
-          subItems: [
-            { name: "Sales", path: "/admin/analytics/sales" },
-            { name: "Traffic", path: "/admin/analytics/traffic" },
-            { name: "Products", path: "/admin/analytics/products" },
-          ],
+          // subItems: [
+          //   { name: "Sales", path: "/admin/analytics/sales" },
+          //   { name: "Traffic", path: "/admin/analytics/traffic" },
+          //   { name: "Products", path: "/admin/analytics/products" },
+          // ],
         },
       ],
     },
@@ -106,57 +94,45 @@ const AdminLayout = ({ children }) => {
           name: "Enigmas",
           path: "/admin/enigmas",
           icon: Globe,
-          subItems: [
-            { name: "All Enigmas", path: "/admin/enigmas" },
-            { name: "Add New Enigma", path: "/admin/enigmas/new" },
-            { name: "Featured", path: "/admin/enigmas/featured" },
-            { name: "Stats", path: "/admin/enigmas/stats" },
-          ],
         },
         {
           name: "Chronicles",
           path: "/admin/chronicles",
           icon: BookOpen,
-          subItems: [
-            { name: "All Chronicles", path: "/admin/chronicles" },
-            { name: "Add New Chronicle", path: "/admin/chronicles/new" },
-            { name: "Production Status", path: "/admin/chronicles/production" },
-            { name: "Waitlists", path: "/admin/chronicles/waitlists" },
-          ],
         },
         {
           name: "Fragments",
           path: "/admin/fragments",
           icon: Layers,
-          subItems: [
-            { name: "All Fragments", path: "/admin/fragments" },
-            { name: "Add New Fragment", path: "/admin/fragments/new" },
-            { name: "By Rarity", path: "/admin/fragments/rarity" },
-            { name: "Claimed", path: "/admin/fragments/claimed" },
-          ],
+          // subItems: [
+          //   { name: "All Fragments", path: "/admin/fragments" },
+          //   { name: "Add New Fragment", path: "/admin/fragments/new" },
+          //   { name: "By Rarity", path: "/admin/fragments/rarity" },
+          //   { name: "Claimed", path: "/admin/fragments/claimed" },
+          // ],
         },
         {
           name: "Claims",
           path: "/admin/claims",
           icon: Ticket,
-          subItems: [
-            { name: "All Claims", path: "/admin/claims" },
-            { name: "Pending", path: "/admin/claims/pending" },
-            { name: "Processing", path: "/admin/claims/processing" },
-            { name: "Shipped", path: "/admin/claims/shipped" },
-            { name: "Delivered", path: "/admin/claims/delivered" },
-          ],
+          // subItems: [
+          //   { name: "All Claims", path: "/admin/claims" },
+          //   { name: "Pending", path: "/admin/claims/pending" },
+          //   { name: "Processing", path: "/admin/claims/processing" },
+          //   { name: "Shipped", path: "/admin/claims/shipped" },
+          //   { name: "Delivered", path: "/admin/claims/delivered" },
+          // ],
         },
         {
           name: "Waitlist",
           path: "/admin/waitlist",
           icon: Clock,
-          subItems: [
-            { name: "All Entries", path: "/admin/waitlist" },
-            { name: "Active", path: "/admin/waitlist/active" },
-            { name: "Notified", path: "/admin/waitlist/notified" },
-            { name: "Fulfilled", path: "/admin/waitlist/fulfilled" },
-          ],
+          // subItems: [
+          //   { name: "All Entries", path: "/admin/waitlist" },
+          //   { name: "Active", path: "/admin/waitlist/active" },
+          //   { name: "Notified", path: "/admin/waitlist/notified" },
+          //   { name: "Fulfilled", path: "/admin/waitlist/fulfilled" },
+          // ],
         },
       ],
     },
@@ -241,7 +217,7 @@ const AdminLayout = ({ children }) => {
               )}
             </button>
             <Link to="/admin" className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-pink-500 rounded-lg flex items-center justify-center">
+              <div className="w-8 h-8 bg-gradient-to-br from-primary-600 to-pink-500 rounded-lg flex items-center justify-center">
                 <span className="text-white font-bold text-sm">A</span>
               </div>
               <span className="font-bold text-gray-900">Admin</span>
@@ -257,7 +233,7 @@ const AdminLayout = ({ children }) => {
               onClick={() => setUserDropdownOpen(!userDropdownOpen)}
               className="flex items-center gap-2 p-2 hover:bg-gray-100 rounded-lg"
             >
-              <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-400 rounded-full"></div>
+              <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-pink-400 rounded-full"></div>
               <ChevronDown className="w-4 h-4" />
             </button>
           </div>
@@ -280,12 +256,12 @@ const AdminLayout = ({ children }) => {
           {/* Sidebar Header */}
           <div className="flex items-center justify-between p-6 border-b border-gray-200">
             <Link to="/admin" className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-pink-500 rounded-xl flex items-center justify-center">
+              <div className="w-10 h-10 bg-gradient-to-br from-primary-600 to-pink-500 rounded-xl flex items-center justify-center">
                 <span className="text-white font-bold">A</span>
               </div>
               <div>
                 <h1 className="font-bold text-gray-900">Admin Panel</h1>
-                <p className="text-xs text-gray-500">DAR ENNAR Tunisia</p>
+                <p className="text-xs text-gray-500">PUZZLE</p>
               </div>
             </Link>
             <button
@@ -341,7 +317,7 @@ const AdminLayout = ({ children }) => {
                                   transition-colors
                                   ${
                                     active
-                                      ? "bg-purple-50 text-purple-700"
+                                      ? "bg-primary-50 text-primary-700"
                                       : "text-gray-700 hover:bg-gray-50 hover:text-gray-900"
                                   }
                                 `}
@@ -370,7 +346,7 @@ const AdminLayout = ({ children }) => {
                                         flex items-center gap-2 px-4 py-2 rounded-lg text-sm
                                         ${
                                           location.pathname === subItem.path
-                                            ? "bg-purple-100 text-purple-700"
+                                            ? "bg-primary-100 text-primary-700"
                                             : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                                         }
                                       `}
@@ -465,7 +441,7 @@ const AdminLayout = ({ children }) => {
                   <input
                     type="text"
                     placeholder="Search orders, products, mysteries..."
-                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none w-80"
+                    className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none w-80"
                   />
                 </div>
 
@@ -487,7 +463,7 @@ const AdminLayout = ({ children }) => {
                       </p>
                       <p className="text-xs text-gray-500">Administrator</p>
                     </div>
-                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-400 rounded-full"></div>
+                    <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-pink-400 rounded-full"></div>
                     <ChevronDown className="w-4 h-4" />
                   </button>
 

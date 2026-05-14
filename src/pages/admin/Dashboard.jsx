@@ -37,7 +37,7 @@ const Dashboard = () => {
       change: "+5.2%",
       trend: "up",
       icon: Users,
-      color: "from-purple-500 to-pink-600",
+      color: "from-primary-500 to-pink-600",
     },
     {
       title: "Products Sold",
@@ -99,7 +99,7 @@ const Dashboard = () => {
     <AdminLayout>
       <div className="space-y-6">
         {/* Welcome Banner */}
-        <div className="bg-gradient-to-r from-purple-600 to-pink-500 rounded-2xl p-6 text-white">
+        <div className="bg-gradient-to-r from-primary-600 to-pink-500 rounded-2xl p-6 text-white">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold mb-2">Welcome back, Admin!</h1>
@@ -169,7 +169,7 @@ const Dashboard = () => {
                 </h2>
                 <p className="text-sm text-gray-600">Last 30 days</p>
               </div>
-              <button className="text-sm text-purple-600 hover:text-purple-700">
+              <button className="text-sm text-primary-600 hover:text-primary-700">
                 View Details
               </button>
             </div>
@@ -192,7 +192,7 @@ const Dashboard = () => {
                 </h2>
                 <p className="text-sm text-gray-600">Latest 5 orders</p>
               </div>
-              <button className="text-sm text-purple-600 hover:text-purple-700">
+              <button className="text-sm text-primary-600 hover:text-primary-700">
                 View All
               </button>
             </div>
@@ -262,7 +262,7 @@ const Dashboard = () => {
                 </h2>
                 <p className="text-sm text-gray-600">By revenue this month</p>
               </div>
-              <button className="text-sm text-purple-600 hover:text-purple-700">
+              <button className="text-sm text-primary-600 hover:text-primary-700">
                 View All
               </button>
             </div>
@@ -300,7 +300,7 @@ const Dashboard = () => {
             </h2>
 
             <div className="space-y-4">
-              <button className="w-full flex items-center gap-3 p-4 bg-purple-50 text-purple-700 rounded-xl hover:bg-purple-100 transition-colors">
+              <button className="w-full flex items-center gap-3 p-4 bg-primary-50 text-primary-700 rounded-xl hover:bg-primary-100 transition-colors">
                 <Package className="w-5 h-5" />
                 <span className="font-medium">Add New Product</span>
               </button>

@@ -140,7 +140,7 @@ const PaymentUpdateModal = ({ isOpen, onClose, order, onSuccess }) => {
                       handlePaymentDetailChange("cardLastFour", e.target.value)
                     }
                     placeholder="1234"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                     maxLength="4"
                   />
                 </div>
@@ -161,7 +161,7 @@ const PaymentUpdateModal = ({ isOpen, onClose, order, onSuccess }) => {
                       )
                     }
                     placeholder="e.g., Flouci, D17"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                   />
                 </div>
               )}
@@ -178,7 +178,7 @@ const PaymentUpdateModal = ({ isOpen, onClose, order, onSuccess }) => {
                       handlePaymentDetailChange("bankName", e.target.value)
                     }
                     placeholder="e.g., BIAT, Attijari Bank"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                   />
                 </div>
               )}
@@ -194,7 +194,7 @@ const PaymentUpdateModal = ({ isOpen, onClose, order, onSuccess }) => {
                     handlePaymentDetailChange("transactionId", e.target.value)
                   }
                   placeholder="Transaction reference"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                 />
               </div>
             </div>
@@ -208,7 +208,7 @@ const PaymentUpdateModal = ({ isOpen, onClose, order, onSuccess }) => {
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
                 placeholder="Add notes about this payment update..."
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                 rows="3"
               />
             </div>

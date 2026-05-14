@@ -103,7 +103,7 @@ const Shop = () => {
         { name: "Blue", value: "#3B82F6" },
         { name: "Red", value: "#EF4444" },
         { name: "Green", value: "#10B981" },
-        { name: "Purple", value: "#f0b100" },
+        { name: "primary", value: "#f0b100" },
       ]);
     }
   };

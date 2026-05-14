@@ -75,6 +75,15 @@ export const authAPI = {
   updatePassword: (data) => api.put("/auth/password", data),
   addAddress: (data) => api.post("/auth/address", data),
   deleteAddress: (id) => api.delete(`/auth/address/${id}`),
+  verifyEmail: (data) => api.post("/auth/verify-email", data),
+  resendVerificationCode: () => api.post("/auth/resend-verification"),
+  resendVerificationCodePublic: (email) =>
+    api.post("/auth/resend-verification-code", { email }),
+  verifyEmailPublic: (email, code) =>
+    api.post("/auth/verify-email", { email, code }),
+  sendPasswordChangeCode: () => api.post("/auth/send-password-change-code"),
+  updatePasswordWithVerification: (data) =>
+    api.post("/auth/update-password-with-verification", data),
 };
 
 // Products API

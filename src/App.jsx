@@ -80,6 +80,8 @@ import AdminRoute from "./components/common/AdminRoute";
 import TestConnection from "./components/TestConnection";
 import PublicRoute from "./components/common/PublicRoute";
 import Profile from "./pages/Profile";
+import ClaimsPage from "./pages/ClaimsPage";
+import ClaimDetailsPage from "./pages/ClaimDetailsPage";
 
 const GoogleCallback = lazy(() => import("./pages/GoogleCallback"));
 const Orders = lazy(() => import("./components/orders/OrdersList"));
@@ -90,6 +92,8 @@ const NotFound = lazy(() => import("./pages/NotFound"));
 // Mystery pages
 const EnigmasPage = lazy(() => import("./pages/EnigmasPage"));
 const EnigmaDetailPage = lazy(() => import("./pages/EnigmaDetailPage"));
+const ChroniclesPage = lazy(() => import("./pages/ChroniclesPage"));
+
 const ChronicleDetailPage = lazy(() => import("./pages/ChronicleDetailPage"));
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -144,6 +148,10 @@ function App() {
                           element={<EnigmaDetailPage />}
                         />
                         <Route
+                          path="/enigmas/:id/chronicles"
+                          element={<ChroniclesPage />}
+                        />
+                        <Route
                           path="/enigmas/:enigmaId/chronicles/:chronicleId"
                           element={<ChronicleDetailPage />}
                         />
@@ -189,7 +197,11 @@ function App() {
                         <Route path="/profile" element={<Profile />} />
                         <Route path="/orders/:id" element={<OrderDetails />} />
                         <Route path="/wishlist" element={<Wishlist />} />
-
+                        <Route path="/claims" element={<ClaimsPage />} />
+                        <Route
+                          path="/claims/:id"
+                          element={<ClaimDetailsPage />}
+                        />
                         {/* Admin Routes - E-commerce */}
                         <Route
                           path="/admin"

@@ -59,6 +59,7 @@ export const AuthProvider = ({ children }) => {
 
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(userData));
+
       setUser(userData);
       toast.success("Welcome back!");
       return userData;
@@ -78,13 +79,22 @@ export const AuthProvider = ({ children }) => {
 
     try {
       const response = await authAPI.register(userData);
-      const { token, user: newUser } = response.data;
+      const { token, user: newUser, requiresVerification } = response.data;
 
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(newUser));
-      setUser(newUser);
-      toast.success("Account created successfully!");
-      return newUser;
+      // Only store token and set user if verification is NOT required
+      if (!requiresVerification) {
+        localStorage.setItem("token", token);
+        localStorage.setItem("user", JSON.stringify(newUser));
+
+        setUser(newUser);
+        toast.success("Account created successfully!");
+      } else {
+        // For verification required case, don't set user or token
+        toast.success("Account created! Please verify your email.");
+      }
+
+      // Return the full response data to the component
+      return response.data;
     } catch (err) {
       const errorMessage = err.response?.data?.message || "Registration failed";
       setError(errorMessage);
@@ -94,7 +104,30 @@ export const AuthProvider = ({ children }) => {
       setLoading(false);
     }
   };
+  const sendPasswordChangeCode = async () => {
+    try {
+      const response = await authAPI.sendPasswordChangeCode();
+      return response.data;
+    } catch (err) {
+      const errorMessage =
+        err.response?.data?.message || "Failed to send verification code";
+      toast.error(errorMessage);
+      throw err;
+    }
+  };
 
+  const updatePasswordWithVerification = async (data) => {
+    try {
+      const response = await authAPI.updatePasswordWithVerification(data);
+      toast.success(response.data.message || "Password updated successfully");
+      return response.data;
+    } catch (err) {
+      const errorMessage =
+        err.response?.data?.message || "Failed to update password";
+      toast.error(errorMessage);
+      throw err;
+    }
+  };
   const logout = async () => {
     try {
       await authAPI.logout();
@@ -182,6 +215,8 @@ export const AuthProvider = ({ children }) => {
     forgotPassword,
     resetPassword,
     getProfile,
+    updatePasswordWithVerification,
+    sendPasswordChangeCode,
     isAuthenticated: !!user,
     isAdmin: user?.role === "admin",
     // REMOVED: handleGoogleAuth - we don't need it for redirect flow

@@ -10,7 +10,7 @@ const AdminRoute = ({ children }) => {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <LoadingSpinner size="large" color="purple" />
+        <LoadingSpinner size="large" color="primary" />
       </div>
     );
   }

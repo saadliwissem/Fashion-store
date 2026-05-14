@@ -54,7 +54,7 @@ const FragmentCard = ({ fragment = {}, onClick, viewMode = "grid" }) => {
 
   const getStatusColor = () => {
     if (isFeatured) return "yellow";
-    if (status === "claimed") return "purple";
+    if (status === "claimed") return "primary";
     if (status === "available") return "green";
     return "gray";
   };
@@ -64,7 +64,7 @@ const FragmentCard = ({ fragment = {}, onClick, viewMode = "grid" }) => {
       case "legendary":
         return "from-yellow-400 to-orange-500";
       case "rare":
-        return "from-purple-400 to-purple-600";
+        return "from-primary-400 to-primary-600";
       case "common":
       default:
         return "from-gray-400 to-gray-600";
@@ -139,7 +139,7 @@ const FragmentCard = ({ fragment = {}, onClick, viewMode = "grid" }) => {
 
           <div className="flex items-center gap-3 text-xs flex-wrap">
             {status === "claimed" ? (
-              <div className="flex items-center gap-1 text-purple-600">
+              <div className="flex items-center gap-1 text-primary-600">
                 <Users className="w-3 h-3" />
                 <span className="truncate max-w-[100px]">
                   {getClaimedByName()}
@@ -224,7 +224,7 @@ const FragmentCard = ({ fragment = {}, onClick, viewMode = "grid" }) => {
               isFeatured
                 ? "bg-yellow-100 text-yellow-700 border border-yellow-300"
                 : status === "claimed"
-                ? "bg-purple-100 text-purple-700 border border-purple-300"
+                ? "bg-primary-100 text-primary-700 border border-primary-300"
                 : status === "available"
                 ? "bg-green-100 text-green-700 border border-green-300"
                 : "bg-gray-100 text-gray-700 border border-gray-300"
@@ -245,7 +245,7 @@ const FragmentCard = ({ fragment = {}, onClick, viewMode = "grid" }) => {
         {status === "claimed" && (
           <div className="absolute inset-0 bg-black/5 backdrop-blur-[1px] flex items-center justify-center">
             <div className="bg-white/90 rounded-full px-3 py-1.5 shadow-lg">
-              <span className="text-xs font-medium text-purple-600 flex items-center gap-1">
+              <span className="text-xs font-medium text-primary-600 flex items-center gap-1">
                 <Users className="w-3 h-3" />
                 {getClaimedByName()}
               </span>
@@ -305,7 +305,7 @@ const FragmentCard = ({ fragment = {}, onClick, viewMode = "grid" }) => {
           ) : status === "claimed" ? (
             <div className="w-full flex items-center justify-between">
               <span className="text-xs text-gray-500">Claimed by</span>
-              <span className="text-xs font-medium text-purple-600 truncate ml-2 max-w-[120px]">
+              <span className="text-xs font-medium text-primary-600 truncate ml-2 max-w-[120px]">
                 {getClaimedByName()}
               </span>
             </div>

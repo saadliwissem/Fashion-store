@@ -77,7 +77,7 @@ const OrderCard = ({
       case "confirmed":
         return {
           label: "Confirmed",
-          color: "bg-purple-100 text-purple-800",
+          color: "bg-primary-100 text-primary-800",
           icon: CheckCircle,
         };
       case "cancelled":
@@ -155,7 +155,7 @@ const OrderCard = ({
                 type="checkbox"
                 checked={isSelected}
                 onChange={() => onSelect(order._id)}
-                className="w-4 h-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
               />
               <h3 className="font-bold text-gray-900">
                 Order #{order.orderNumber}
@@ -736,7 +736,7 @@ const OrdersManagement = () => {
                       orders.length > 0
                     }
                     onChange={handleSelectAll}
-                    className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                    className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                 </th>
                 <th className="text-left p-4 font-semibold text-gray-900">
@@ -774,7 +774,7 @@ const OrdersManagement = () => {
                         type="checkbox"
                         checked={selectedOrders.includes(order._id)}
                         onChange={() => handleSelectOrder(order._id)}
-                        className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                        className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                       />
                     </td>
                     <td className="p-4">
@@ -860,7 +860,7 @@ const OrdersManagement = () => {
                           !order.trackingNumber && (
                             <button
                               onClick={() => handleTrackingUpdate(order)}
-                              className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+                              className="p-2 text-gray-600 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
                               title="Add Tracking"
                             >
                               <Truck className="w-4 h-4" />
@@ -910,7 +910,7 @@ const OrdersManagement = () => {
                     onClick={() => setCurrentPage(pageNum)}
                     className={`w-10 h-10 flex items-center justify-center rounded-lg ${
                       currentPage === pageNum
-                        ? "bg-purple-600 text-white"
+                        ? "bg-primary-600 text-white"
                         : "hover:bg-gray-100"
                     }`}
                   >
@@ -924,7 +924,7 @@ const OrdersManagement = () => {
                   onClick={() => setCurrentPage(totalPages)}
                   className={`w-10 h-10 flex items-center justify-center rounded-lg ${
                     currentPage === totalPages
-                      ? "bg-purple-600 text-white"
+                      ? "bg-primary-600 text-white"
                       : "hover:bg-gray-100"
                   }`}
                 >
@@ -1020,7 +1020,7 @@ const OrdersManagement = () => {
         {/* Loading State */}
         {loading && (
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
             <p className="mt-4 text-gray-600">Loading orders...</p>
           </div>
         )}
@@ -1041,8 +1041,8 @@ const OrdersManagement = () => {
                       +{stats.todayOrders} today
                     </p>
                   </div>
-                  <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                    <ShoppingBag className="w-6 h-6 text-purple-600" />
+                  <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
+                    <ShoppingBag className="w-6 h-6 text-primary-600" />
                   </div>
                 </div>
               </div>
@@ -1109,11 +1109,11 @@ const OrdersManagement = () => {
                       placeholder="Search by order number, email, or phone..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                     />
                     {searchTerm !== debouncedSearchTerm && (
                       <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600"></div>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-600"></div>
                       </div>
                     )}
                   </div>
@@ -1127,14 +1127,14 @@ const OrdersManagement = () => {
                       type="date"
                       value={startDate}
                       onChange={(e) => setStartDate(e.target.value)}
-                      className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                      className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                       placeholder="From"
                     />
                     <input
                       type="date"
                       value={endDate}
                       onChange={(e) => setEndDate(e.target.value)}
-                      className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                      className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                       placeholder="To"
                     />
                   </div>
@@ -1144,7 +1144,7 @@ const OrdersManagement = () => {
                     <select
                       value={filterStatus}
                       onChange={(e) => setFilterStatus(e.target.value)}
-                      className="appearance-none pl-4 pr-10 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                      className="appearance-none pl-4 pr-10 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                     >
                       {statusOptions.map((status) => (
                         <option key={status.value} value={status.value}>
@@ -1160,7 +1160,7 @@ const OrdersManagement = () => {
                     <select
                       value={filterPaymentStatus}
                       onChange={(e) => setFilterPaymentStatus(e.target.value)}
-                      className="appearance-none pl-4 pr-10 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                      className="appearance-none pl-4 pr-10 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                     >
                       {paymentStatusOptions.map((status) => (
                         <option key={status.value} value={status.value}>
@@ -1176,7 +1176,7 @@ const OrdersManagement = () => {
                     <select
                       value={sortBy}
                       onChange={(e) => setSortBy(e.target.value)}
-                      className="appearance-none pl-4 pr-10 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                      className="appearance-none pl-4 pr-10 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                     >
                       {sortOptions.map((option) => (
                         <option key={option.value} value={option.value}>
@@ -1193,7 +1193,7 @@ const OrdersManagement = () => {
                       onClick={() => setViewMode("table")}
                       className={`px-4 py-3 transition-colors ${
                         viewMode === "table"
-                          ? "bg-purple-600 text-white"
+                          ? "bg-primary-600 text-white"
                           : "hover:bg-gray-50 text-gray-700"
                       }`}
                     >
@@ -1203,7 +1203,7 @@ const OrdersManagement = () => {
                       onClick={() => setViewMode("grid")}
                       className={`px-4 py-3 transition-colors ${
                         viewMode === "grid"
-                          ? "bg-purple-600 text-white"
+                          ? "bg-primary-600 text-white"
                           : "hover:bg-gray-50 text-gray-700"
                       }`}
                     >
@@ -1220,7 +1220,7 @@ const OrdersManagement = () => {
                   <select
                     value={filterPaymentMethod}
                     onChange={(e) => setFilterPaymentMethod(e.target.value)}
-                    className="appearance-none pl-4 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                    className="appearance-none pl-4 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                   >
                     {paymentMethodOptions.map((method) => (
                       <option key={method.value} value={method.value}>
@@ -1236,7 +1236,7 @@ const OrdersManagement = () => {
                   <select
                     value={filterShippingMethod}
                     onChange={(e) => setFilterShippingMethod(e.target.value)}
-                    className="appearance-none pl-4 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                    className="appearance-none pl-4 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                   >
                     {shippingMethodOptions.map((method) => (
                       <option key={method.value} value={method.value}>
@@ -1251,10 +1251,10 @@ const OrdersManagement = () => {
 
             {/* Bulk Actions */}
             {selectedOrders.length > 0 && (
-              <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-4 border border-purple-100">
+              <div className="bg-gradient-to-r from-primary-50 to-pink-50 rounded-2xl p-4 border border-primary-100">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg flex items-center justify-center font-semibold">
+                    <div className="w-8 h-8 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-lg flex items-center justify-center font-semibold">
                       {selectedOrders.length}
                     </div>
                     <span className="font-medium text-gray-900">
@@ -1266,7 +1266,7 @@ const OrdersManagement = () => {
                     <div className="relative">
                       <select
                         onChange={(e) => handleBulkStatusUpdate(e.target.value)}
-                        className="appearance-none pl-4 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                        className="appearance-none pl-4 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                         defaultValue=""
                       >
                         <option value="" disabled>
@@ -1326,7 +1326,7 @@ const OrdersManagement = () => {
                           </div>
                           <div className="w-full bg-gray-200 rounded-full h-2">
                             <div
-                              className="bg-purple-500 h-2 rounded-full"
+                              className="bg-primary-500 h-2 rounded-full"
                               style={{ width: `${percentage}%` }}
                             />
                           </div>
@@ -1343,7 +1343,7 @@ const OrdersManagement = () => {
                 <div className="space-y-3">
                   <button
                     onClick={() => window.print()}
-                    className="w-full text-left p-3 bg-purple-50 text-purple-700 rounded-xl hover:bg-purple-100 transition-colors flex items-center gap-2"
+                    className="w-full text-left p-3 bg-primary-50 text-primary-700 rounded-xl hover:bg-primary-100 transition-colors flex items-center gap-2"
                   >
                     <Printer className="w-4 h-4" />
                     Print Report

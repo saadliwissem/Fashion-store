@@ -185,8 +185,8 @@ const EnigmasPage = () => {
 
               <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-soft">
                 <div className="flex items-center gap-3">
-                  <div className="p-3 bg-purple-100 rounded-xl">
-                    <Clock className="w-6 h-6 text-purple-600" />
+                  <div className="p-3 bg-primary-100 rounded-xl">
+                    <Clock className="w-6 h-6 text-primary-600" />
                   </div>
                   <div>
                     <div className="text-2xl font-bold text-gray-900">

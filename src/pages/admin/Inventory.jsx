@@ -379,7 +379,7 @@ const Inventory = () => {
             type="checkbox"
             checked={selectedItems.includes(item.id)}
             onChange={() => handleSelectItem(item.id)}
-            className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+            className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </td>
         <td className="p-4">
@@ -625,7 +625,7 @@ const Inventory = () => {
       <AdminLayout>
         <div className="flex items-center justify-center h-96">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
             <p className="mt-4 text-gray-600">Loading inventory...</p>
           </div>
         </div>
@@ -688,8 +688,8 @@ const Inventory = () => {
                 </p>
                 <p className="text-sm text-gray-600 mt-1">in inventory</p>
               </div>
-              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                <Package className="w-6 h-6 text-purple-600" />
+              <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
+                <Package className="w-6 h-6 text-primary-600" />
               </div>
             </div>
           </div>
@@ -758,12 +758,12 @@ const Inventory = () => {
                   placeholder="Search by name, SKU, product ID..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none transition-colors"
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none transition-colors"
                   disabled={loading}
                 />
                 {loading && (
                   <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600"></div>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-600"></div>
                   </div>
                 )}
               </div>
@@ -776,7 +776,7 @@ const Inventory = () => {
                 <select
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}
-                  className="appearance-none pl-4 pr-10 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="appearance-none pl-4 pr-10 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={loading}
                 >
                   {statusOptions.map((status) => (
@@ -793,7 +793,7 @@ const Inventory = () => {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="appearance-none pl-4 pr-10 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="appearance-none pl-4 pr-10 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={loading}
                 >
                   {sortOptions.map((option) => (
@@ -812,7 +812,7 @@ const Inventory = () => {
                   disabled={loading}
                   className={`px-4 py-3 transition-colors ${
                     viewMode === "table"
-                      ? "bg-purple-100 text-purple-700"
+                      ? "bg-primary-100 text-primary-700"
                       : "hover:bg-gray-50"
                   } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
                   title="Table View"
@@ -824,7 +824,7 @@ const Inventory = () => {
                   disabled={loading}
                   className={`px-4 py-3 transition-colors ${
                     viewMode === "cards"
-                      ? "bg-purple-100 text-purple-700"
+                      ? "bg-primary-100 text-primary-700"
                       : "hover:bg-gray-50"
                   } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
                   title="Card View"
@@ -838,10 +838,10 @@ const Inventory = () => {
 
         {/* Bulk Actions */}
         {selectedItems.length > 0 && (
-          <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-4">
+          <div className="bg-gradient-to-r from-primary-50 to-pink-50 rounded-2xl p-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-purple-600 text-white rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-primary-600 text-white rounded-lg flex items-center justify-center">
                   {selectedItems.length}
                 </div>
                 <span className="font-medium text-gray-900">
@@ -886,7 +886,7 @@ const Inventory = () => {
         {loading && inventory.length === 0 ? (
           <div className="bg-white rounded-2xl shadow-lg p-12">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
               <p className="mt-4 text-gray-600">Loading inventory data...</p>
             </div>
           </div>
@@ -904,7 +904,7 @@ const Inventory = () => {
                           inventory.length > 0
                         }
                         onChange={handleSelectAll}
-                        className="rounded border-gray-300 text-purple-600 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="rounded border-gray-300 text-primary-600 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
                         disabled={loading || inventory.length === 0}
                       />
                     </th>
@@ -989,7 +989,7 @@ const Inventory = () => {
                         disabled={loading}
                         className={`min-w-[40px] h-10 flex items-center justify-center rounded-lg transition-colors ${
                           pagination.page === pageNum
-                            ? "bg-purple-600 text-white"
+                            ? "bg-primary-600 text-white"
                             : "hover:bg-gray-100"
                         } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
                       >
@@ -1063,7 +1063,7 @@ const Inventory = () => {
                           disabled={loading}
                           className={`min-w-[40px] h-10 flex items-center justify-center rounded-lg transition-colors ${
                             pagination.page === pageNum
-                              ? "bg-purple-600 text-white"
+                              ? "bg-primary-600 text-white"
                               : "hover:bg-gray-100"
                           } ${loading ? "opacity-50 cursor-not-allowed" : ""}`}
                         >
@@ -1196,10 +1196,10 @@ const Inventory = () => {
               <button
                 onClick={() => setShowBulkUpdate(true)}
                 disabled={loading || selectedItems.length === 0}
-                className={`w-full text-left p-3 bg-gradient-to-r from-purple-50 to-pink-50 text-purple-700 rounded-xl transition-colors flex items-center gap-3 ${
+                className={`w-full text-left p-3 bg-gradient-to-r from-primary-50 to-pink-50 text-primary-700 rounded-xl transition-colors flex items-center gap-3 ${
                   loading || selectedItems.length === 0
                     ? "opacity-50 cursor-not-allowed"
-                    : "hover:from-purple-100 hover:to-pink-100"
+                    : "hover:from-primary-100 hover:to-pink-100"
                 }`}
               >
                 <Edit className="w-5 h-5" />
@@ -1295,7 +1295,7 @@ const Inventory = () => {
                         onChange={(e) =>
                           setBulkQuantity(parseInt(e.target.value) || 0)
                         }
-                        className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                        className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                         placeholder="Enter quantity"
                       />
                       <Button

@@ -19,7 +19,7 @@ const StatusUpdateModal = ({ isOpen, onClose, order, onSuccess }) => {
     {
       value: "confirmed",
       label: "Confirmed",
-      color: "bg-purple-100 text-purple-800",
+      color: "bg-primary-100 text-primary-800",
     },
     {
       value: "processing",
@@ -108,8 +108,8 @@ const StatusUpdateModal = ({ isOpen, onClose, order, onSuccess }) => {
                     onClick={() => setStatus(option.value)}
                     className={`p-3 border-2 rounded-xl text-center transition-all ${
                       status === option.value
-                        ? "border-purple-500 bg-purple-50"
-                        : "border-gray-200 hover:border-purple-300"
+                        ? "border-primary-500 bg-primary-50"
+                        : "border-gray-200 hover:border-primary-300"
                     }`}
                   >
                     <span
@@ -131,7 +131,7 @@ const StatusUpdateModal = ({ isOpen, onClose, order, onSuccess }) => {
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
                 placeholder="Add a note about this status change..."
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                 rows="3"
               />
             </div>
@@ -169,7 +169,7 @@ const StatusUpdateModal = ({ isOpen, onClose, order, onSuccess }) => {
               <Button
                 type="submit"
                 loading={loading}
-                className="flex-1 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800"
+                className="flex-1 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
               >
                 Update Status
               </Button>

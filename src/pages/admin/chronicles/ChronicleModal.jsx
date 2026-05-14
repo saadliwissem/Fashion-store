@@ -514,10 +514,10 @@ const ChronicleModal = ({
       value,
       onChange: handleChange,
       onBlur: () => setTouched((prev) => ({ ...prev, [name]: true })),
-      className: `w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none transition-colors ${
+      className: `w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-200 focus:outline-none transition-colors ${
         isInvalid
           ? "border-red-500 focus:border-red-500 bg-red-50"
-          : "border-gray-300 focus:border-purple-500"
+          : "border-gray-300 focus:border-primary-500"
       }`,
       placeholder,
       ...options,
@@ -548,10 +548,10 @@ const ChronicleModal = ({
           onChange={handleChange}
           onBlur={() => setTouched((prev) => ({ ...prev, [name]: true }))}
           rows={rows}
-          className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none transition-colors ${
+          className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-200 focus:outline-none transition-colors ${
             isInvalid
               ? "border-red-500 focus:border-red-500 bg-red-50"
-              : "border-gray-300 focus:border-purple-500"
+              : "border-gray-300 focus:border-primary-500"
           }`}
           placeholder={placeholder}
         />
@@ -631,7 +631,7 @@ const ChronicleModal = ({
                   className={`w-5 h-5 ${
                     getFieldError("name") || getFieldError("description")
                       ? "text-red-500"
-                      : "text-purple-600"
+                      : "text-primary-600"
                   }`}
                 />
                 <span className="font-semibold text-gray-900">
@@ -665,10 +665,10 @@ const ChronicleModal = ({
                     onBlur={() =>
                       setTouched((prev) => ({ ...prev, enigma: true }))
                     }
-                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none ${
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-200 focus:outline-none ${
                       isFieldInvalid("enigma")
                         ? "border-red-500 focus:border-red-500 bg-red-50"
-                        : "border-gray-300 focus:border-purple-500"
+                        : "border-gray-300 focus:border-primary-500"
                     }`}
                   >
                     <option value="">Select an enigma</option>
@@ -731,7 +731,7 @@ const ChronicleModal = ({
               className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
             >
               <div className="flex items-center gap-3">
-                <Sparkles className="w-5 h-5 text-purple-600" />
+                <Sparkles className="w-5 h-5 text-primary-600" />
                 <span className="font-semibold text-gray-900">Details</span>
               </div>
               {expandedSections.details ? (
@@ -754,10 +754,10 @@ const ChronicleModal = ({
                     onBlur={() =>
                       setTouched((prev) => ({ ...prev, difficulty: true }))
                     }
-                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none ${
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-200 focus:outline-none ${
                       isFieldInvalid("difficulty")
                         ? "border-red-500 focus:border-red-500 bg-red-50"
-                        : "border-gray-300 focus:border-purple-500"
+                        : "border-gray-300 focus:border-primary-500"
                     }`}
                   >
                     <option value="beginner">Beginner</option>
@@ -784,10 +784,10 @@ const ChronicleModal = ({
                     onBlur={() =>
                       setTouched((prev) => ({ ...prev, status: true }))
                     }
-                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none ${
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-200 focus:outline-none ${
                       isFieldInvalid("status")
                         ? "border-red-500 focus:border-red-500 bg-red-50"
-                        : "border-gray-300 focus:border-purple-500"
+                        : "border-gray-300 focus:border-primary-500"
                     }`}
                   >
                     <option value="available">Available</option>
@@ -826,10 +826,10 @@ const ChronicleModal = ({
                       }
                       min="0"
                       step="0.01"
-                      className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none ${
+                      className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-200 focus:outline-none ${
                         isFieldInvalid("basePrice")
                           ? "border-red-500 focus:border-red-500 bg-red-50"
-                          : "border-gray-300 focus:border-purple-500"
+                          : "border-gray-300 focus:border-primary-500"
                       }`}
                       placeholder="299.99"
                     />
@@ -849,7 +849,7 @@ const ChronicleModal = ({
                     name="featured"
                     checked={formData.featured}
                     onChange={handleChange}
-                    className="w-5 h-5 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                    className="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <label htmlFor="featured" className="text-sm text-gray-700">
                     <span className="font-medium">Featured Chronicle</span>
@@ -870,7 +870,7 @@ const ChronicleModal = ({
               className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
             >
               <div className="flex items-center gap-3">
-                <Hammer className="w-5 h-5 text-purple-600" />
+                <Hammer className="w-5 h-5 text-primary-600" />
                 <span className="font-semibold text-gray-900">Production</span>
               </div>
               {expandedSections.production ? (
@@ -897,10 +897,10 @@ const ChronicleModal = ({
                           productionStatus: true,
                         }))
                       }
-                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none ${
+                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-200 focus:outline-none ${
                         isFieldInvalid("productionStatus")
                           ? "border-red-500 focus:border-red-500 bg-red-50"
-                          : "border-gray-300 focus:border-purple-500"
+                          : "border-gray-300 focus:border-primary-500"
                       }`}
                     >
                       <option value="awaiting">Awaiting</option>
@@ -959,7 +959,7 @@ const ChronicleModal = ({
               className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
             >
               <div className="flex items-center gap-3">
-                <MapPin className="w-5 h-5 text-purple-600" />
+                <MapPin className="w-5 h-5 text-primary-600" />
                 <span className="font-semibold text-gray-900">Location</span>
               </div>
               {expandedSections.location ? (
@@ -1022,7 +1022,7 @@ const ChronicleModal = ({
               className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
             >
               <div className="flex items-center gap-3">
-                <User className="w-5 h-5 text-purple-600" />
+                <User className="w-5 h-5 text-primary-600" />
                 <span className="font-semibold text-gray-900">Author</span>
               </div>
               {expandedSections.author ? (
@@ -1074,7 +1074,7 @@ const ChronicleModal = ({
               className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
             >
               <div className="flex items-center gap-3">
-                <Hash className="w-5 h-5 text-purple-600" />
+                <Hash className="w-5 h-5 text-primary-600" />
                 <span className="font-semibold text-gray-900">
                   Fragment Statistics
                 </span>
@@ -1104,10 +1104,10 @@ const ChronicleModal = ({
                       }))
                     }
                     min="0"
-                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none ${
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-200 focus:outline-none ${
                       isFieldInvalid("stats.fragmentCount")
                         ? "border-red-500 focus:border-red-500 bg-red-50"
-                        : "border-gray-300 focus:border-purple-500"
+                        : "border-gray-300 focus:border-primary-500"
                     }`}
                     readOnly={mode === "edit"}
                   />
@@ -1140,10 +1140,10 @@ const ChronicleModal = ({
                       }))
                     }
                     min="0"
-                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none ${
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-200 focus:outline-none ${
                       isFieldInvalid("stats.fragmentsClaimed")
                         ? "border-red-500 focus:border-red-500 bg-red-50"
-                        : "border-gray-300 focus:border-purple-500"
+                        : "border-gray-300 focus:border-primary-500"
                     }`}
                     readOnly={mode === "edit"}
                   />
@@ -1171,10 +1171,10 @@ const ChronicleModal = ({
                       }))
                     }
                     min="1"
-                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none ${
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-200 focus:outline-none ${
                       isFieldInvalid("stats.requiredFragments")
                         ? "border-red-500 focus:border-red-500 bg-red-50"
-                        : "border-gray-300 focus:border-purple-500"
+                        : "border-gray-300 focus:border-primary-500"
                     }`}
                   />
                   {getFieldError("stats.requiredFragments") && (
@@ -1201,10 +1201,10 @@ const ChronicleModal = ({
                       }))
                     }
                     min="0"
-                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none ${
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-200 focus:outline-none ${
                       isFieldInvalid("stats.uniqueKeepers")
                         ? "border-red-500 focus:border-red-500 bg-red-50"
-                        : "border-gray-300 focus:border-purple-500"
+                        : "border-gray-300 focus:border-primary-500"
                     }`}
                     readOnly={mode === "edit"}
                   />
@@ -1227,7 +1227,7 @@ const ChronicleModal = ({
               className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
             >
               <div className="flex items-center gap-3">
-                <Sparkles className="w-5 h-5 text-purple-600" />
+                <Sparkles className="w-5 h-5 text-primary-600" />
                 <span className="font-semibold text-gray-900">Rewards</span>
               </div>
               {expandedSections.rewards ? (
@@ -1255,7 +1255,7 @@ const ChronicleModal = ({
                               reward.rarity === "legendary"
                                 ? "bg-yellow-100 text-yellow-800"
                                 : reward.rarity === "rare"
-                                ? "bg-purple-100 text-purple-800"
+                                ? "bg-primary-100 text-primary-800"
                                 : "bg-gray-100 text-gray-800"
                             }`}
                           >
@@ -1379,7 +1379,7 @@ const ChronicleModal = ({
                         <button
                           type="button"
                           onClick={handleAddReward}
-                          className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+                          className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
                         >
                           Add Reward
                         </button>
@@ -1415,7 +1415,7 @@ const ChronicleModal = ({
               className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
             >
               <div className="flex items-center gap-3">
-                <Clock className="w-5 h-5 text-purple-600" />
+                <Clock className="w-5 h-5 text-primary-600" />
                 <span className="font-semibold text-gray-900">Waitlist</span>
               </div>
               {expandedSections.waitlist ? (
@@ -1434,7 +1434,7 @@ const ChronicleModal = ({
                     name="waitlist.enabled"
                     checked={formData.waitlist.enabled}
                     onChange={handleChange}
-                    className="w-5 h-5 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                    className="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <label
                     htmlFor="waitlistEnabled"
@@ -1479,10 +1479,10 @@ const ChronicleModal = ({
                           }))
                         }
                         min="0"
-                        className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none ${
+                        className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-200 focus:outline-none ${
                           isFieldInvalid("waitlist.currentCount")
                             ? "border-red-500 focus:border-red-500 bg-red-50"
-                            : "border-gray-300 focus:border-purple-500"
+                            : "border-gray-300 focus:border-primary-500"
                         }`}
                         readOnly={mode === "edit"}
                       />
@@ -1523,7 +1523,7 @@ const ChronicleModal = ({
                   className={`w-5 h-5 ${
                     getFieldError("coverImage.url")
                       ? "text-red-500"
-                      : "text-purple-600"
+                      : "text-primary-600"
                   }`}
                 />
                 <span className="font-semibold text-gray-900">Cover Image</span>
@@ -1573,7 +1573,7 @@ const ChronicleModal = ({
                       />
                       <label
                         htmlFor="cover-upload"
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg cursor-pointer hover:bg-purple-700 transition-colors"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg cursor-pointer hover:bg-primary-700 transition-colors"
                       >
                         <Upload className="w-4 h-4" />
                         Upload Cover Image
@@ -1624,7 +1624,7 @@ const ChronicleModal = ({
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
                 <>

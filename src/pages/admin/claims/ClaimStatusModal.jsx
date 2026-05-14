@@ -62,7 +62,7 @@ const ClaimStatusModal = ({ isOpen, onClose, claim, onUpdateStatus }) => {
       case "confirmed":
         return "bg-blue-100 text-blue-800 border-blue-200";
       case "processing":
-        return "bg-purple-100 text-purple-800 border-purple-200";
+        return "bg-primary-100 text-primary-800 border-primary-200";
       case "shipped":
         return "bg-cyan-100 text-cyan-800 border-cyan-200";
       case "delivered":
@@ -114,7 +114,7 @@ const ClaimStatusModal = ({ isOpen, onClose, claim, onUpdateStatus }) => {
           value: "processing",
           label: "Start Processing",
           icon: Loader,
-          color: "bg-purple-100 text-purple-700",
+          color: "bg-primary-100 text-primary-700",
         },
         {
           value: "cancelled",
@@ -267,7 +267,7 @@ const ClaimStatusModal = ({ isOpen, onClose, claim, onUpdateStatus }) => {
                   onClick={() => setSelectedTab(tab.id)}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
                     selectedTab === tab.id
-                      ? "bg-purple-600 text-white"
+                      ? "bg-primary-600 text-white"
                       : "text-gray-600 hover:bg-gray-100"
                   }`}
                 >
@@ -317,8 +317,8 @@ const ClaimStatusModal = ({ isOpen, onClose, claim, onUpdateStatus }) => {
                         }
                         className={`flex items-center gap-3 p-4 rounded-xl border-2 transition-all ${
                           isSelected
-                            ? "border-purple-500 bg-purple-50"
-                            : "border-gray-200 hover:border-purple-300 hover:bg-gray-50"
+                            ? "border-primary-500 bg-primary-50"
+                            : "border-gray-200 hover:border-primary-300 hover:bg-gray-50"
                         }`}
                       >
                         <div className={`p-2 rounded-lg ${option.color}`}>
@@ -356,7 +356,7 @@ const ClaimStatusModal = ({ isOpen, onClose, claim, onUpdateStatus }) => {
                     setStatusData({ ...statusData, notes: e.target.value })
                   }
                   rows="4"
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                   placeholder="Add notes about this status change (reason, details, etc.)..."
                 />
                 <p className="text-xs text-gray-500 mt-1">
@@ -382,7 +382,7 @@ const ClaimStatusModal = ({ isOpen, onClose, claim, onUpdateStatus }) => {
                         estimatedCompletion: e.target.value,
                       })
                     }
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                   />
                 </div>
               )}
@@ -392,9 +392,9 @@ const ClaimStatusModal = ({ isOpen, onClose, claim, onUpdateStatus }) => {
           {/* Notifications Tab */}
           {selectedTab === "notifications" && (
             <div className="space-y-6">
-              <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-100">
+              <div className="bg-gradient-to-r from-primary-50 to-pink-50 rounded-xl p-6 border border-primary-100">
                 <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <Bell className="w-5 h-5 text-purple-600" />
+                  <Bell className="w-5 h-5 text-primary-600" />
                   Customer Notifications
                 </h3>
 
@@ -425,7 +425,7 @@ const ClaimStatusModal = ({ isOpen, onClose, claim, onUpdateStatus }) => {
                         }
                         className="sr-only peer"
                       />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
                     </label>
                   </div>
 
@@ -453,7 +453,7 @@ const ClaimStatusModal = ({ isOpen, onClose, claim, onUpdateStatus }) => {
                         }
                         className="sr-only peer"
                       />
-                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                      <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
                     </label>
                   </div>
 
@@ -542,7 +542,7 @@ const ClaimStatusModal = ({ isOpen, onClose, claim, onUpdateStatus }) => {
                                   [req.field]: e.target.value,
                                 })
                               }
-                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                               placeholder="Enter tracking number"
                               required={req.required}
                             />
@@ -557,7 +557,7 @@ const ClaimStatusModal = ({ isOpen, onClose, claim, onUpdateStatus }) => {
                                   [req.field]: e.target.value,
                                 })
                               }
-                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                               required={req.required}
                             >
                               <option value="">Select Carrier</option>
@@ -579,7 +579,7 @@ const ClaimStatusModal = ({ isOpen, onClose, claim, onUpdateStatus }) => {
                                 })
                               }
                               rows="3"
-                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                               placeholder="Reason for cancellation/refund"
                               required={req.required}
                             />
@@ -595,7 +595,7 @@ const ClaimStatusModal = ({ isOpen, onClose, claim, onUpdateStatus }) => {
                                   [req.field]: e.target.value,
                                 })
                               }
-                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                               placeholder="Delivery confirmation number (optional)"
                             />
                           )}
@@ -629,7 +629,7 @@ const ClaimStatusModal = ({ isOpen, onClose, claim, onUpdateStatus }) => {
             <div className="space-y-6">
               <div className="bg-white rounded-xl border border-gray-200 p-6">
                 <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <Clock className="w-5 h-5 text-purple-600" />
+                  <Clock className="w-5 h-5 text-primary-600" />
                   Previous Status Changes
                 </h3>
 
@@ -640,7 +640,7 @@ const ClaimStatusModal = ({ isOpen, onClose, claim, onUpdateStatus }) => {
                         key={index}
                         className="relative pl-8 pb-4 border-l-2 border-gray-200 last:border-0"
                       >
-                        <div className="absolute left-[-9px] top-0 w-4 h-4 bg-purple-100 rounded-full border-2 border-purple-500"></div>
+                        <div className="absolute left-[-9px] top-0 w-4 h-4 bg-primary-100 rounded-full border-2 border-primary-500"></div>
                         <div className="bg-gray-50 rounded-lg p-4">
                           <div className="flex items-center justify-between mb-2">
                             <p className="font-medium text-gray-900">
@@ -681,7 +681,7 @@ const ClaimStatusModal = ({ isOpen, onClose, claim, onUpdateStatus }) => {
             <Button
               onClick={handleSubmit}
               disabled={saving || !statusData.status}
-              className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800"
+              className="flex items-center gap-2 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
             >
               {saving ? (
                 <>

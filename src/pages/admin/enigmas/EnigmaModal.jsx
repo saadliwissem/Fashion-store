@@ -489,10 +489,10 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
         : formData[name],
       onChange: handleChange,
       onBlur: () => setTouched((prev) => ({ ...prev, [name]: true })),
-      className: `w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none transition-colors ${
+      className: `w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-200 focus:outline-none transition-colors ${
         isInvalid
           ? "border-red-500 focus:border-red-500 bg-red-50"
-          : "border-gray-300 focus:border-purple-500"
+          : "border-gray-300 focus:border-primary-500"
       }`,
       placeholder,
       ...options,
@@ -523,10 +523,10 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
           onChange={handleChange}
           onBlur={() => setTouched((prev) => ({ ...prev, [name]: true }))}
           rows={rows}
-          className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none transition-colors ${
+          className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-200 focus:outline-none transition-colors ${
             isInvalid
               ? "border-red-500 focus:border-red-500 bg-red-50"
-              : "border-gray-300 focus:border-purple-500"
+              : "border-gray-300 focus:border-primary-500"
           }`}
           placeholder={placeholder}
         />
@@ -583,7 +583,7 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
               <div className="flex items-center gap-3">
                 <FileText
                   className={`w-5 h-5 ${
-                    getFieldError("name") ? "text-red-500" : "text-purple-600"
+                    getFieldError("name") ? "text-red-500" : "text-primary-600"
                   }`}
                 />
                 <span className="font-semibold text-gray-900">
@@ -645,10 +645,10 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
                       onBlur={() =>
                         setTouched((prev) => ({ ...prev, status: true }))
                       }
-                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none ${
+                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-200 focus:outline-none ${
                         isFieldInvalid("status")
                           ? "border-red-500 focus:border-red-500 bg-red-50"
-                          : "border-gray-300 focus:border-purple-500"
+                          : "border-gray-300 focus:border-primary-500"
                       }`}
                     >
                       <option value="upcoming">Upcoming</option>
@@ -675,10 +675,10 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
                       onBlur={() =>
                         setTouched((prev) => ({ ...prev, difficulty: true }))
                       }
-                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none ${
+                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-200 focus:outline-none ${
                         isFieldInvalid("difficulty")
                           ? "border-red-500 focus:border-red-500 bg-red-50"
-                          : "border-gray-300 focus:border-purple-500"
+                          : "border-gray-300 focus:border-primary-500"
                       }`}
                     >
                       <option value="beginner">Beginner</option>
@@ -702,7 +702,7 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
                     name="featured"
                     checked={formData.featured}
                     onChange={handleChange}
-                    className="w-5 h-5 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                    className="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <label htmlFor="featured" className="text-sm text-gray-700">
                     <span className="font-medium">Featured Enigma</span>
@@ -735,7 +735,7 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
                     getFieldError("coverImage.url") ||
                     getFieldError("bannerImage.url")
                       ? "text-red-500"
-                      : "text-purple-600"
+                      : "text-primary-600"
                   }`}
                 />
                 <span className="font-semibold text-gray-900">Media</span>
@@ -789,7 +789,7 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
                       />
                       <label
                         htmlFor="cover-upload"
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg cursor-pointer hover:bg-purple-700 transition-colors"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg cursor-pointer hover:bg-primary-700 transition-colors"
                       >
                         <Upload className="w-4 h-4" />
                         Upload Cover Image
@@ -848,7 +848,7 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
                       />
                       <label
                         htmlFor="banner-upload"
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg cursor-pointer hover:bg-purple-700 transition-colors"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg cursor-pointer hover:bg-primary-700 transition-colors"
                       >
                         <Upload className="w-4 h-4" />
                         Upload Banner Image
@@ -884,7 +884,7 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
               className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
             >
               <div className="flex items-center gap-3">
-                <User className="w-5 h-5 text-purple-600" />
+                <User className="w-5 h-5 text-primary-600" />
                 <span className="font-semibold text-gray-900">
                   Creator Information
                 </span>
@@ -942,7 +942,7 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
               className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
             >
               <div className="flex items-center gap-3">
-                <MapPin className="w-5 h-5 text-purple-600" />
+                <MapPin className="w-5 h-5 text-primary-600" />
                 <span className="font-semibold text-gray-900">Location</span>
               </div>
               {expandedSections.location ? (
@@ -961,7 +961,7 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
                     name="location.virtual"
                     checked={formData.location.virtual}
                     onChange={handleChange}
-                    className="w-5 h-5 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                    className="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <label htmlFor="virtual" className="text-sm text-gray-700">
                     Virtual Location
@@ -997,7 +997,7 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
               className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
             >
               <div className="flex items-center gap-3">
-                <Tag className="w-5 h-5 text-purple-600" />
+                <Tag className="w-5 h-5 text-primary-600" />
                 <span className="font-semibold text-gray-900">Tags</span>
               </div>
               {expandedSections.tags ? (
@@ -1017,13 +1017,13 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
                     onKeyPress={(e) =>
                       e.key === "Enter" && (e.preventDefault(), handleAddTag())
                     }
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                     placeholder="Add a tag..."
                   />
                   <button
                     type="button"
                     onClick={handleAddTag}
-                    className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                    className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
                   >
                     Add
                   </button>
@@ -1061,7 +1061,7 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
               className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
             >
               <div className="flex items-center gap-3">
-                <Sparkles className="w-5 h-5 text-purple-600" />
+                <Sparkles className="w-5 h-5 text-primary-600" />
                 <span className="font-semibold text-gray-900">Rewards</span>
               </div>
               {expandedSections.rewards ? (
@@ -1089,7 +1089,7 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
                               reward.rarity === "legendary"
                                 ? "bg-yellow-100 text-yellow-800"
                                 : reward.rarity === "rare"
-                                ? "bg-purple-100 text-purple-800"
+                                ? "bg-primary-100 text-primary-800"
                                 : "bg-gray-100 text-gray-800"
                             }`}
                           >
@@ -1188,7 +1188,7 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
                         <button
                           type="button"
                           onClick={handleAddReward}
-                          className="flex-1 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+                          className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700"
                         >
                           Add Reward
                         </button>
@@ -1224,7 +1224,7 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
               className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
             >
               <div className="flex items-center gap-3">
-                <Calendar className="w-5 h-5 text-purple-600" />
+                <Calendar className="w-5 h-5 text-primary-600" />
                 <span className="font-semibold text-gray-900">Dates</span>
               </div>
               {expandedSections.dates ? (
@@ -1261,7 +1261,7 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
               className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
             >
               <div className="flex items-center gap-3">
-                <FileText className="w-5 h-5 text-purple-600" />
+                <FileText className="w-5 h-5 text-primary-600" />
                 <span className="font-semibold text-gray-900">
                   SEO Settings
                 </span>
@@ -1318,13 +1318,13 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
                         e.key === "Enter" &&
                         (e.preventDefault(), handleAddSeoKeyword())
                       }
-                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                       placeholder="Add a keyword..."
                     />
                     <button
                       type="button"
                       onClick={handleAddSeoKeyword}
-                      className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                      className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
                     >
                       Add
                     </button>
@@ -1361,7 +1361,7 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
                 className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
               >
                 <div className="flex items-center gap-3">
-                  <AlertCircle className="w-5 h-5 text-purple-600" />
+                  <AlertCircle className="w-5 h-5 text-primary-600" />
                   <span className="font-semibold text-gray-900">
                     Statistics
                   </span>
@@ -1437,7 +1437,7 @@ const EnigmaModal = ({ isOpen, onClose, mode, enigma, onSave }) => {
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
                 <>

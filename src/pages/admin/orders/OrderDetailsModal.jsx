@@ -73,7 +73,7 @@ const OrderDetailsModal = ({ isOpen, onClose, order }) => {
             {/* Left Column - Order Details */}
             <div className="lg:col-span-2 space-y-6">
               {/* Order Status */}
-              <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-6">
+              <div className="bg-gradient-to-r from-primary-50 to-pink-50 rounded-xl p-6">
                 <div className="flex items-center justify-between">
                   <div>
                     <h3 className="font-bold text-gray-900 text-lg mb-2">

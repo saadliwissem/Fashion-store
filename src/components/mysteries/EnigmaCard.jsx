@@ -54,9 +54,9 @@ const EnigmaCard = ({ enigma }) => {
       },
       solved: {
         label: "Revealed",
-        color: "bg-purple-100 text-purple-700",
+        color: "bg-primary-100 text-primary-700",
         icon: Trophy,
-        iconColor: "text-purple-600",
+        iconColor: "text-primary-600",
       },
     };
     return configs[status] || configs["active"];

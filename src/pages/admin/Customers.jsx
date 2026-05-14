@@ -262,7 +262,7 @@ const Customers = () => {
     {
       value: "vip",
       label: "VIP",
-      color: "bg-purple-100 text-purple-800",
+      color: "bg-primary-100 text-primary-800",
       icon: Award,
     },
     {
@@ -579,10 +579,10 @@ const Customers = () => {
           </div>
 
           {/* Total Revenue */}
-          <div className="bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-200 rounded-2xl p-6">
+          <div className="bg-gradient-to-br from-primary-50 to-pink-50 border border-primary-200 rounded-2xl p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-purple-600 font-medium">
+                <p className="text-sm text-primary-600 font-medium">
                   Customer Revenue
                 </p>
                 <p className="text-3xl font-bold text-gray-900 mt-2">
@@ -592,8 +592,8 @@ const Customers = () => {
                   Avg: {statistics.averageCustomerValue.toFixed(2)} DT
                 </p>
               </div>
-              <div className="w-14 h-14 rounded-xl bg-purple-100 flex items-center justify-center">
-                <DollarSign className="w-7 h-7 text-purple-600" />
+              <div className="w-14 h-14 rounded-xl bg-primary-100 flex items-center justify-center">
+                <DollarSign className="w-7 h-7 text-primary-600" />
               </div>
             </div>
           </div>
@@ -916,7 +916,7 @@ const Customers = () => {
                             onClick={() =>
                               toast.success(`Editing ${customer.name}`)
                             }
-                            className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+                            className="p-2 text-gray-600 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
                             title="Edit"
                           >
                             <Edit className="w-4 h-4" />
@@ -1012,8 +1012,8 @@ const Customers = () => {
                         {customer.averageOrder.toFixed(2)} DT
                       </p>
                     </div>
-                    <div className="text-center p-3 bg-purple-50 rounded-lg">
-                      <p className="text-xs text-purple-600 font-medium mb-1">
+                    <div className="text-center p-3 bg-primary-50 rounded-lg">
+                      <p className="text-xs text-primary-600 font-medium mb-1">
                         Join Date
                       </p>
                       <p className="text-sm font-medium text-gray-900">
@@ -1276,17 +1276,17 @@ const Customers = () => {
                         <DollarSign className="w-8 h-8 text-green-600" />
                       </div>
                     </div>
-                    <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6">
+                    <div className="bg-gradient-to-br from-primary-50 to-pink-50 rounded-xl p-6">
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-sm text-purple-600 font-medium">
+                          <p className="text-sm text-primary-600 font-medium">
                             Avg. Order Value
                           </p>
                           <p className="text-3xl font-bold text-gray-900 mt-2">
                             {selectedCustomer.averageOrder.toFixed(2)} DT
                           </p>
                         </div>
-                        <Activity className="w-8 h-8 text-purple-600" />
+                        <Activity className="w-8 h-8 text-primary-600" />
                       </div>
                     </div>
                   </div>
@@ -1313,7 +1313,7 @@ const Customers = () => {
                       {selectedCustomer.tags.map((tag, index) => (
                         <span
                           key={index}
-                          className="px-3 py-2 bg-gradient-to-r from-purple-50 to-indigo-50 text-purple-700 rounded-lg font-medium"
+                          className="px-3 py-2 bg-gradient-to-r from-primary-50 to-indigo-50 text-primary-700 rounded-lg font-medium"
                         >
                           {tag.replace("_", " ").toUpperCase()}
                         </span>

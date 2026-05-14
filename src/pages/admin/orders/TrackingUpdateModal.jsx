@@ -91,7 +91,7 @@ const TrackingUpdateModal = ({ isOpen, onClose, order, onSuccess }) => {
                 value={trackingNumber}
                 onChange={(e) => setTrackingNumber(e.target.value)}
                 placeholder="Enter tracking number..."
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                 required
               />
             </div>
@@ -124,7 +124,7 @@ const TrackingUpdateModal = ({ isOpen, onClose, order, onSuccess }) => {
                 value={shippingCarrier}
                 onChange={(e) => setShippingCarrier(e.target.value)}
                 placeholder="Or enter custom carrier..."
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none mt-3"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none mt-3"
               />
             </div>
 
@@ -137,7 +137,7 @@ const TrackingUpdateModal = ({ isOpen, onClose, order, onSuccess }) => {
                 value={note}
                 onChange={(e) => setNote(e.target.value)}
                 placeholder="Add any additional shipping notes..."
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                 rows="3"
               />
             </div>

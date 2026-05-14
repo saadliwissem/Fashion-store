@@ -65,7 +65,7 @@ const FragmentProgress = ({
       },
       enchanting: {
         label: "Enchantment Phase",
-        color: "bg-purple-100 text-purple-700",
+        color: "bg-primary-100 text-primary-700",
         icon: AlertCircle,
         description: "Imbuing with hidden clues and magical properties",
       },

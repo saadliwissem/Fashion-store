@@ -35,7 +35,7 @@ const CartItem = ({
     <div className="p-4 md:p-6 hover:bg-gray-50 transition-colors">
       {/* {isUpdating && (
         <div className="absolute inset-0 bg-white/50 flex items-center justify-center z-10">
-          <Loader2 className="w-6 h-6 text-purple-600 animate-spin" />
+          <Loader2 className="w-6 h-6 text-primary-600 animate-spin" />
         </div>
       )} */}
       <div className="flex flex-col md:grid md:grid-cols-12 gap-4 items-center">

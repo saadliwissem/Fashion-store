@@ -196,8 +196,8 @@ const ChronicleOracle = ({ chronicle }) => {
 
         <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-soft">
           <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-purple-100 rounded-lg">
-              <DollarSign className="w-6 h-6 text-purple-600" />
+            <div className="p-3 bg-primary-100 rounded-lg">
+              <DollarSign className="w-6 h-6 text-primary-600" />
             </div>
             <div className="text-2xl font-bold text-gray-900">
               ${stats.totalValueLocked.toLocaleString()}
@@ -460,11 +460,11 @@ const ChronicleOracle = ({ chronicle }) => {
             </>
           )}
 
-          <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-xl">
+          <div className="p-4 bg-gradient-to-r from-primary-50 to-pink-50 border border-primary-200 rounded-xl">
             <div className="flex items-start gap-3">
-              <Zap className="w-5 h-5 text-purple-600 flex-shrink-0 mt-0.5" />
+              <Zap className="w-5 h-5 text-primary-600 flex-shrink-0 mt-0.5" />
               <div>
-                <div className="font-medium text-purple-700 mb-1">
+                <div className="font-medium text-primary-700 mb-1">
                   Oracle's Recommendation
                 </div>
                 <div className="text-sm text-gray-700">

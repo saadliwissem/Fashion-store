@@ -64,7 +64,7 @@ const ClaimDetailsModal = ({
       case "confirmed":
         return "bg-blue-100 text-blue-800 border-blue-200";
       case "processing":
-        return "bg-purple-100 text-purple-800 border-purple-200";
+        return "bg-primary-100 text-primary-800 border-primary-200";
       case "shipped":
         return "bg-cyan-100 text-cyan-800 border-cyan-200";
       case "delivered":
@@ -206,7 +206,7 @@ const ClaimDetailsModal = ({
             <div className="flex items-center gap-3">
               <button
                 onClick={() => handleCopyToClipboard(claim.claimId, "Claim ID")}
-                className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+                className="p-2 text-gray-600 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
                 title="Copy Claim ID"
               >
                 <Copy className="w-5 h-5" />
@@ -230,7 +230,7 @@ const ClaimDetailsModal = ({
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
                     activeTab === tab.id
-                      ? "bg-purple-600 text-white"
+                      ? "bg-primary-600 text-white"
                       : "text-gray-600 hover:bg-gray-100"
                   }`}
                 >
@@ -251,7 +251,7 @@ const ClaimDetailsModal = ({
               <div className="bg-white rounded-xl border border-gray-200 p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                    <Package className="w-5 h-5 text-purple-600" />
+                    <Package className="w-5 h-5 text-primary-600" />
                     Claim Status
                   </h3>
                   {!isEditingStatus && (
@@ -260,7 +260,7 @@ const ClaimDetailsModal = ({
                         setStatusData({ status: claim.status, notes: "" });
                         setIsEditingStatus(true);
                       }}
-                      className="flex items-center gap-2 px-3 py-1.5 text-sm text-purple-600 hover:text-purple-700 hover:bg-purple-50 rounded-lg transition-colors"
+                      className="flex items-center gap-2 px-3 py-1.5 text-sm text-primary-600 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-colors"
                     >
                       <Edit className="w-4 h-4" />
                       Update Status
@@ -282,7 +282,7 @@ const ClaimDetailsModal = ({
                             status: e.target.value,
                           })
                         }
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                       >
                         <option value="pending">Pending</option>
                         <option value="confirmed">Confirmed</option>
@@ -306,7 +306,7 @@ const ClaimDetailsModal = ({
                           })
                         }
                         rows="3"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                         placeholder="Add any notes about this status change..."
                       />
                     </div>
@@ -372,13 +372,13 @@ const ClaimDetailsModal = ({
               <div className="bg-white rounded-xl border border-gray-200 p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                    <Truck className="w-5 h-5 text-purple-600" />
+                    <Truck className="w-5 h-5 text-primary-600" />
                     Tracking Information
                   </h3>
                   {!isAddingTracking && !claim.trackingInfo?.trackingNumber && (
                     <button
                       onClick={() => setIsAddingTracking(true)}
-                      className="flex items-center gap-2 px-3 py-1.5 text-sm text-purple-600 hover:text-purple-700 hover:bg-purple-50 rounded-lg transition-colors"
+                      className="flex items-center gap-2 px-3 py-1.5 text-sm text-primary-600 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-colors"
                     >
                       <Package className="w-4 h-4" />
                       Add Tracking
@@ -401,7 +401,7 @@ const ClaimDetailsModal = ({
                               carrier: e.target.value,
                             })
                           }
-                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                         >
                           <option value="">Select Carrier</option>
                           <option value="UPS">UPS</option>
@@ -425,7 +425,7 @@ const ClaimDetailsModal = ({
                               trackingNumber: e.target.value,
                             })
                           }
-                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                           placeholder="Enter tracking number"
                         />
                       </div>
@@ -444,7 +444,7 @@ const ClaimDetailsModal = ({
                             estimatedDelivery: e.target.value,
                           })
                         }
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                       />
                     </div>
 
@@ -499,7 +499,7 @@ const ClaimDetailsModal = ({
                                   "Tracking number"
                                 )
                               }
-                              className="text-gray-400 hover:text-purple-600"
+                              className="text-gray-400 hover:text-primary-600"
                             >
                               <Copy className="w-3 h-3" />
                             </button>
@@ -527,9 +527,9 @@ const ClaimDetailsModal = ({
 
               {/* Summary Cards */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-100">
+                <div className="bg-gradient-to-br from-primary-50 to-pink-50 rounded-xl p-6 border border-primary-100">
                   <h4 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <DollarSign className="w-5 h-5 text-purple-600" />
+                    <DollarSign className="w-5 h-5 text-primary-600" />
                     Payment Summary
                   </h4>
                   <div className="space-y-3">
@@ -549,10 +549,10 @@ const ClaimDetailsModal = ({
                       <span className="text-gray-600">Shipping:</span>
                       <span className="font-medium">$25.00</span>
                     </div>
-                    <div className="border-t border-purple-200 pt-3 mt-3">
+                    <div className="border-t border-primary-200 pt-3 mt-3">
                       <div className="flex justify-between font-bold">
                         <span className="text-gray-900">Total:</span>
-                        <span className="text-purple-600">
+                        <span className="text-primary-600">
                           $
                           {((claim.payment?.amount || 0) * 1.1 + 25).toFixed(2)}
                         </span>
@@ -608,7 +608,7 @@ const ClaimDetailsModal = ({
             <div className="space-y-6">
               <div className="bg-white rounded-xl border border-gray-200 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <User className="w-5 h-5 text-purple-600" />
+                  <User className="w-5 h-5 text-primary-600" />
                   Personal Information
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -623,7 +623,7 @@ const ClaimDetailsModal = ({
                     <div className="flex items-center gap-2">
                       <a
                         href={`mailto:${claim.userData?.email}`}
-                        className="text-purple-600 hover:text-purple-700"
+                        className="text-primary-600 hover:text-primary-700"
                       >
                         {claim.userData?.email}
                       </a>
@@ -631,7 +631,7 @@ const ClaimDetailsModal = ({
                         onClick={() =>
                           handleCopyToClipboard(claim.userData?.email, "Email")
                         }
-                        className="text-gray-400 hover:text-purple-600"
+                        className="text-gray-400 hover:text-primary-600"
                       >
                         <Copy className="w-3 h-3" />
                       </button>
@@ -642,7 +642,7 @@ const ClaimDetailsModal = ({
                     <div className="flex items-center gap-2">
                       <a
                         href={`tel:${claim.userData?.phone}`}
-                        className="text-purple-600 hover:text-purple-700"
+                        className="text-primary-600 hover:text-primary-700"
                       >
                         {claim.userData?.phone || "Not provided"}
                       </a>
@@ -654,7 +654,7 @@ const ClaimDetailsModal = ({
                               "Phone"
                             )
                           }
-                          className="text-gray-400 hover:text-purple-600"
+                          className="text-gray-400 hover:text-primary-600"
                         >
                           <Copy className="w-3 h-3" />
                         </button>
@@ -672,7 +672,7 @@ const ClaimDetailsModal = ({
 
               <div className="bg-white rounded-xl border border-gray-200 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <MapPin className="w-5 h-5 text-purple-600" />
+                  <MapPin className="w-5 h-5 text-primary-600" />
                   Shipping Address
                 </h3>
                 <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
@@ -697,7 +697,7 @@ const ClaimDetailsModal = ({
 
               <div className="bg-white rounded-xl border border-gray-200 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-purple-600" />
+                  <FileText className="w-5 h-5 text-primary-600" />
                   Preferences
                 </h3>
                 <div className="space-y-3">
@@ -732,7 +732,7 @@ const ClaimDetailsModal = ({
               {claim.customization && (
                 <div className="bg-white rounded-xl border border-gray-200 p-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <Edit className="w-5 h-5 text-purple-600" />
+                    <Edit className="w-5 h-5 text-primary-600" />
                     Customization Requests
                   </h3>
                   <p className="text-gray-700 whitespace-pre-line">
@@ -748,7 +748,7 @@ const ClaimDetailsModal = ({
             <div className="space-y-6">
               <div className="bg-white rounded-xl border border-gray-200 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <ShoppingBag className="w-5 h-5 text-purple-600" />
+                  <ShoppingBag className="w-5 h-5 text-primary-600" />
                   Fragment Information
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -777,7 +777,7 @@ const ClaimDetailsModal = ({
                         claim.fragment?.rarity === "legendary"
                           ? "bg-yellow-100 text-yellow-800"
                           : claim.fragment?.rarity === "rare"
-                          ? "bg-purple-100 text-purple-800"
+                          ? "bg-primary-100 text-primary-800"
                           : "bg-gray-100 text-gray-800"
                       }`}
                     >
@@ -790,7 +790,7 @@ const ClaimDetailsModal = ({
               {claim.fragment?.description && (
                 <div className="bg-white rounded-xl border border-gray-200 p-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <FileText className="w-5 h-5 text-purple-600" />
+                    <FileText className="w-5 h-5 text-primary-600" />
                     Description
                   </h3>
                   <p className="text-gray-700">{claim.fragment.description}</p>
@@ -801,7 +801,7 @@ const ClaimDetailsModal = ({
                 claim.fragment.features.length > 0 && (
                   <div className="bg-white rounded-xl border border-gray-200 p-6">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                      <Tag className="w-5 h-5 text-purple-600" />
+                      <Tag className="w-5 h-5 text-primary-600" />
                       Features
                     </h3>
                     <div className="flex flex-wrap gap-2">
@@ -820,7 +820,7 @@ const ClaimDetailsModal = ({
               {claim.fragment?.clues && claim.fragment.clues.total > 0 && (
                 <div className="bg-white rounded-xl border border-gray-200 p-6">
                   <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <Eye className="w-5 h-5 text-purple-600" />
+                    <Eye className="w-5 h-5 text-primary-600" />
                     Clues
                   </h3>
                   <div className="space-y-3">
@@ -833,7 +833,7 @@ const ClaimDetailsModal = ({
                     </div>
                     <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
                       <div
-                        className="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all"
+                        className="h-full bg-gradient-to-r from-primary-500 to-pink-500 transition-all"
                         style={{
                           width: `${
                             ((claim.fragment.clues.revealed || 0) /
@@ -854,7 +854,7 @@ const ClaimDetailsModal = ({
             <div className="space-y-6">
               <div className="bg-white rounded-xl border border-gray-200 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <CreditCard className="w-5 h-5 text-purple-600" />
+                  <CreditCard className="w-5 h-5 text-primary-600" />
                   Payment Details
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -872,7 +872,7 @@ const ClaimDetailsModal = ({
                               "Transaction ID"
                             )
                           }
-                          className="text-gray-400 hover:text-purple-600"
+                          className="text-gray-400 hover:text-primary-600"
                         >
                           <Copy className="w-3 h-3" />
                         </button>
@@ -890,7 +890,7 @@ const ClaimDetailsModal = ({
                   </div>
                   <div>
                     <p className="text-xs text-gray-500 mb-1">Amount</p>
-                    <p className="text-xl font-bold text-purple-600">
+                    <p className="text-xl font-bold text-primary-600">
                       ${claim.payment?.amount?.toFixed(2)}{" "}
                       {claim.payment?.currency}
                     </p>
@@ -916,7 +916,7 @@ const ClaimDetailsModal = ({
                 </div>
               </div>
 
-              <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-100">
+              <div className="bg-gradient-to-br from-primary-50 to-pink-50 rounded-xl p-6 border border-primary-100">
                 <h4 className="font-semibold text-gray-900 mb-4">
                   Payment Breakdown
                 </h4>
@@ -937,10 +937,10 @@ const ClaimDetailsModal = ({
                     <span className="text-gray-600">Shipping:</span>
                     <span className="font-medium">$25.00</span>
                   </div>
-                  <div className="border-t border-purple-200 pt-3 mt-3">
+                  <div className="border-t border-primary-200 pt-3 mt-3">
                     <div className="flex justify-between font-bold">
                       <span className="text-gray-900">Total Charged:</span>
-                      <span className="text-purple-600">
+                      <span className="text-primary-600">
                         ${((claim.payment?.amount || 0) * 1.1 + 25).toFixed(2)}
                       </span>
                     </div>
@@ -955,7 +955,7 @@ const ClaimDetailsModal = ({
             <div className="space-y-6">
               <div className="bg-white rounded-xl border border-gray-200 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <Truck className="w-5 h-5 text-purple-600" />
+                  <Truck className="w-5 h-5 text-primary-600" />
                   Shipping Details
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -987,7 +987,7 @@ const ClaimDetailsModal = ({
 
               <div className="bg-white rounded-xl border border-gray-200 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <Package className="w-5 h-5 text-purple-600" />
+                  <Package className="w-5 h-5 text-primary-600" />
                   Tracking Information
                 </h3>
                 {claim.trackingInfo?.trackingNumber ? (
@@ -1013,7 +1013,7 @@ const ClaimDetailsModal = ({
                               "Tracking number"
                             )
                           }
-                          className="text-gray-400 hover:text-purple-600"
+                          className="text-gray-400 hover:text-primary-600"
                         >
                           <Copy className="w-3 h-3" />
                         </button>
@@ -1060,7 +1060,7 @@ const ClaimDetailsModal = ({
             <div className="space-y-6">
               <div className="bg-white rounded-xl border border-gray-200 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                  <History className="w-5 h-5 text-purple-600" />
+                  <History className="w-5 h-5 text-primary-600" />
                   Claim Timeline
                 </h3>
 
@@ -1071,8 +1071,8 @@ const ClaimDetailsModal = ({
                   <div className="space-y-6">
                     {/* Created Event */}
                     <div className="relative pl-12">
-                      <div className="absolute left-2 top-1 w-5 h-5 bg-purple-100 rounded-full border-2 border-purple-500 flex items-center justify-center">
-                        <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                      <div className="absolute left-2 top-1 w-5 h-5 bg-primary-100 rounded-full border-2 border-primary-500 flex items-center justify-center">
+                        <div className="w-2 h-2 bg-primary-500 rounded-full"></div>
                       </div>
                       <div>
                         <p className="font-medium text-gray-900">

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import {
   User,
   Mail,
@@ -33,12 +33,16 @@ import {
   Key,
   TrendingUp,
   AlertCircle,
+  ChevronRight,
+  Filter,
+  Search,
 } from "lucide-react";
 import Button from "../components/common/Button";
 import { authAPI, keeperAPI, waitlistAPI, claimAPI } from "../services/api";
 import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
-import { Link } from "react-router-dom";
+import ClaimsList from "../components/claims/ClaimsList";
+import PasswordChangeModal from "../components/PasswordChangeModal";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -53,7 +57,8 @@ const Profile = () => {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [avatarFile, setAvatarFile] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState("");
-
+  const [showAllClaims, setShowAllClaims] = useState(false);
+  const [showPasswordChangeModal, setShowPasswordChangeModal] = useState(false);
   // Keeper profile data
   const [keeperProfile, setKeeperProfile] = useState(null);
   const [keeperStats, setKeeperStats] = useState({
@@ -69,7 +74,10 @@ const Profile = () => {
   const [badges, setBadges] = useState([]);
   const [waitlistEntries, setWaitlistEntries] = useState([]);
   const [recentClaims, setRecentClaims] = useState([]);
+  const [allClaims, setAllClaims] = useState([]);
   const [loadingKeeperData, setLoadingKeeperData] = useState(false);
+  const [claimsFilter, setClaimsFilter] = useState("all");
+  const [claimsSearch, setClaimsSearch] = useState("");
 
   const [profile, setProfile] = useState({
     firstName: "",
@@ -143,6 +151,12 @@ const Profile = () => {
     fetchKeeperData();
   }, []);
 
+  useEffect(() => {
+    if (showAllClaims) {
+      fetchAllClaims();
+    }
+  }, [showAllClaims, claimsFilter, claimsSearch]);
+
   const fetchProfile = async () => {
     try {
       setLoading(true);
@@ -159,26 +173,43 @@ const Profile = () => {
   const fetchKeeperData = async () => {
     try {
       setLoadingKeeperData(true);
-
-      // Use getMyProfile for the current user's profile
       const keeperResponse = await keeperAPI.getMyProfile();
       setKeeperProfile(keeperResponse.data.data);
       setKeeperStats(keeperResponse.data.data.stats);
       setBadges(keeperResponse.data.data.badges || []);
 
-      // Fetch user's claims
       const claimsResponse = await claimAPI.getUserClaims({ limit: 5 });
       setRecentClaims(claimsResponse.data.data);
-
-      // Fetch user's waitlist entries
-      // You'll need to add this endpoint to your waitlistAPI
-      // const waitlistResponse = await waitlistAPI.getUserWaitlists();
-      // setWaitlistEntries(waitlistResponse.data.data);
     } catch (error) {
       console.error("Failed to fetch keeper data:", error);
-      // Don't show error toast as this might be first-time user without keeper profile
     } finally {
       setLoadingKeeperData(false);
+    }
+  };
+
+  const fetchAllClaims = async () => {
+    try {
+      const params = { limit: 100 };
+      if (claimsFilter !== "all") {
+        params.status = claimsFilter;
+      }
+      const response = await claimAPI.getUserClaims(params);
+      let claims = response.data.data;
+
+      if (claimsSearch) {
+        claims = claims.filter(
+          (claim) =>
+            claim.fragment?.name
+              ?.toLowerCase()
+              .includes(claimsSearch.toLowerCase()) ||
+            claim.claimId?.toLowerCase().includes(claimsSearch.toLowerCase())
+        );
+      }
+
+      setAllClaims(claims);
+    } catch (error) {
+      console.error("Failed to fetch all claims:", error);
+      toast.error("Failed to load claims");
     }
   };
 
@@ -210,13 +241,11 @@ const Profile = () => {
     const file = e.target.files[0];
     if (!file) return;
 
-    // Validate file type
     if (!file.type.startsWith("image/")) {
       toast.error("Please upload an image file");
       return;
     }
 
-    // Validate file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
       toast.error("Image size should be less than 5MB");
       return;
@@ -234,8 +263,6 @@ const Profile = () => {
     try {
       setSaving(true);
       const formData = new FormData();
-
-      // Add profile fields
       formData.append("firstName", profile.firstName);
       formData.append("lastName", profile.lastName);
       formData.append("phone", profile.phone);
@@ -243,14 +270,13 @@ const Profile = () => {
       formData.append("newsletter", profile.newsletter);
       formData.append("marketingEmails", profile.marketingEmails);
 
-      // Add avatar if uploaded
       if (avatarFile) {
         formData.append("avatar", avatarFile);
       }
 
       const response = await authAPI.updateProfile(formData);
       setProfile(response.data.user);
-      setUser(response.data.user); // Update auth context
+      setUser(response.data.user);
       toast.success("Profile updated successfully");
       setAvatarFile(null);
       setAvatarPreview("");
@@ -296,7 +322,6 @@ const Profile = () => {
   };
 
   const handleSaveAddress = async () => {
-    // Validate required fields
     if (
       !addressForm.firstName ||
       !addressForm.lastName ||
@@ -434,7 +459,7 @@ const Profile = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto mb-4"></div>
           <p className="text-gray-600">Loading your profile...</p>
         </div>
       </div>
@@ -485,7 +510,7 @@ const Profile = () => {
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-400 to-pink-400 text-white text-3xl font-bold">
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary-400 to-pink-400 text-white text-3xl font-bold">
                         {profile.firstName?.charAt(0)}
                         {profile.lastName?.charAt(0)}
                       </div>
@@ -506,7 +531,6 @@ const Profile = () => {
                 </h2>
                 <p className="text-gray-600 text-sm mt-1">{profile.email}</p>
 
-                {/* Keeper Badge */}
                 {keeperProfile && (
                   <div className="mt-2">
                     <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r from-primary-100 to-secondary-100 text-primary-700 text-xs font-medium border border-primary-200">
@@ -552,14 +576,14 @@ const Profile = () => {
                     onClick={() => setActiveTab(item.id)}
                     className={`flex items-center gap-3 w-full px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
                       activeTab === item.id
-                        ? "bg-purple-50 text-purple-700"
+                        ? "bg-primary-50 text-primary-700"
                         : "text-gray-700 hover:bg-gray-100"
                     }`}
                   >
                     <item.icon className="w-5 h-5" />
                     {item.label}
                     {item.badge > 0 && (
-                      <span className="ml-auto bg-purple-100 text-purple-700 text-xs font-medium px-2 py-1 rounded-full">
+                      <span className="ml-auto bg-primary-100 text-primary-700 text-xs font-medium px-2 py-1 rounded-full">
                         {item.badge}
                       </span>
                     )}
@@ -598,7 +622,7 @@ const Profile = () => {
 
           {/* Main Content Area */}
           <div className="lg:col-span-3 space-y-6">
-            {/* Keeper Profile Tab - NEW */}
+            {/* Keeper Profile Tab */}
             {activeTab === "keeper" && (
               <div className="space-y-6">
                 {/* Keeper Stats Overview */}
@@ -665,7 +689,7 @@ const Profile = () => {
                       <div className="text-xs text-gray-600">Waitlists</div>
                     </div>
                     <div className="bg-gray-50 rounded-xl p-4 text-center">
-                      <div className="text-2xl font-bold text-purple-600 mb-1">
+                      <div className="text-2xl font-bold text-primary-600 mb-1">
                         {keeperStats.claimsCount}
                       </div>
                       <div className="text-xs text-gray-600">Claims</div>
@@ -673,83 +697,101 @@ const Profile = () => {
                   </div>
                 </div>
 
-                {/* Recent Claims */}
-                <div className="bg-white rounded-xl shadow-sm p-6">
-                  <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <Package className="w-5 h-5 text-primary-500" />
-                    Recent Fragment Claims
-                  </h4>
-
-                  {recentClaims.length === 0 ? (
-                    <div className="text-center py-8">
-                      <Package className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                      <p className="text-gray-600">No fragments claimed yet</p>
-                      <Link to="/mysteries">
-                        <Button variant="outline" size="small" className="mt-4">
-                          Explore Mysteries
-                        </Button>
-                      </Link>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      {recentClaims.map((claim) => (
-                        <div
-                          key={claim._id}
-                          className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200"
-                        >
-                          <div>
-                            <p className="font-medium text-gray-900">
-                              {claim.fragment?.name || "Fragment"}
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              {new Date(claim.createdAt).toLocaleDateString()}
-                            </p>
-                          </div>
-                          <div>
-                            <span
-                              className={`px-2 py-1 rounded-full text-xs font-medium ${
-                                claim.status === "delivered"
-                                  ? "bg-green-100 text-green-700"
-                                  : claim.status === "shipped"
-                                  ? "bg-blue-100 text-blue-700"
-                                  : claim.status === "confirmed"
-                                  ? "bg-purple-100 text-purple-700"
-                                  : "bg-yellow-100 text-yellow-700"
-                              }`}
-                            >
-                              {claim.status}
-                            </span>
-                          </div>
-                        </div>
-                      ))}
-                      <Link to="/claims">
-                        <Button
-                          variant="outline"
-                          size="small"
-                          className="w-full"
+                {/* Claims Section */}
+                {!showAllClaims ? (
+                  <div className="bg-white rounded-xl shadow-sm p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                        <Package className="w-5 h-5 text-primary-500" />
+                        Recent Fragment Claims
+                      </h4>
+                      {keeperStats.fragmentsOwned > 0 && (
+                        <button
+                          onClick={() => setShowAllClaims(true)}
+                          className="text-primary-600 text-sm flex items-center gap-1 hover:text-primary-700"
                         >
                           View All Claims
-                        </Button>
-                      </Link>
+                          <ChevronRight className="w-4 h-4" />
+                        </button>
+                      )}
                     </div>
-                  )}
-                </div>
+
+                    {recentClaims.length === 0 ? (
+                      <div className="text-center py-8">
+                        <Package className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                        <p className="text-gray-600">
+                          No fragments claimed yet
+                        </p>
+                        <Link to="/mysteries">
+                          <Button
+                            variant="outline"
+                            size="small"
+                            className="mt-4"
+                          >
+                            Explore Mysteries
+                          </Button>
+                        </Link>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {recentClaims.map((claim) => (
+                          <div
+                            key={claim._id}
+                            className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border border-gray-200"
+                          >
+                            <div>
+                              <p className="font-medium text-gray-900">
+                                {claim.fragment?.name || "Fragment"}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                Claim ID: {claim.claimId}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                {new Date(claim.createdAt).toLocaleDateString()}
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <span
+                                className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
+                                  claim.status === "delivered"
+                                    ? "bg-green-100 text-green-700"
+                                    : claim.status === "shipped"
+                                    ? "bg-blue-100 text-blue-700"
+                                    : claim.status === "confirmed"
+                                    ? "bg-primary-100 text-primary-700"
+                                    : "bg-yellow-100 text-yellow-700"
+                                }`}
+                              >
+                                {claim.status}
+                              </span>
+                              <p className="text-xs text-gray-500 mt-1">
+                                {claim.payment?.amount} TND
+                              </p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <ClaimsList
+                    claims={allClaims}
+                    loading={loadingKeeperData}
+                    onBack={() => setShowAllClaims(false)}
+                    filter={claimsFilter}
+                    setFilter={setClaimsFilter}
+                    search={claimsSearch}
+                    setSearch={setClaimsSearch}
+                  />
+                )}
 
                 {/* Waitlist Entries */}
-                <div className="bg-white rounded-xl shadow-sm p-6">
-                  <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <Clock className="w-5 h-5 text-accent-500" />
-                    Waitlist Entries
-                  </h4>
-
-                  {waitlistEntries.length === 0 ? (
-                    <div className="text-center py-8">
-                      <Clock className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                      <p className="text-gray-600">
-                        No active waitlist entries
-                      </p>
-                    </div>
-                  ) : (
+                {waitlistEntries.length > 0 && (
+                  <div className="bg-white rounded-xl shadow-sm p-6">
+                    <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                      <Clock className="w-5 h-5 text-accent-500" />
+                      Waitlist Entries
+                    </h4>
                     <div className="space-y-3">
                       {waitlistEntries.map((entry) => (
                         <div
@@ -774,8 +816,8 @@ const Profile = () => {
                         </div>
                       ))}
                     </div>
-                  )}
-                </div>
+                  </div>
+                )}
 
                 {/* Badges */}
                 {badges.length > 0 && (
@@ -1012,7 +1054,7 @@ const Profile = () => {
                           name="isDefault"
                           checked={addressForm.isDefault}
                           onChange={handleAddressChange}
-                          className="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                          className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
                         />
                         <label
                           htmlFor="isDefault"
@@ -1197,7 +1239,7 @@ const Profile = () => {
                         key={address._id}
                         className={`border rounded-xl p-5 ${
                           address.isDefault
-                            ? "border-purple-300 bg-purple-50"
+                            ? "border-primary-300 bg-primary-50"
                             : "border-gray-200"
                         }`}
                       >
@@ -1208,7 +1250,7 @@ const Profile = () => {
                                 {address.label}
                               </span>
                               {address.isDefault && (
-                                <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-medium">
+                                <span className="px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-xs font-medium">
                                   Default
                                 </span>
                               )}
@@ -1223,7 +1265,7 @@ const Profile = () => {
                           <div className="flex items-center gap-2">
                             <button
                               onClick={() => handleEditAddress(address)}
-                              className="p-2 text-gray-500 hover:text-purple-600"
+                              className="p-2 text-gray-500 hover:text-primary-600"
                             >
                               <Edit className="w-4 h-4" />
                             </button>
@@ -1273,170 +1315,60 @@ const Profile = () => {
                   Security Settings
                 </h3>
 
-                {!showPasswordForm ? (
-                  <div className="max-w-lg">
-                    <div className="p-6 border border-gray-200 rounded-xl">
-                      <div className="flex items-center justify-between mb-4">
-                        <div>
-                          <h4 className="font-semibold text-gray-900">
-                            Password
-                          </h4>
-                          <p className="text-gray-600 text-sm">
-                            Last changed: {formatDate(profile.updatedAt)}
-                          </p>
-                        </div>
-                        <Button
-                          variant="outline"
-                          size="small"
-                          onClick={() => setShowPasswordForm(true)}
-                          className="flex items-center gap-2"
-                        >
-                          <Lock className="w-4 h-4" />
-                          Change Password
-                        </Button>
-                      </div>
-                      <div className="p-4 bg-gray-50 rounded-lg">
-                        <p className="text-sm text-gray-600">
-                          For security reasons, your password is not displayed
-                          here. Click "Change Password" to update it.
+                <div className="max-w-lg">
+                  <div className="p-6 border border-gray-200 rounded-xl">
+                    <div className="flex items-center justify-between mb-4">
+                      <div>
+                        <h4 className="font-semibold text-gray-900">
+                          Password
+                        </h4>
+                        <p className="text-gray-600 text-sm">
+                          Last changed: {formatDate(profile.updatedAt)}
                         </p>
                       </div>
-                    </div>
-
-                    {profile.googleId && (
-                      <div className="mt-6 p-6 border border-gray-200 rounded-xl">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <h4 className="font-semibold text-gray-900">
-                              Google Account
-                            </h4>
-                            <p className="text-gray-600 text-sm">
-                              Your account is linked with Google
-                            </p>
-                          </div>
-                          <span className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-medium">
-                            Connected
-                          </span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <div className="max-w-lg">
-                    <div className="p-6 border border-gray-200 rounded-xl">
-                      <h4 className="font-semibold text-gray-900 mb-6">
+                      <Button
+                        variant="outline"
+                        size="small"
+                        onClick={() => setShowPasswordChangeModal(true)}
+                        className="flex items-center gap-2"
+                      >
+                        <Lock className="w-4 h-4" />
                         Change Password
-                      </h4>
+                      </Button>
+                    </div>
+                    <div className="p-4 bg-gray-50 rounded-lg">
+                      <p className="text-sm text-gray-600">
+                        For security reasons, your password is not displayed
+                        here. Click "Change Password" to update it. You'll need
+                        to verify via email.
+                      </p>
+                    </div>
+                  </div>
 
-                      <div className="space-y-4">
+                  {profile.googleId && (
+                    <div className="mt-6 p-6 border border-gray-200 rounded-xl">
+                      <div className="flex items-center justify-between">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Current Password
-                          </label>
-                          <div className="relative">
-                            <input
-                              type={showCurrentPassword ? "text" : "password"}
-                              name="currentPassword"
-                              value={passwordData.currentPassword}
-                              onChange={handlePasswordChange}
-                              className="input-modern w-full pr-10"
-                            />
-                            <button
-                              type="button"
-                              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                              onClick={() =>
-                                setShowCurrentPassword(!showCurrentPassword)
-                              }
-                            >
-                              {showCurrentPassword ? (
-                                <EyeOff className="w-5 h-5" />
-                              ) : (
-                                <Eye className="w-5 h-5" />
-                              )}
-                            </button>
-                          </div>
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            New Password
-                          </label>
-                          <div className="relative">
-                            <input
-                              type={showNewPassword ? "text" : "password"}
-                              name="newPassword"
-                              value={passwordData.newPassword}
-                              onChange={handlePasswordChange}
-                              className="input-modern w-full pr-10"
-                            />
-                            <button
-                              type="button"
-                              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                              onClick={() =>
-                                setShowNewPassword(!showNewPassword)
-                              }
-                            >
-                              {showNewPassword ? (
-                                <EyeOff className="w-5 h-5" />
-                              ) : (
-                                <Eye className="w-5 h-5" />
-                              )}
-                            </button>
-                          </div>
-                          <p className="text-sm text-gray-500 mt-1">
-                            Must be at least 8 characters long
+                          <h4 className="font-semibold text-gray-900">
+                            Google Account
+                          </h4>
+                          <p className="text-gray-600 text-sm">
+                            Your account is linked with Google
                           </p>
                         </div>
-
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Confirm New Password
-                          </label>
-                          <input
-                            type="password"
-                            name="confirmPassword"
-                            value={passwordData.confirmPassword}
-                            onChange={handlePasswordChange}
-                            className="input-modern w-full"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="flex items-center gap-3 mt-6">
-                        <Button
-                          onClick={handleChangePassword}
-                          disabled={saving}
-                          className="flex items-center gap-2"
-                        >
-                          {saving ? (
-                            <>
-                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                              Updating...
-                            </>
-                          ) : (
-                            <>
-                              <Save className="w-4 h-4" />
-                              Update Password
-                            </>
-                          )}
-                        </Button>
-                        <Button
-                          variant="outline"
-                          onClick={() => {
-                            setShowPasswordForm(false);
-                            setPasswordData({
-                              currentPassword: "",
-                              newPassword: "",
-                              confirmPassword: "",
-                            });
-                          }}
-                        >
-                          Cancel
-                        </Button>
+                        <span className="px-3 py-1 bg-emerald-100 text-emerald-700 rounded-full text-xs font-medium">
+                          Connected
+                        </span>
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
+                </div>
+
+                {/* Password Change Modal */}
+                <PasswordChangeModal
+                  isOpen={showPasswordChangeModal}
+                  onClose={() => setShowPasswordChangeModal(false)}
+                />
               </div>
             )}
 
@@ -1479,7 +1411,7 @@ const Profile = () => {
                             onChange={handleInputChange}
                             className="sr-only peer"
                           />
-                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
                         </label>
                       </div>
 
@@ -1501,7 +1433,7 @@ const Profile = () => {
                             onChange={handleInputChange}
                             className="sr-only peer"
                           />
-                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-purple-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+                          <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
                         </label>
                       </div>
                     </div>

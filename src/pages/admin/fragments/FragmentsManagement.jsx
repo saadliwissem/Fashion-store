@@ -80,7 +80,7 @@ const SortableFragmentItem = ({
       case "available":
         return "bg-green-100 text-green-800";
       case "claimed":
-        return "bg-purple-100 text-purple-800";
+        return "bg-primary-100 text-primary-800";
       case "reserved":
         return "bg-yellow-100 text-yellow-800";
       default:
@@ -93,7 +93,7 @@ const SortableFragmentItem = ({
       case "legendary":
         return "bg-gradient-to-r from-yellow-400 to-orange-400 text-white";
       case "rare":
-        return "bg-gradient-to-r from-purple-400 to-purple-600 text-white";
+        return "bg-gradient-to-r from-primary-400 to-primary-600 text-white";
       case "common":
         return "bg-gray-200 text-gray-700";
       default:
@@ -128,7 +128,7 @@ const SortableFragmentItem = ({
       <div
         className={`flex items-center gap-3 p-4 rounded-xl transition-colors ${
           isSelected
-            ? "bg-purple-50 border border-purple-200"
+            ? "bg-primary-50 border border-primary-200"
             : "hover:bg-gray-50"
         }`}
       >
@@ -142,7 +142,7 @@ const SortableFragmentItem = ({
           type="checkbox"
           checked={isSelected}
           onChange={() => onSelect(fragment._id)}
-          className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+          className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
         />
 
         {/* Icon with Rarity */}
@@ -172,7 +172,7 @@ const SortableFragmentItem = ({
                 fragment.rarity === "legendary"
                   ? "bg-yellow-100 text-yellow-800"
                   : fragment.rarity === "rare"
-                  ? "bg-purple-100 text-purple-800"
+                  ? "bg-primary-100 text-primary-800"
                   : "bg-gray-100 text-gray-800"
               }`}
             >
@@ -213,20 +213,20 @@ const SortableFragmentItem = ({
             <div className="mt-2 w-48">
               <div className="flex items-center justify-between text-xs mb-1">
                 <span className="text-gray-600">Clues</span>
-                <span className="font-medium text-purple-600">
+                <span className="font-medium text-primary-600">
                   {fragment.clues?.revealed || 0}/{fragment.clues?.total}
                 </span>
               </div>
               <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all"
+                  className="h-full bg-gradient-to-r from-primary-500 to-pink-500 transition-all"
                   style={{ width: `${clueProgress}%` }}
                 />
               </div>
             </div>
           )}
           {fragment.claimedBy && (
-            <div className="mt-2 text-xs text-purple-600 flex items-center gap-1">
+            <div className="mt-2 text-xs text-primary-600 flex items-center gap-1">
               <Users className="w-3 h-3" />
               Claimed by:{" "}
               {fragment.claimedBy?.firstName ||
@@ -255,7 +255,7 @@ const SortableFragmentItem = ({
           </button>
           <button
             onClick={() => onDuplicate(fragment)}
-            className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg"
+            className="p-2 text-gray-600 hover:text-primary-600 hover:bg-primary-50 rounded-lg"
             title="Duplicate"
           >
             <Copy className="w-4 h-4" />
@@ -280,7 +280,7 @@ const FragmentCard = ({ fragment, isSelected, onSelect, onEdit, onDelete }) => {
       case "available":
         return "bg-green-100 text-green-800";
       case "claimed":
-        return "bg-purple-100 text-purple-800";
+        return "bg-primary-100 text-primary-800";
       case "reserved":
         return "bg-yellow-100 text-yellow-800";
       default:
@@ -293,7 +293,7 @@ const FragmentCard = ({ fragment, isSelected, onSelect, onEdit, onDelete }) => {
       case "legendary":
         return "from-yellow-400 to-orange-500";
       case "rare":
-        return "from-purple-400 to-purple-600";
+        return "from-primary-400 to-primary-600";
       case "common":
         return "from-gray-400 to-gray-600";
       default:
@@ -326,7 +326,7 @@ const FragmentCard = ({ fragment, isSelected, onSelect, onEdit, onDelete }) => {
             type="checkbox"
             checked={isSelected}
             onChange={() => onSelect(fragment._id)}
-            className="w-5 h-5 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+            className="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
         </div>
 
@@ -382,7 +382,7 @@ const FragmentCard = ({ fragment, isSelected, onSelect, onEdit, onDelete }) => {
               <DollarSign className="w-3 h-3" />
               Price:
             </span>
-            <span className="font-bold text-purple-600">
+            <span className="font-bold text-primary-600">
               ${fragment.price?.toFixed(2)}
             </span>
           </div>
@@ -409,13 +409,13 @@ const FragmentCard = ({ fragment, isSelected, onSelect, onEdit, onDelete }) => {
             <div>
               <div className="flex items-center justify-between text-xs mb-1">
                 <span className="text-gray-600">Clues Progress</span>
-                <span className="font-medium text-purple-600">
+                <span className="font-medium text-primary-600">
                   {fragment.clues?.revealed || 0}/{fragment.clues?.total}
                 </span>
               </div>
               <div className="w-full h-1.5 bg-gray-200 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all"
+                  className="h-full bg-gradient-to-r from-primary-500 to-pink-500 transition-all"
                   style={{ width: `${clueProgress}%` }}
                 />
               </div>
@@ -429,8 +429,8 @@ const FragmentCard = ({ fragment, isSelected, onSelect, onEdit, onDelete }) => {
         </div>
 
         {fragment.claimedBy && (
-          <div className="mb-4 p-3 bg-purple-50 rounded-lg border border-purple-200">
-            <div className="flex items-center gap-2 text-sm text-purple-700">
+          <div className="mb-4 p-3 bg-primary-50 rounded-lg border border-primary-200">
+            <div className="flex items-center gap-2 text-sm text-primary-700">
               <Users className="w-4 h-4" />
               <span className="font-medium">Claimed by:</span>
               <span>
@@ -440,7 +440,7 @@ const FragmentCard = ({ fragment, isSelected, onSelect, onEdit, onDelete }) => {
               </span>
             </div>
             {fragment.claimedAt && (
-              <p className="text-xs text-purple-600 mt-1">
+              <p className="text-xs text-primary-600 mt-1">
                 {formatDate(fragment.claimedAt)}
               </p>
             )}
@@ -807,7 +807,7 @@ const FragmentsManagement = () => {
                 fragments.length > 0
               }
               onChange={handleSelectAll}
-              className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+              className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
             />
             <div className="w-10"></div>
             <div className="flex-1 font-semibold text-gray-900">Fragment</div>
@@ -959,7 +959,7 @@ const FragmentsManagement = () => {
               Export
             </Button>
             <Button
-              className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800"
+              className="flex items-center gap-2 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
               onClick={() => setShowAddModal(true)}
             >
               <Plus className="w-4 h-4" />
@@ -981,8 +981,8 @@ const FragmentsManagement = () => {
                   {stats.byStatus?.available || 0} available
                 </p>
               </div>
-              <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                <Puzzle className="w-6 h-6 text-purple-600" />
+              <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
+                <Puzzle className="w-6 h-6 text-primary-600" />
               </div>
             </div>
           </div>
@@ -1054,7 +1054,7 @@ const FragmentsManagement = () => {
                       placeholder="Search fragments by name, number, or description..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                     />
                   </div>
                 </div>
@@ -1064,7 +1064,7 @@ const FragmentsManagement = () => {
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
-                    className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                    className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                   >
                     <option value="all">All Status</option>
                     <option value="available">Available</option>
@@ -1075,7 +1075,7 @@ const FragmentsManagement = () => {
                   <select
                     value={rarityFilter}
                     onChange={(e) => setRarityFilter(e.target.value)}
-                    className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                    className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                   >
                     <option value="all">All Rarities</option>
                     <option value="common">Common</option>
@@ -1086,7 +1086,7 @@ const FragmentsManagement = () => {
                   <select
                     value={chronicleFilter}
                     onChange={(e) => setChronicleFilter(e.target.value)}
-                    className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                    className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                   >
                     <option value="all">All Chronicles</option>
                     {chronicles.map((chronicle) => (
@@ -1099,7 +1099,7 @@ const FragmentsManagement = () => {
                   <select
                     value={featuredFilter}
                     onChange={(e) => setFeaturedFilter(e.target.value)}
-                    className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                    className="px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                   >
                     <option value="all">All Featured</option>
                     <option value="featured">Featured</option>
@@ -1115,7 +1115,7 @@ const FragmentsManagement = () => {
                 onClick={() => setViewMode("list")}
                 className={`px-4 py-3 transition-colors ${
                   viewMode === "list"
-                    ? "bg-purple-600 text-white"
+                    ? "bg-primary-600 text-white"
                     : "hover:bg-gray-50 text-gray-700"
                 }`}
                 title="List View"
@@ -1126,7 +1126,7 @@ const FragmentsManagement = () => {
                 onClick={() => setViewMode("grid")}
                 className={`px-4 py-3 transition-colors ${
                   viewMode === "grid"
-                    ? "bg-purple-600 text-white"
+                    ? "bg-primary-600 text-white"
                     : "hover:bg-gray-50 text-gray-700"
                 }`}
                 title="Grid View"
@@ -1139,10 +1139,10 @@ const FragmentsManagement = () => {
 
         {/* Bulk Actions */}
         {selectedItems.length > 0 && (
-          <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-4 border border-purple-100">
+          <div className="bg-gradient-to-r from-primary-50 to-pink-50 rounded-2xl p-4 border border-primary-100">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg flex items-center justify-center font-semibold">
+                <div className="w-8 h-8 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-lg flex items-center justify-center font-semibold">
                   {selectedItems.length}
                 </div>
                 <span className="font-medium text-gray-900">
@@ -1187,7 +1187,7 @@ const FragmentsManagement = () => {
         {/* Fragments Content */}
         {loading ? (
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
             <p className="mt-4 text-gray-600">Loading fragments...</p>
           </div>
         ) : viewMode === "list" ? (

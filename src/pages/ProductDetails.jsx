@@ -486,7 +486,7 @@ const ProductDetails = () => {
                 {product.tags?.map((tag) => (
                   <span
                     key={tag}
-                    className="px-3 py-1 bg-purple-100 text-primary-700 text-xs font-medium rounded-full capitalize"
+                    className="px-3 py-1 bg-primary-100 text-primary-700 text-xs font-medium rounded-full capitalize"
                   >
                     {tag}
                   </span>

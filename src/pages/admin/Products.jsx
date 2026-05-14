@@ -110,7 +110,7 @@ const ProductCard = ({
             type="checkbox"
             checked={isSelected}
             onChange={() => onSelect(product._id)}
-            className="w-5 h-5 rounded border-gray-300 text-purple-600 focus:ring-purple-500 bg-white"
+            className="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500 bg-white"
           />
         </div>
 
@@ -226,7 +226,7 @@ const ProductCard = ({
           </button>
           <button
             onClick={() => onDuplicate(product)}
-            className="py-2.5 px-4 bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-100 transition-colors"
+            className="py-2.5 px-4 bg-primary-50 text-primary-600 rounded-lg hover:bg-primary-100 transition-colors"
             title="Duplicate"
           >
             <Copy className="w-4 h-4" />
@@ -657,7 +657,7 @@ const Products = () => {
                       products.length > 0
                     }
                     onChange={handleSelectAll}
-                    className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                    className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                 </th>
                 <th className="text-left p-4 font-semibold text-gray-900">
@@ -707,7 +707,7 @@ const Products = () => {
                         type="checkbox"
                         checked={selectedProducts.includes(product._id)}
                         onChange={() => handleSelectProduct(product._id)}
-                        className="rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                        className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                       />
                     </td>
                     <td className="p-4">
@@ -731,7 +731,7 @@ const Products = () => {
                           </p>
                           <div className="flex items-center gap-2 mt-1">
                             {product.featured && (
-                              <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">
+                              <span className="text-xs bg-primary-100 text-primary-700 px-2 py-1 rounded-full">
                                 Featured
                               </span>
                             )}
@@ -844,7 +844,7 @@ const Products = () => {
                         </button>
                         <button
                           onClick={() => handleDuplicateProduct(product)}
-                          className="p-2 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+                          className="p-2 text-gray-600 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
                           title="Duplicate"
                         >
                           <Copy className="w-4 h-4" />
@@ -891,7 +891,7 @@ const Products = () => {
                     onClick={() => setCurrentPage(pageNum)}
                     className={`w-10 h-10 flex items-center justify-center rounded-lg ${
                       currentPage === pageNum
-                        ? "bg-purple-600 text-white"
+                        ? "bg-primary-600 text-white"
                         : "hover:bg-gray-100"
                     }`}
                   >
@@ -905,7 +905,7 @@ const Products = () => {
                   onClick={() => setCurrentPage(totalPages)}
                   className={`w-10 h-10 flex items-center justify-center rounded-lg ${
                     currentPage === totalPages
-                      ? "bg-purple-600 text-white"
+                      ? "bg-primary-600 text-white"
                       : "hover:bg-gray-100"
                   }`}
                 >
@@ -992,7 +992,7 @@ const Products = () => {
               Export
             </Button>
             <Button
-              className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800"
+              className="flex items-center gap-2 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800"
               onClick={() => setShowAddModal(true)}
             >
               <Plus className="w-4 h-4" />
@@ -1004,7 +1004,7 @@ const Products = () => {
         {/* Loading State */}
         {loading && (
           <div className="text-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
             <p className="mt-4 text-gray-600">Loading products...</p>
           </div>
         )}
@@ -1025,8 +1025,8 @@ const Products = () => {
                       {/* Growth can be calculated from historical data */}
                     </p>
                   </div>
-                  <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
-                    <Package className="w-6 h-6 text-purple-600" />
+                  <div className="w-12 h-12 bg-primary-100 rounded-xl flex items-center justify-center">
+                    <Package className="w-6 h-6 text-primary-600" />
                   </div>
                 </div>
               </div>
@@ -1098,7 +1098,7 @@ const Products = () => {
                       placeholder="Search by name, SKU, tags..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                     />
                   </div>
                 </div>
@@ -1110,7 +1110,7 @@ const Products = () => {
                     <select
                       value={filterCategory}
                       onChange={(e) => setFilterCategory(e.target.value)}
-                      className="appearance-none pl-4 pr-10 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                      className="appearance-none pl-4 pr-10 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                     >
                       <option value="all">All Categories</option>
                       {categories.map((cat) => (
@@ -1127,7 +1127,7 @@ const Products = () => {
                     <select
                       value={filterStatus}
                       onChange={(e) => setFilterStatus(e.target.value)}
-                      className="appearance-none pl-4 pr-10 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                      className="appearance-none pl-4 pr-10 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                     >
                       {statusOptions.map((status) => (
                         <option key={status.value} value={status.value}>
@@ -1143,7 +1143,7 @@ const Products = () => {
                     <select
                       value={sortBy}
                       onChange={(e) => setSortBy(e.target.value)}
-                      className="appearance-none pl-4 pr-10 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                      className="appearance-none pl-4 pr-10 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                     >
                       {sortOptions.map((option) => (
                         <option key={option.value} value={option.value}>
@@ -1160,7 +1160,7 @@ const Products = () => {
                       onClick={() => setViewMode("table")}
                       className={`px-4 py-3 transition-colors ${
                         viewMode === "table"
-                          ? "bg-purple-600 text-white"
+                          ? "bg-primary-600 text-white"
                           : "hover:bg-gray-50 text-gray-700"
                       }`}
                     >
@@ -1170,7 +1170,7 @@ const Products = () => {
                       onClick={() => setViewMode("grid")}
                       className={`px-4 py-3 transition-colors ${
                         viewMode === "grid"
-                          ? "bg-purple-600 text-white"
+                          ? "bg-primary-600 text-white"
                           : "hover:bg-gray-50 text-gray-700"
                       }`}
                     >
@@ -1183,10 +1183,10 @@ const Products = () => {
 
             {/* Bulk Actions */}
             {selectedProducts.length > 0 && (
-              <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-4 border border-purple-100">
+              <div className="bg-gradient-to-r from-primary-50 to-pink-50 rounded-2xl p-4 border border-primary-100">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-purple-700 text-white rounded-lg flex items-center justify-center font-semibold">
+                    <div className="w-8 h-8 bg-gradient-to-r from-primary-600 to-primary-700 text-white rounded-lg flex items-center justify-center font-semibold">
                       {selectedProducts.length}
                     </div>
                     <span className="font-medium text-gray-900">
@@ -1321,7 +1321,7 @@ const Products = () => {
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
                           <div
-                            className="bg-purple-500 h-2 rounded-full"
+                            className="bg-primary-500 h-2 rounded-full"
                             style={{
                               width: `${
                                 stats.total > 0
@@ -1342,7 +1342,7 @@ const Products = () => {
                   Quick Actions
                 </h3>
                 <div className="space-y-3">
-                  <button className="w-full text-left p-3 bg-purple-50 text-purple-700 rounded-xl hover:bg-purple-100 transition-colors">
+                  <button className="w-full text-left p-3 bg-primary-50 text-primary-700 rounded-xl hover:bg-primary-100 transition-colors">
                     Update Inventory
                   </button>
                   <button className="w-full text-left p-3 bg-blue-50 text-blue-700 rounded-xl hover:bg-blue-100 transition-colors">

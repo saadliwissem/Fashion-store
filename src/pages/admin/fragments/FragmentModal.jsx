@@ -516,10 +516,10 @@ const FragmentModal = ({
       value,
       onChange: handleChange,
       onBlur: () => setTouched((prev) => ({ ...prev, [name]: true })),
-      className: `w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none transition-colors ${
+      className: `w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-200 focus:outline-none transition-colors ${
         isInvalid
           ? "border-red-500 focus:border-red-500 bg-red-50"
-          : "border-gray-300 focus:border-purple-500"
+          : "border-gray-300 focus:border-primary-500"
       }`,
       placeholder,
       ...options,
@@ -550,10 +550,10 @@ const FragmentModal = ({
           onChange={handleChange}
           onBlur={() => setTouched((prev) => ({ ...prev, [name]: true }))}
           rows={rows}
-          className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none transition-colors ${
+          className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-200 focus:outline-none transition-colors ${
             isInvalid
               ? "border-red-500 focus:border-red-500 bg-red-50"
-              : "border-gray-300 focus:border-purple-500"
+              : "border-gray-300 focus:border-primary-500"
           }`}
           placeholder={placeholder}
         />
@@ -572,7 +572,7 @@ const FragmentModal = ({
       case "legendary":
         return "bg-yellow-100 text-yellow-800 border-yellow-300";
       case "rare":
-        return "bg-purple-100 text-purple-800 border-purple-300";
+        return "bg-primary-100 text-primary-800 border-primary-300";
       case "common":
         return "bg-gray-100 text-gray-800 border-gray-300";
       default:
@@ -631,7 +631,7 @@ const FragmentModal = ({
                   className={`w-5 h-5 ${
                     getFieldError("chronicle") || getFieldError("name")
                       ? "text-red-500"
-                      : "text-purple-600"
+                      : "text-primary-600"
                   }`}
                 />
                 <span className="font-semibold text-gray-900">
@@ -667,10 +667,10 @@ const FragmentModal = ({
                     onBlur={() =>
                       setTouched((prev) => ({ ...prev, chronicle: true }))
                     }
-                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none ${
+                    className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-200 focus:outline-none ${
                       isFieldInvalid("chronicle")
                         ? "border-red-500 focus:border-red-500 bg-red-50"
-                        : "border-gray-300 focus:border-purple-500"
+                        : "border-gray-300 focus:border-primary-500"
                     }`}
                   >
                     <option value="">Select a chronicle</option>
@@ -705,10 +705,10 @@ const FragmentModal = ({
                           setTouched((prev) => ({ ...prev, number: true }))
                         }
                         min="1"
-                        className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none ${
+                        className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-200 focus:outline-none ${
                           isFieldInvalid("number")
                             ? "border-red-500 focus:border-red-500 bg-red-50"
-                            : "border-gray-300 focus:border-purple-500"
+                            : "border-gray-300 focus:border-primary-500"
                         }`}
                         placeholder="1"
                       />
@@ -757,10 +757,10 @@ const FragmentModal = ({
                       onBlur={() =>
                         setTouched((prev) => ({ ...prev, status: true }))
                       }
-                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none ${
+                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-200 focus:outline-none ${
                         isFieldInvalid("status")
                           ? "border-red-500 focus:border-red-500 bg-red-50"
-                          : "border-gray-300 focus:border-purple-500"
+                          : "border-gray-300 focus:border-primary-500"
                       }`}
                     >
                       <option value="available">Available</option>
@@ -786,10 +786,10 @@ const FragmentModal = ({
                       onBlur={() =>
                         setTouched((prev) => ({ ...prev, rarity: true }))
                       }
-                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none ${
+                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-200 focus:outline-none ${
                         isFieldInvalid("rarity")
                           ? "border-red-500 focus:border-red-500 bg-red-50"
-                          : `border-gray-300 focus:border-purple-500 ${getRarityColor(
+                          : `border-gray-300 focus:border-primary-500 ${getRarityColor(
                               formData.rarity
                             )}`
                       }`}
@@ -824,10 +824,10 @@ const FragmentModal = ({
                         }
                         min="0"
                         step="0.01"
-                        className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-purple-200 focus:outline-none ${
+                        className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:ring-2 focus:ring-primary-200 focus:outline-none ${
                           isFieldInvalid("price")
                             ? "border-red-500 focus:border-red-500 bg-red-50"
-                            : "border-gray-300 focus:border-purple-500"
+                            : "border-gray-300 focus:border-primary-500"
                         }`}
                         placeholder="299.99"
                       />
@@ -859,7 +859,7 @@ const FragmentModal = ({
                     name="isFeatured"
                     checked={formData.isFeatured}
                     onChange={handleChange}
-                    className="w-5 h-5 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                    className="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
                   />
                   <label htmlFor="isFeatured" className="text-sm text-gray-700">
                     <span className="font-medium">Featured Fragment</span>
@@ -874,15 +874,15 @@ const FragmentModal = ({
 
           {/* Claimed Information (shown only if claimed) */}
           {formData.status === "claimed" && (
-            <div className="border border-purple-200 rounded-xl overflow-hidden bg-purple-50">
+            <div className="border border-primary-200 rounded-xl overflow-hidden bg-primary-50">
               <div className="p-4">
-                <h3 className="font-semibold text-purple-900 mb-3 flex items-center gap-2">
+                <h3 className="font-semibold text-primary-900 mb-3 flex items-center gap-2">
                   <Users className="w-5 h-5" />
                   Claimed Information
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-purple-700 mb-2">
+                    <label className="block text-sm font-medium text-primary-700 mb-2">
                       Claimed By
                     </label>
                     <input
@@ -893,11 +893,11 @@ const FragmentModal = ({
                         "Unknown"
                       }
                       readOnly
-                      className="w-full px-4 py-3 bg-white border border-purple-300 rounded-xl text-purple-900"
+                      className="w-full px-4 py-3 bg-white border border-primary-300 rounded-xl text-primary-900"
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-purple-700 mb-2">
+                    <label className="block text-sm font-medium text-primary-700 mb-2">
                       Claimed At
                     </label>
                     <input
@@ -908,7 +908,7 @@ const FragmentModal = ({
                           : "Unknown"
                       }
                       readOnly
-                      className="w-full px-4 py-3 bg-white border border-purple-300 rounded-xl text-purple-900"
+                      className="w-full px-4 py-3 bg-white border border-primary-300 rounded-xl text-primary-900"
                     />
                   </div>
                 </div>
@@ -924,7 +924,7 @@ const FragmentModal = ({
               className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
             >
               <div className="flex items-center gap-3">
-                <Tag className="w-5 h-5 text-purple-600" />
+                <Tag className="w-5 h-5 text-primary-600" />
                 <span className="font-semibold text-gray-900">Features</span>
               </div>
               {expandedSections.features ? (
@@ -945,13 +945,13 @@ const FragmentModal = ({
                       e.key === "Enter" &&
                       (e.preventDefault(), handleAddFeature())
                     }
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                     placeholder="Add a feature..."
                   />
                   <button
                     type="button"
                     onClick={handleAddFeature}
-                    className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                    className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
                   >
                     Add
                   </button>
@@ -991,7 +991,7 @@ const FragmentModal = ({
               className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
             >
               <div className="flex items-center gap-3">
-                <Eye className="w-5 h-5 text-purple-600" />
+                <Eye className="w-5 h-5 text-primary-600" />
                 <span className="font-semibold text-gray-900">Clues</span>
               </div>
               {expandedSections.clues ? (
@@ -1021,7 +1021,7 @@ const FragmentModal = ({
                       })
                     }
                     min="1"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                   />
                 </div>
 
@@ -1107,13 +1107,13 @@ const FragmentModal = ({
                           e.key === "Enter" &&
                           (e.preventDefault(), handleAddClue())
                         }
-                        className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                        className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                         placeholder="Add a clue..."
                       />
                       <button
                         type="button"
                         onClick={handleAddClue}
-                        className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                        className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
                       >
                         Add
                       </button>
@@ -1138,7 +1138,7 @@ const FragmentModal = ({
               className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
             >
               <div className="flex items-center gap-3">
-                <Lock className="w-5 h-5 text-purple-600" />
+                <Lock className="w-5 h-5 text-primary-600" />
                 <span className="font-semibold text-gray-900">
                   Dimensions & Materials
                 </span>
@@ -1204,13 +1204,13 @@ const FragmentModal = ({
                         e.key === "Enter" &&
                         (e.preventDefault(), handleAddMaterial())
                       }
-                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                      className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                       placeholder="Add a material..."
                     />
                     <button
                       type="button"
                       onClick={handleAddMaterial}
-                      className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                      className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
                     >
                       Add
                     </button>
@@ -1256,7 +1256,7 @@ const FragmentModal = ({
                   className={`w-5 h-5 ${
                     getFieldError("imageUrl.url")
                       ? "text-red-500"
-                      : "text-purple-600"
+                      : "text-primary-600"
                   }`}
                 />
                 <span className="font-semibold text-gray-900">
@@ -1308,7 +1308,7 @@ const FragmentModal = ({
                       />
                       <label
                         htmlFor="fragment-image-upload"
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg cursor-pointer hover:bg-purple-700 transition-colors"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-lg cursor-pointer hover:bg-primary-700 transition-colors"
                       >
                         <Upload className="w-4 h-4" />
                         Upload Image
@@ -1351,7 +1351,7 @@ const FragmentModal = ({
                 className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
               >
                 <div className="flex items-center gap-3">
-                  <Eye className="w-5 h-5 text-purple-600" />
+                  <Eye className="w-5 h-5 text-primary-600" />
                   <span className="font-semibold text-gray-900">Metadata</span>
                 </div>
                 {expandedSections.metadata ? (
@@ -1381,7 +1381,7 @@ const FragmentModal = ({
                         })
                       }
                       min="0"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                     />
                   </div>
 
@@ -1403,7 +1403,7 @@ const FragmentModal = ({
                         })
                       }
                       min="0"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-200 focus:border-purple-500 focus:outline-none"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-200 focus:border-primary-500 focus:outline-none"
                     />
                   </div>
                 </div>
@@ -1424,7 +1424,7 @@ const FragmentModal = ({
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="flex items-center gap-2 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
                 <>

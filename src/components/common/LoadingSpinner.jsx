@@ -1,6 +1,6 @@
 import React from "react";
 
-const LoadingSpinner = ({ size = "medium", color = "purple" }) => {
+const LoadingSpinner = ({ size = "medium", color = "primary" }) => {
   const sizes = {
     small: "w-6 h-6",
     medium: "w-10 h-10",
@@ -8,7 +8,7 @@ const LoadingSpinner = ({ size = "medium", color = "purple" }) => {
   };
 
   const colors = {
-    purple: "border-primary-600",
+    primary: "border-primary-600",
     white: "border-white",
     gray: "border-gray-400",
   };

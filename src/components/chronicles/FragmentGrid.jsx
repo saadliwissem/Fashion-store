@@ -389,7 +389,7 @@ const FragmentGrid = ({ fragments = [], onFragmentSelect }) => {
               <span className="text-gray-600">{stats.available} Available</span>
             </div>
             <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-purple-500"></span>
+              <span className="w-2 h-2 rounded-full bg-primary-500"></span>
               <span className="text-gray-600">{stats.claimed} Claimed</span>
             </div>
           </div>

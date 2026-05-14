@@ -133,12 +133,62 @@ const ChronicleDetailPage = () => {
 
   const handleClaimSubmit = async (claimData) => {
     try {
-      // Submit claim to API
-      const response = await claimAPI.create({
+      console.log("Claim data received:", claimData); // Debug log
+
+      // Ensure paymentMethod is properly extracted
+      let paymentMethod = claimData.paymentMethod;
+
+      // If paymentMethod is nested in paymentDetails or userData
+      if (!paymentMethod && claimData.paymentDetails?.method) {
+        paymentMethod = claimData.paymentDetails.method;
+      }
+      if (!paymentMethod && claimData.userData?.paymentMethod) {
+        paymentMethod = claimData.userData.paymentMethod;
+      }
+
+      // Validate payment method
+      if (!paymentMethod) {
+        toast.error(
+          "Payment method is required. Please select a payment option."
+        );
+        return;
+      }
+
+      // Validate required fields
+      if (!claimData.userData?.fullName || !claimData.userData?.email) {
+        toast.error("Please fill in all required fields");
+        return;
+      }
+
+      // Prepare the data for API
+      const apiData = {
         fragmentId: selectedFragment._id,
-        userData: claimData.userData,
-        paymentMethod: claimData.paymentMethod,
-      });
+        userData: {
+          fullName: claimData.userData.fullName,
+          email: claimData.userData.email,
+          phone: claimData.userData.phone || "",
+          address: claimData.userData.address || "",
+          city: claimData.userData.city || "",
+          state: claimData.userData.state || "",
+          postalCode: claimData.userData.postalCode || "",
+          country: claimData.userData.country || "TN",
+          acceptTerms: claimData.userData.acceptTerms || false,
+          acceptUpdates: claimData.userData.acceptUpdates || true,
+        },
+        paymentMethod: paymentMethod, // Send at root level
+        size: claimData.size || claimData.userData?.size || "M",
+        customization:
+          claimData.customization || claimData.userData?.customization || "",
+        specialRequests:
+          claimData.specialRequests ||
+          claimData.userData?.specialRequests ||
+          "",
+      };
+
+      console.log("Sending to API:", apiData); // Debug log
+
+      // Submit claim to API
+      const response = await claimAPI.create(apiData);
 
       toast.success(
         `Successfully claimed Fragment #${selectedFragment.number}!`
@@ -158,8 +208,8 @@ const ChronicleDetailPage = () => {
       const progressRes = await chronicleAPI.getProgress(chronicleId);
       setProgress(progressRes.data.data);
     } catch (error) {
+      console.error("Claim error:", error.response?.data);
       toast.error(error.response?.data?.message || "Failed to submit claim");
-      console.error(error);
     }
   };
 
