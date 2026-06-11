@@ -113,7 +113,7 @@ const CartSummary = ({
         </div>
 
         <div className="flex justify-between">
-          <span className="text-gray-600">TVA (7%)</span>
+          <span className="text-gray-600">TVA (19%)</span>
           <span className="font-medium">{tax.toFixed(3)} DT</span>
         </div>
 

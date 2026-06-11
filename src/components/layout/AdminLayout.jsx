@@ -23,6 +23,7 @@ import {
   Globe,
   Star,
   AlertCircle,
+  Warehouse
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
@@ -72,6 +73,11 @@ const AdminLayout = ({ children }) => {
           name: "Customers",
           path: "/admin/customers",
           icon: Users,
+        },
+        {
+          name: "Inventory",
+          path: "/admin/inventory",
+          icon: Warehouse,
         },
         {
           name: "Analytics",

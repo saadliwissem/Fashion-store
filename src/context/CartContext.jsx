@@ -159,7 +159,7 @@ export const CartProvider = ({ children }) => {
 
       // For now, use simple calculations
       const shipping = subtotal > 99 ? 0 : 5.99;
-      const tax = subtotal * 0.07; // 7% tax rate
+      const tax = subtotal * 0.19; // 7% tax rate
 
       setCartTotal({
         items: items.length,
@@ -245,7 +245,6 @@ export const CartProvider = ({ children }) => {
         const cartData = response.data.cart;
         setCart(cartData);
         updateCartTotals(cartData);
-        toast.success("Added to cart!");
 
         return cartData;
       } else {
@@ -273,7 +272,6 @@ export const CartProvider = ({ children }) => {
         setCart(updatedCart);
         updateCartTotals(updatedCart);
         localStorage.setItem("cart", JSON.stringify(updatedCart));
-        toast.success("Added to cart!");
 
         return updatedCart;
       }

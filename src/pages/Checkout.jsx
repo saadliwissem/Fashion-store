@@ -82,17 +82,10 @@ const Checkout = () => {
   const shippingMethods = [
     {
       id: "standard",
-      name: "Standard Delivery",
+      name: "Delivery",
       description: "3-5 business days",
       price: 7.0,
       icon: "🚚",
-    },
-    {
-      id: "express",
-      name: "Express Delivery",
-      description: "1-2 business days",
-      price: 15.0,
-      icon: "⚡",
     },
     {
       id: "pickup",
@@ -106,7 +99,6 @@ const Checkout = () => {
   const paymentMethods = [
     { id: "card", name: "Credit/Debit Card", icon: "💳" },
     { id: "cod", name: "Cash on Delivery", icon: "💰" },
-    { id: "mobile", name: "Mobile Money", icon: "📱" },
     { id: "bank", name: "Bank Transfer", icon: "🏦" },
   ];
 
@@ -353,7 +345,7 @@ const Checkout = () => {
       const shippingPrice =
         shippingMethods.find((m) => m.id === formData.shippingMethod)?.price ||
         0;
-      const tax = subtotal * 0.07; // 7% TVA in Tunisia
+      const tax = subtotal * 0.19; // 7% TVA in Tunisia
       const total = subtotal + shippingPrice + tax;
 
       return {
@@ -373,7 +365,7 @@ const Checkout = () => {
       const shippingPrice =
         shippingMethods.find((m) => m.id === formData.shippingMethod)?.price ||
         0;
-      const tax = subtotal * 0.07;
+      const tax = subtotal * 0.19;
       const total = subtotal + shippingPrice + tax;
       const itemCount = cart.items.length;
       const totalItems = cart.items.reduce(
@@ -450,32 +442,6 @@ const Checkout = () => {
       case 3:
         return (
           <div className="space-y-6">
-            <h3 className="text-xl font-semibold text-gray-900 mb-4">
-              Select Payment Method
-            </h3>
-            <div className="space-y-4">
-              {paymentMethods.map((method) => (
-                <div
-                  key={method.id}
-                  className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${
-                    selectedPaymentMethod === method.id
-                      ? "border-primary-500 bg-primary-50"
-                      : "border-gray-200 hover:border-primary-300"
-                  }`}
-                  onClick={() => setSelectedPaymentMethod(method.id)}
-                >
-                  <div className="flex items-center gap-4">
-                    <span className="text-2xl">{method.icon}</span>
-                    <div>
-                      <p className="font-semibold text-gray-900">
-                        {method.name}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
             <PaymentForm
               formData={formData}
               handleInputChange={handleInputChange}

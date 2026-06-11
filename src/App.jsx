@@ -236,7 +236,7 @@ function App() {
                           }
                         />
                         <Route
-                          path="/admin/products/inventory"
+                          path="/admin/inventory"
                           element={
                             <AdminRoute>
                               <Inventory />
