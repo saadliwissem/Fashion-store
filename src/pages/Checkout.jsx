@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Lock, Shield, Truck, Loader } from "lucide-react";
 import CheckoutSteps from "../components/checkout/CheckoutSteps";
 import AddressForm from "../components/checkout/AddressForm";
@@ -8,6 +8,7 @@ import OrderSummary from "../components/checkout/OrderSummary";
 import Button from "../components/common/Button";
 import toast from "react-hot-toast";
 import { cartAPI, ordersAPI } from "../services/api";
+import { useCart } from "../context/CartContext";
 
 // Tunisian governorates
 const TUNISIAN_GOVERNORATES = [
@@ -44,6 +45,7 @@ const Checkout = () => {
   const [cart, setCart] = useState(null);
   const [cartLoading, setCartLoading] = useState(true);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("card");
+  const { clearCart } = useCart();
 
   const [formData, setFormData] = useState({
     // Address Information
@@ -94,12 +96,6 @@ const Checkout = () => {
       price: 0.0,
       icon: "🏪",
     },
-  ];
-
-  const paymentMethods = [
-    { id: "card", name: "Credit/Debit Card", icon: "💳" },
-    { id: "cod", name: "Cash on Delivery", icon: "💰" },
-    { id: "bank", name: "Bank Transfer", icon: "🏦" },
   ];
 
   useEffect(() => {
@@ -212,9 +208,11 @@ const Checkout = () => {
             toast.error("Please enter a valid 3-digit CVC");
             return false;
           }
+        } else if (selectedPaymentMethod === "cod") {
+          // Cash on delivery doesn't need additional validation
+          return true;
         }
         return true;
-
       case 4: // Terms validation
         if (!document.getElementById("terms")?.checked) {
           toast.error("Please agree to the terms and conditions");
@@ -294,7 +292,7 @@ const Checkout = () => {
       const response = await ordersAPI.create(orderData);
 
       toast.success("Commande passée avec succès! Merci pour votre achat.");
-
+      clearCart();
       // Redirect to order confirmation
       setTimeout(() => {
         navigate(`/orders/${response.data.order._id}`);
@@ -485,14 +483,24 @@ const Checkout = () => {
             </div>
 
             {/* Terms and Conditions */}
+            {/* Terms and Conditions */}
             <div className="flex items-start gap-3">
               <input type="checkbox" id="terms" className="mt-1" required />
-              <label htmlFor="terms" className="text-sm text-gray-600">
-                I agree to the Terms & Conditions and Privacy Policy. I
-                understand that my order is subject to availability and
-                confirmation. By placing this order, I authorize the charge to
-                my payment method.
-              </label>
+              <div className="text-sm text-gray-600">
+                <label htmlFor="terms">
+                  I agree to the{" "}
+                  <Link
+                    to="/termsandconditions"
+                    className="font-medium text-primary-600 hover:text-primary-500 underline"
+                    target="_blank" // Optional: opens in new tab
+                  >
+                    Terms & Conditions and Privacy Policy.
+                  </Link>{" "}
+                  . I understand that my order is subject to availability and
+                  confirmation. By placing this order, I authorize the charge to
+                  my payment method.
+                </label>
+              </div>
             </div>
           </div>
         );

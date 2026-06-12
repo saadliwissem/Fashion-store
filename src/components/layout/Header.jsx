@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom"; // Add useLocation
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import {
   ShoppingBag,
   User,
@@ -7,27 +7,18 @@ import {
   Search,
   Menu,
   X,
-  ChevronDown,
   LogOut,
-  Loader2,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
 import { useWishlist } from "../../context/WishlistContext";
 import logo from "../../assets/images/logo.webp";
-import axios from "axios";
-
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:5000/api";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
-  const [categories, setCategories] = useState([]);
-  const [loadingCategories, setLoadingCategories] = useState(true);
-  const [featuredCategories, setFeaturedCategories] = useState([]);
   const navigate = useNavigate();
-  const location = useLocation(); // Get current location
+  const location = useLocation();
 
   const { user, logout, isAuthenticated } = useAuth();
   const { cart, cartTotal, clearCart } = useCart();
@@ -38,17 +29,7 @@ const Header = () => {
     if (path === "/") {
       return location.pathname === "/";
     }
-    // For nested routes like /shop?category=men, check if path starts with the base route
     return location.pathname.startsWith(path);
-  };
-
-  // Helper function to check if shop/category links are active
-  const isShopActive = () => {
-    return (
-      location.pathname === "/shop" ||
-      location.pathname.startsWith("/shop?") ||
-      location.pathname === "/categories"
-    );
   };
 
   // Helper function to get the appropriate class for nav links
@@ -61,258 +42,17 @@ const Header = () => {
     }`;
   };
 
-  // Helper function for shop link with special handling
-  const getShopLinkClass = () => {
-    const isActive = isShopActive();
-    return `flex items-center space-x-1 nav-link transition-colors ${
-      isActive
-        ? "text-[#C9A24D] font-semibold"
-        : "text-gray-700 hover:text-[#C9A24D]"
-    }`;
-  };
-
-  // Fetch categories on component mount
-  useEffect(() => {
-    fetchCategories();
-    fetchFeaturedCategories();
-  }, []);
-
-  const fetchCategories = async () => {
-    setLoadingCategories(true);
-    try {
-      const response = await axios.get(`${API_BASE_URL}/categories`);
-      // Transform categories for the dropdown
-      const transformedCategories = response.data.categories.map(
-        (category) => ({
-          id: category._id,
-          name: category.name,
-          slug: category.slug,
-          description: category.description,
-          productCount: category.productCount || 0,
-          icon: category.icon || getCategoryIcon(category.name),
-        })
-      );
-
-      setCategories(transformedCategories);
-    } catch (err) {
-      console.error("Error fetching categories:", err);
-      // Fallback to static categories if API fails
-      setCategories(getStaticCategories());
-    } finally {
-      setLoadingCategories(false);
-    }
-  };
-
-  const fetchFeaturedCategories = async () => {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/categories/featured`);
-      // Transform featured categories for the mobile menu
-      const transformedFeatured = response.data.categories.map((category) => ({
-        id: category._id,
-        name: category.name,
-        slug: category.slug,
-        productCount: category.productCount || 0,
-      }));
-
-      setFeaturedCategories(transformedFeatured);
-    } catch (err) {
-      console.error("Error fetching featured categories:", err);
-      // Use regular categories as fallback for featured
-      if (categories.length > 0) {
-        setFeaturedCategories(categories.slice(0, 4));
-      }
-    }
-  };
-
-  // Helper function to get category icon based on name
-  const getCategoryIcon = (categoryName) => {
-    const icons = {
-      men: "👔",
-      women: "👗",
-      kids: "👶",
-      accessories: "💎",
-      electronics: "📱",
-      home: "🏠",
-      sports: "⚽",
-      beauty: "💄",
-    };
-
-    const lowerName = categoryName.toLowerCase();
-    for (const [key, icon] of Object.entries(icons)) {
-      if (lowerName.includes(key)) return icon;
-    }
-    return "🛒";
-  };
-
   // Calculate total items in cart
   const getTotalCartItems = () => {
     if (!cart || !Array.isArray(cart) || cart.length === 0) return 0;
 
-    // If cartTotal has quantity already calculated, use it
     if (cartTotal && cartTotal.quantity !== undefined) {
       return cartTotal.quantity;
     }
 
-    // Otherwise calculate manually
     return cart.reduce((total, item) => {
       return total + (item.quantity || 1);
     }, 0);
-  };
-
-  // Handle category click
-  // const handleCategoryClick = (categorySlug) => {
-  //   if (categorySlug === "new") {
-  //     navigate("/shop?sort=newest");
-  //   } else {
-  //     navigate(`/shop?category=${categorySlug}`);
-  //   }
-  //   setIsMenuOpen(false);
-  //   setIsUserDropdownOpen(false);
-  // };
-
-  // Loading state for categories dropdown
-  const renderCategoriesDropdown = () => (
-    <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-2xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 max-h-96 overflow-y-auto">
-      {loadingCategories ? (
-        <div className="px-6 py-8 flex items-center justify-center">
-          <Loader2 className="w-5 h-5 text-[#C9A24D] animate-spin" />
-          <span className="ml-2 text-gray-600">Loading categories...</span>
-        </div>
-      ) : categories.length === 0 ? (
-        <div className="px-6 py-4 text-gray-500 text-center">
-          No categories found
-        </div>
-      ) : (
-        <>
-          {/* All Products */}
-          <Link
-            to="/shop"
-            className={`flex items-center gap-3 px-6 py-4 transition-colors first:rounded-t-2xl border-b border-gray-100 ${
-              location.pathname === "/shop"
-                ? "bg-[#FAF6E8] text-[#C9A24D]"
-                : "text-gray-700 hover:bg-[#FAF6E8] hover:text-[#C9A24D]"
-            }`}
-            onClick={() => setIsUserDropdownOpen(false)}
-          >
-            <span className="text-xl">🛍️</span>
-            <div className="flex-1">
-              <span className="font-medium">All Products</span>
-              <p className="text-xs text-gray-500 mt-1">
-                Browse our entire collection
-              </p>
-            </div>
-          </Link>
-
-          {/* Dynamic Categories */}
-          {categories.map((category) => {
-            const isCategoryActive =
-              location.pathname === "/shop" &&
-              new URLSearchParams(location.search).get("category") ===
-                category.slug;
-
-            return (
-              <Link
-                key={category.id}
-                to={`/shop?category=${category.slug}`}
-                className={`flex items-center gap-3 px-6 py-4 transition-colors last:rounded-b-2xl ${
-                  isCategoryActive
-                    ? "bg-[#FAF6E8] text-[#C9A24D]"
-                    : "text-gray-700 hover:bg-[#FAF6E8] hover:text-[#C9A24D]"
-                }`}
-                onClick={() => setIsUserDropdownOpen(false)}
-              >
-                <span className="text-xl">{category.icon}</span>
-                <div className="flex-1">
-                  <span className="font-medium">{category.name}</span>
-                  {category.productCount > 0 && (
-                    <p className="text-xs text-gray-500 mt-1">
-                      {category.productCount} products
-                    </p>
-                  )}
-                </div>
-                <ChevronDown className="w-4 h-4 text-gray-400" />
-              </Link>
-            );
-          })}
-        </>
-      )}
-    </div>
-  );
-
-  // Mobile categories list
-  const renderMobileCategories = () => {
-    const categoriesToShow =
-      featuredCategories.length > 0
-        ? featuredCategories
-        : categories.slice(0, 6);
-
-    return (
-      <div className="space-y-2">
-        <p className="font-semibold text-gray-700 mb-2">Categories</p>
-        {loadingCategories ? (
-          <div className="flex items-center justify-center py-4">
-            <Loader2 className="w-5 h-5 text-[#C9A24D] animate-spin" />
-          </div>
-        ) : (
-          <>
-            <Link
-              to="/shop"
-              className={`flex items-center gap-2 py-3 transition-colors border-b border-gray-100 ${
-                location.pathname === "/shop"
-                  ? "text-[#C9A24D] font-medium"
-                  : "text-gray-600 hover:text-[#C9A24D]"
-              }`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <span>🛍️</span>
-              <span>All Products</span>
-            </Link>
-
-            {categoriesToShow.map((category) => {
-              const isCategoryActive =
-                location.pathname === "/shop" &&
-                new URLSearchParams(location.search).get("category") ===
-                  category.slug;
-
-              return (
-                <Link
-                  key={category.id}
-                  to={`/shop?category=${category.slug}`}
-                  className={`flex items-center gap-2 py-3 transition-colors border-b border-gray-100 last:border-b-0 ${
-                    isCategoryActive
-                      ? "text-[#C9A24D] font-medium"
-                      : "text-gray-600 hover:text-[#C9A24D]"
-                  }`}
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <span>{getCategoryIcon(category.name)}</span>
-                  <span>{category.name}</span>
-                  {category.productCount > 0 && (
-                    <span className="ml-auto text-xs text-gray-500">
-                      ({category.productCount})
-                    </span>
-                  )}
-                </Link>
-              );
-            })}
-
-            {categories.length > 6 && (
-              <Link
-                to="/categories"
-                className={`block py-3 transition-colors font-medium text-center ${
-                  location.pathname === "/categories"
-                    ? "text-[#C9A24D]"
-                    : "text-[#C9A24D] hover:text-[#C9A24D]"
-                }`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                View All Categories →
-              </Link>
-            )}
-          </>
-        )}
-      </div>
-    );
   };
 
   return (
@@ -333,20 +73,14 @@ const Header = () => {
             </span>
           </Link>
 
-          {/* Desktop Navigation */}
+          {/* Desktop Navigation - Removed Shop dropdown with categories */}
           <nav className="hidden md:flex items-center space-x-8">
             <Link to="/" className={getNavLinkClass("/")}>
               Home
             </Link>
-
-            {/* Categories Dropdown */}
-            <div className="relative group">
-              <button className={getShopLinkClass()}>
-                <span>Shop</span>
-                <ChevronDown className="w-4 h-4" />
-              </button>
-              {renderCategoriesDropdown()}
-            </div>
+            <Link to="/shop" className={getNavLinkClass("/shop")}>
+              Shop
+            </Link>
             <Link to="/mysteries" className={getNavLinkClass("/mysteries")}>
               Mysteries
             </Link>
@@ -419,7 +153,7 @@ const Header = () => {
             >
               <ShoppingBag className="w-6 h-6 text-gray-700 hover:text-[#C9A24D] transition-colors" />
               {getTotalCartItems() > 0 && (
-                <span className="absolute -top-1 -right-1 bg-[smoke] text-[red] text-xs min-w-5 h-5 rounded-full flex items-center justify-center px-1">
+                <span className="absolute -top-1 -right-1 bg-gray-200 text-red-600 text-xs min-w-5 h-5 rounded-full flex items-center justify-center px-1">
                   {getTotalCartItems() > 99 ? "99+" : getTotalCartItems()}
                 </span>
               )}
@@ -455,6 +189,7 @@ const Header = () => {
                             ? "bg-[#FAF6E8] text-[#C9A24D]"
                             : "text-gray-700 hover:bg-[#FAF6E8] hover:text-[#C9A24D]"
                         }`}
+                        onClick={() => setIsUserDropdownOpen(false)}
                       >
                         Profile
                       </Link>
@@ -465,6 +200,7 @@ const Header = () => {
                             ? "bg-[#FAF6E8] text-[#C9A24D]"
                             : "text-gray-700 hover:bg-[#FAF6E8] hover:text-[#C9A24D]"
                         }`}
+                        onClick={() => setIsUserDropdownOpen(false)}
                       >
                         My Orders
                       </Link>
@@ -475,6 +211,7 @@ const Header = () => {
                             ? "bg-[#FAF6E8] text-[#C9A24D]"
                             : "text-gray-700 hover:bg-[#FAF6E8] hover:text-[#C9A24D]"
                         }`}
+                        onClick={() => setIsUserDropdownOpen(false)}
                       >
                         Wishlist ({getWishlistCount()})
                       </Link>
@@ -485,6 +222,7 @@ const Header = () => {
                             ? "bg-[#FAF6E8] text-[#C9A24D]"
                             : "text-gray-700 hover:bg-[#FAF6E8] hover:text-[#C9A24D]"
                         }`}
+                        onClick={() => setIsUserDropdownOpen(false)}
                       >
                         Cart ({getTotalCartItems()})
                       </Link>
@@ -533,7 +271,7 @@ const Header = () => {
           </div>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Menu - Removed categories section */}
         {isMenuOpen && (
           <div className="md:hidden mt-4 py-4 border-t border-gray-100 slide-up">
             <div className="flex flex-col space-y-6">
@@ -568,16 +306,14 @@ const Header = () => {
               <Link
                 to="/shop"
                 className={`nav-link py-2 transition-colors ${
-                  isShopActive()
+                  isActiveLink("/shop")
                     ? "text-[#C9A24D] font-semibold"
                     : "text-gray-700 hover:text-[#C9A24D]"
                 }`}
                 onClick={() => setIsMenuOpen(false)}
               >
-                Shop All
+                Shop
               </Link>
-
-              {renderMobileCategories()}
               <Link
                 to="/mysteries"
                 className={`nav-link py-2 transition-colors ${

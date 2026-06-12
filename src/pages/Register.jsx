@@ -407,7 +407,7 @@ const Register = () => {
                     <label htmlFor="terms" className="text-sm text-gray-700">
                       I agree to the{" "}
                       <Link
-                        to="/terms"
+                        to="/termsandconditions"
                         className="font-medium text-primary-600 hover:text-primary-500"
                       >
                         Terms & Conditions

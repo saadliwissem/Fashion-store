@@ -82,6 +82,7 @@ import PublicRoute from "./components/common/PublicRoute";
 import Profile from "./pages/Profile";
 import ClaimsPage from "./pages/ClaimsPage";
 import ClaimDetailsPage from "./pages/ClaimDetailsPage";
+import TermsAndConditions from "./pages/TermsAndConditions";
 
 const GoogleCallback = lazy(() => import("./pages/GoogleCallback"));
 const Orders = lazy(() => import("./components/orders/OrdersList"));
@@ -174,6 +175,10 @@ function App() {
                               <Login />
                             </PublicRoute>
                           }
+                        />
+                        <Route
+                          path="/termsandconditions"
+                          element={<TermsAndConditions />}
                         />
                         <Route
                           path="/register"

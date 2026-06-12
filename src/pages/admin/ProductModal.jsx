@@ -21,6 +21,7 @@ import {
   Info,
 } from "lucide-react";
 import Button from "../../components/common/Button";
+import toast from "react-hot-toast"; // Import toast
 
 const ProductModal = ({
   isOpen,
@@ -48,7 +49,6 @@ const ProductModal = ({
     price: 0,
     originalPrice: 0,
     costPrice: 0,
-    // REMOVED: stock, lowStockThreshold, manageStock
     description: "",
     shortDescription: "",
     status: "draft",
@@ -81,7 +81,7 @@ const ProductModal = ({
 
   const tabs = [
     { id: "basic", label: "Basic Info", icon: Package },
-    { id: "pricing", label: "Pricing", icon: DollarSign }, // Changed from "Pricing & Inventory"
+    { id: "pricing", label: "Pricing", icon: DollarSign },
     { id: "media", label: "Media", icon: ImageIcon },
     { id: "description", label: "Description", icon: AlignLeft },
     { id: "specifications", label: "Specifications", icon: Settings },
@@ -92,8 +92,6 @@ const ProductModal = ({
 
   useEffect(() => {
     if (mode === "edit" && product) {
-      // For edit mode, we might still want to show variants data
-      // but inventory will be managed separately
       setFormData({
         ...product,
         category: product.category?._id || product.category || "",
@@ -111,10 +109,8 @@ const ProductModal = ({
           keywords: product.seo?.keywords || [],
         },
         dimensions: product.dimensions || { length: 0, width: 0, height: 0 },
-        // REMOVED stock-related fields
       });
     } else {
-      // Reset form for add mode
       setFormData({
         name: "",
         sku: "",
@@ -124,7 +120,6 @@ const ProductModal = ({
         price: 0,
         originalPrice: 0,
         costPrice: 0,
-        // REMOVED: stock, lowStockThreshold, manageStock
         description: "",
         shortDescription: "",
         status: "draft",
@@ -173,7 +168,6 @@ const ProductModal = ({
           : value,
     }));
 
-    // Clear error for this field
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: null }));
     }
@@ -202,47 +196,43 @@ const ProductModal = ({
     setFormData((prev) => ({ ...prev, tags }));
   };
 
-  // Handle file upload from device
   const handleFileUpload = async (e) => {
     const files = Array.from(e.target.files);
 
     if (files.length === 0) return;
 
-    // Validate total number of images
     const totalImages = formData.images.length + files.length;
     if (totalImages > 10) {
+      const errorMsg = `Maximum 10 images allowed. You already have ${formData.images.length} images.`;
       setImageErrors((prev) => ({
         ...prev,
-        upload: `Maximum 10 images allowed. You already have ${formData.images.length} images.`,
+        upload: errorMsg,
       }));
+      toast.error(errorMsg);
       return;
     }
 
-    // Track uploading images
     setUploadingImages(files.map((file) => file.name));
 
     for (const file of files) {
       try {
-        // Validate file
         const validationError = validateImageFile(file);
         if (validationError) {
           setImageErrors((prev) => ({
             ...prev,
             [file.name]: validationError,
           }));
+          toast.error(validationError);
           continue;
         }
 
-        // Convert file to base64
         const base64Image = await convertToBase64(file);
 
-        // Add to images array
         setFormData((prev) => ({
           ...prev,
           images: [...prev.images, base64Image],
         }));
 
-        // Clear any previous error for this file
         setImageErrors((prev) => {
           const newErrors = { ...prev };
           delete newErrors[file.name];
@@ -250,24 +240,23 @@ const ProductModal = ({
         });
       } catch (error) {
         console.error("Error processing image:", error);
+        const errorMsg = "Failed to process image. Please try another file.";
         setImageErrors((prev) => ({
           ...prev,
-          [file.name]: "Failed to process image. Please try another file.",
+          [file.name]: errorMsg,
         }));
+        toast.error(errorMsg);
       }
     }
 
-    // Clear uploading images after processing
     setUploadingImages([]);
 
-    // Reset file input
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
   };
 
   const validateImageFile = (file) => {
-    // Check file type
     const validTypes = [
       "image/jpeg",
       "image/jpg",
@@ -279,8 +268,7 @@ const ProductModal = ({
       return "Invalid file type. Please upload JPG, PNG, GIF, or WEBP images.";
     }
 
-    // Check file size (5MB limit)
-    const maxSize = 5 * 1024 * 1024; // 5MB
+    const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
       return "File is too large. Maximum size is 5MB.";
     }
@@ -309,7 +297,6 @@ const ProductModal = ({
       ...prev,
       images: prev.images.filter((_, i) => i !== index),
     }));
-    // Clear any error for this image
     setImageErrors((prev) => {
       const newErrors = { ...prev };
       delete newErrors[index];
@@ -322,7 +309,6 @@ const ProductModal = ({
     newImages[index] = value;
     setFormData((prev) => ({ ...prev, images: newImages }));
 
-    // Clear error when user types
     if (imageErrors[index]) {
       setImageErrors((prev) => {
         const newErrors = { ...prev };
@@ -357,7 +343,7 @@ const ProductModal = ({
           color: "",
           size: "",
           price: prev.price,
-          stock: 0, // This will be used to create initial inventory
+          stock: 0,
           sku: "",
           image: "",
         },
@@ -392,60 +378,91 @@ const ProductModal = ({
 
   const validateForm = () => {
     const newErrors = {};
+    let hasErrors = false;
 
     // Basic info validation
     if (!formData.name.trim()) {
       newErrors.name = "Product name is required";
+      toast.error("Product name is required");
+      hasErrors = true;
     } else if (formData.name.length < 3) {
       newErrors.name = "Product name must be at least 3 characters";
+      toast.error("Product name must be at least 3 characters");
+      hasErrors = true;
     }
 
     if (!formData.sku.trim()) {
       newErrors.sku = "SKU is required";
+      toast.error("SKU is required");
+      hasErrors = true;
     }
 
     if (!formData.category) {
       newErrors.category = "Category is required";
+      toast.error("Category is required");
+      hasErrors = true;
     }
 
     // Pricing validation
     if (formData.price <= 0) {
       newErrors.price = "Price must be greater than 0";
+      toast.error("Price must be greater than 0");
+      hasErrors = true;
     }
 
     if (formData.originalPrice < 0) {
       newErrors.originalPrice = "Original price cannot be negative";
+      toast.error("Original price cannot be negative");
+      hasErrors = true;
     }
 
     if (formData.costPrice < 0) {
       newErrors.costPrice = "Cost price cannot be negative";
+      toast.error("Cost price cannot be negative");
+      hasErrors = true;
     }
-
-    // REMOVED: Stock validation since it's now in Inventory
 
     // Description validation
     if (!formData.description.trim()) {
       newErrors.description = "Description is required";
+      toast.error("Description is required");
+      hasErrors = true;
     } else if (formData.description.length < 10) {
       newErrors.description = "Description must be at least 10 characters";
+      toast.error("Description must be at least 10 characters");
+      hasErrors = true;
     }
 
     // Image validation
     if (formData.images.length === 0) {
       newErrors.images = "At least one product image is required";
+      toast.error("At least one product image is required");
+      hasErrors = true;
     }
 
     // SEO validation
     if (formData.seo.title && formData.seo.title.length > 60) {
       newErrors.seoTitle = "SEO title cannot exceed 60 characters";
+      toast.error("SEO title cannot exceed 60 characters");
+      hasErrors = true;
     }
 
     if (formData.seo.description && formData.seo.description.length > 160) {
       newErrors.seoDescription = "SEO description cannot exceed 160 characters";
+      toast.error("SEO description cannot exceed 160 characters");
+      hasErrors = true;
     }
 
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+
+    if (hasErrors) {
+      // Also show a summary toast
+      toast.error(
+        `Please fix ${Object.keys(newErrors).length} error(s) before saving`
+      );
+    }
+
+    return !hasErrors;
   };
 
   const handleSubmit = async (e) => {
@@ -466,24 +483,18 @@ const ProductModal = ({
     setLoading(true);
 
     try {
-      // Prepare data for saving
       const productData = {
         ...formData,
-        // Ensure numeric fields are numbers
         price: parseFloat(formData.price) || 0,
         originalPrice: parseFloat(formData.originalPrice) || 0,
         costPrice: parseFloat(formData.costPrice) || 0,
-        // REMOVED: stock and lowStockThreshold
         weight: parseFloat(formData.weight) || 0,
-        // Ensure arrays are properly formatted
         tags: Array.isArray(formData.tags) ? formData.tags : [],
         images: Array.isArray(formData.images)
           ? formData.images.filter((img) => img && img.trim() !== "")
           : [],
         variants: Array.isArray(formData.variants) ? formData.variants : [],
-        // Handle onSale flag
         onSale: formData.originalPrice > formData.price,
-        // Ensure SEO keywords are array
         seo: {
           ...formData.seo,
           keywords: Array.isArray(formData.seo.keywords)
@@ -498,15 +509,19 @@ const ProductModal = ({
       };
       console.log(productData);
       await onSave(productData);
+      toast.success(
+        `Product ${mode === "add" ? "added" : "updated"} successfully!`
+      );
       onClose();
     } catch (error) {
-      // Set general error
+      const errorMsg =
+        error.response?.data?.message ||
+        "Failed to save product. Please try again.";
       setErrors((prev) => ({
         ...prev,
-        form:
-          error.response?.data?.message ||
-          "Failed to save product. Please try again.",
+        form: errorMsg,
       }));
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -529,9 +544,7 @@ const ProductModal = ({
                 {mode === "add" ? "Add New Product" : "Edit Product"}
               </h2>
               <p className="text-gray-600">
-                {mode === "add"
-                  ? "Fill in the details to add a new product"
-                  : "Update product information"}
+                {mode === "add" ? "" : "Update product information"}
               </p>
             </div>
             <button
@@ -581,7 +594,7 @@ const ProductModal = ({
           {/* Content */}
           <div className="flex-1 overflow-y-auto max-h-[60vh]">
             <form onSubmit={handleSubmit} className="p-6">
-              {/* Basic Info Tab - NO CHANGES NEEDED */}
+              {/* Basic Info Tab */}
               {activeTab === "basic" && (
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -596,8 +609,8 @@ const ProductModal = ({
                         onChange={handleInputChange}
                         disabled={loading}
                         required
-                        className={`input-modern ${
-                          errors.name ? "border-rose-500" : ""
+                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all ${
+                          errors.name ? "border-rose-500" : "border-gray-300"
                         }`}
                         placeholder="e.g., Premium Cotton T-Shirt"
                       />
@@ -620,8 +633,8 @@ const ProductModal = ({
                           onChange={handleInputChange}
                           disabled={loading}
                           required
-                          className={`input-modern flex-1 ${
-                            errors.sku ? "border-rose-500" : ""
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all flex-1 ${
+                            errors.sku ? "border-rose-500" : "border-gray-300"
                           }`}
                           placeholder="e.g., FS-MEN-001"
                         />
@@ -653,8 +666,10 @@ const ProductModal = ({
                         onChange={handleInputChange}
                         disabled={loading}
                         required
-                        className={`input-modern ${
-                          errors.category ? "border-rose-500" : ""
+                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all ${
+                          errors.category
+                            ? "border-rose-500"
+                            : "border-gray-300"
                         }`}
                       >
                         <option value="">Select category</option>
@@ -681,7 +696,7 @@ const ProductModal = ({
                         value={formData.subCategory}
                         onChange={handleInputChange}
                         disabled={loading}
-                        className="input-modern"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all"
                         placeholder="e.g., T-Shirts"
                       />
                     </div>
@@ -696,7 +711,7 @@ const ProductModal = ({
                       value={formData.tags.join(", ")}
                       onChange={handleTagsChange}
                       disabled={loading}
-                      className="input-modern"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all"
                       placeholder="e.g., cotton, casual, summer (comma separated)"
                     />
                     <p className="text-sm text-gray-500 mt-2">
@@ -743,10 +758,9 @@ const ProductModal = ({
                 </div>
               )}
 
-              {/* Pricing Tab - REMOVED Inventory Fields */}
+              {/* Pricing Tab */}
               {activeTab === "pricing" && (
                 <div className="space-y-6">
-                  {/* Inventory Information Banner */}
                   <div className="p-4 bg-blue-50 border border-blue-200 rounded-xl">
                     <div className="flex items-start gap-3">
                       <Info className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
@@ -788,8 +802,8 @@ const ProductModal = ({
                           required
                           step="0.01"
                           min="0.01"
-                          className={`input-modern pl-10 ${
-                            errors.price ? "border-rose-500" : ""
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all pl-10 ${
+                            errors.price ? "border-rose-500" : "border-gray-300"
                           }`}
                           placeholder="29.99"
                         />
@@ -817,8 +831,10 @@ const ProductModal = ({
                           disabled={loading}
                           step="0.01"
                           min="0"
-                          className={`input-modern pl-10 ${
-                            errors.originalPrice ? "border-rose-500" : ""
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all pl-10 ${
+                            errors.originalPrice
+                              ? "border-rose-500"
+                              : "border-gray-300"
                           }`}
                           placeholder="39.99"
                         />
@@ -846,8 +862,10 @@ const ProductModal = ({
                           disabled={loading}
                           step="0.01"
                           min="0"
-                          className={`input-modern pl-10 ${
-                            errors.costPrice ? "border-rose-500" : ""
+                          className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-all pl-10 ${
+                            errors.costPrice
+                              ? "border-rose-500"
+                              : "border-gray-300"
                           }`}
                           placeholder="15.50"
                         />
@@ -878,7 +896,7 @@ const ProductModal = ({
                         },
                         {
                           value: "out-of-stock",
-                          label: "Out of Stock", // This will be auto-updated by inventory
+                          label: "Out of Stock",
                           color: "bg-rose-500",
                         },
                         {
