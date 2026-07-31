@@ -773,11 +773,7 @@ const ProductDetails = () => {
                 <div
                   key={relatedProduct._id}
                   className="group bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 cursor-pointer"
-                  onClick={() =>
-                    navigate(
-                      `/product/${relatedProduct.slug || relatedProduct._id}`
-                    )
-                  }
+                  onClick={() => navigate(`/product/${relatedProduct._id}`)}
                 >
                   <div className="aspect-square overflow-hidden">
                     <img

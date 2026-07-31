@@ -12,7 +12,7 @@ import {
 import { useAuth } from "../../context/AuthContext";
 import { useCart } from "../../context/CartContext";
 import { useWishlist } from "../../context/WishlistContext";
-import logo from "../../assets/images/logo.webp";
+import logo from "../../assets/images/logo.png";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -61,7 +61,7 @@ const Header = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <div className="w-20 h-20 rounded-xl overflow-hidden flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl overflow-hidden flex items-center justify-center">
               <img
                 src={logo}
                 alt="Dar Ennar Logo"

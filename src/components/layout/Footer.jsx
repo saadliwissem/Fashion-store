@@ -262,7 +262,7 @@ const Footer = () => {
         </div>
 
         {/* Puzzle Features */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 py-8 border-t border-gray-800">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 py-8 border-t border-gray-800">
           <div className="flex items-center space-x-4 p-6 bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl border border-gray-700 hover:border-primary-500 transition-all duration-300 hover:shadow-puzzle group">
             <div className="p-3 bg-primary-500/20 rounded-xl group-hover:scale-110 transition-transform duration-300">
               <Lock className="w-8 h-8 text-primary-400" />
@@ -275,7 +275,7 @@ const Footer = () => {
             </div>
           </div>
 
-          <div className="flex items-center space-x-4 p-6 bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl border border-gray-700 hover:border-secondary-500 transition-all duration-300 hover:shadow-puzzle group">
+          {/* <div className="flex items-center space-x-4 p-6 bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl border border-gray-700 hover:border-secondary-500 transition-all duration-300 hover:shadow-puzzle group">
             <div className="p-3 bg-secondary-500/20 rounded-xl group-hover:scale-110 transition-transform duration-300">
               <Shield className="w-8 h-8 text-secondary-400" />
             </div>
@@ -285,7 +285,7 @@ const Footer = () => {
                 Digital certificate of ownership
               </p>
             </div>
-          </div>
+          </div> */}
 
           <div className="flex items-center space-x-4 p-6 bg-gradient-to-br from-gray-800/50 to-gray-900/50 rounded-2xl border border-gray-700 hover:border-accent-500 transition-all duration-300 hover:shadow-puzzle group">
             <div className="p-3 bg-accent-500/20 rounded-xl group-hover:scale-110 transition-transform duration-300">

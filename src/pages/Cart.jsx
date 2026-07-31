@@ -1,4 +1,5 @@
-import React from "react";
+// pages/Cart.jsx
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Trash2,
@@ -11,6 +12,7 @@ import {
   Shield,
   Package,
   Loader2,
+  X,
 } from "lucide-react";
 import Button from "../components/common/Button";
 import CartItem from "../components/cart/CartItem";
@@ -19,6 +21,7 @@ import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
 import { useWishlist } from "../context/WishlistContext";
+import { productsAPI } from "../services/api";
 
 const Cart = () => {
   const navigate = useNavigate();
@@ -32,15 +35,50 @@ const Cart = () => {
     loading,
     initialized,
     updatingItems,
+    addItem, // Assuming you have this in your cart context
   } = useCart();
   const { isAuthenticated } = useAuth();
 
-  // Handle move to wishlist for a specific item
-  // In Cart.jsx
+  // State for recommended products
+  const [recommendedProducts, setRecommendedProducts] = useState([]);
+  const [loadingRecommendations, setLoadingRecommendations] = useState(false);
+  const [recommendationSource, setRecommendationSource] = useState("popular");
+  const [addingToCart, setAddingToCart] = useState({});
+
+  // Fetch recommendations when cart changes
+  useEffect(() => {
+    fetchRecommendations();
+  }, [cart]);
+
+  const fetchRecommendations = async () => {
+    if (!cart || cart.length === 0) {
+      setRecommendedProducts([]);
+      return;
+    }
+
+    setLoadingRecommendations(true);
+    try {
+      const productIds = cart
+        .map((item) => item.product?._id || item.productId || item._id)
+        .filter(Boolean);
+
+      const response = await productsAPI.getFrequentlyBoughtTogether(
+        productIds
+      );
+      setRecommendedProducts(response.data || []);
+      setRecommendationSource(response.source || "popular");
+    } catch (error) {
+      console.error("Failed to fetch recommendations:", error);
+      setRecommendedProducts([]);
+    } finally {
+      setLoadingRecommendations(false);
+    }
+  };
+
+  // Handle move to wishlist
   const handleMoveToWishlist = (item) => {
     if (!item) return;
 
-    // Extract product information from cart item
     const productData = item.product || item;
 
     addToWishlist({
@@ -67,11 +105,13 @@ const Cart = () => {
   };
 
   const handleClearCart = () => {
-    clearCart();
+    if (window.confirm("Are you sure you want to clear your cart?")) {
+      clearCart();
+      toast.success("Cart cleared");
+    }
   };
 
   const handleProceedToCheckout = () => {
-    // Check if cart is null, undefined, or empty
     if (!cart || !Array.isArray(cart) || cart.length === 0) {
       toast.error("Your cart is empty");
       return;
@@ -87,6 +127,47 @@ const Cart = () => {
     }
 
     navigate("/checkout");
+  };
+
+  // Handle adding recommended product to cart
+  const handleAddRecommendedToCart = async (product) => {
+    if (!product) return;
+
+    try {
+      setAddingToCart((prev) => ({ ...prev, [product._id]: true }));
+
+      // Check if product is already in cart
+      const existingItem = cart.find(
+        (item) =>
+          item.product?._id === product._id || item.productId === product._id
+      );
+
+      if (existingItem) {
+        toast.info(`${product.name} is already in your cart`);
+        // Remove from recommendations
+        setRecommendedProducts((prev) =>
+          prev.filter((p) => p._id !== product._id)
+        );
+        return;
+      }
+
+      // Add to cart - you'll need to implement addItem in your cart context
+      await addItem(product._id, 1);
+      toast.success(`${product.name} added to cart!`);
+
+      // Remove from recommendations
+      setRecommendedProducts((prev) =>
+        prev.filter((p) => p._id !== product._id)
+      );
+
+      // Refresh recommendations
+      setTimeout(() => fetchRecommendations(), 500);
+    } catch (error) {
+      console.error("Failed to add to cart:", error);
+      toast.error(error.response?.data?.message || "Failed to add to cart");
+    } finally {
+      setAddingToCart((prev) => ({ ...prev, [product._id]: false }));
+    }
   };
 
   // Show loading state
@@ -110,7 +191,6 @@ const Cart = () => {
     );
   }
 
-  // Check if cart is empty
   const isCartEmpty = !cart || !Array.isArray(cart) || cart.length === 0;
 
   if (isCartEmpty) {
@@ -135,37 +215,48 @@ const Cart = () => {
             </div>
           </div>
 
-          {/* Recently Viewed */}
-          <div className="mt-16">
-            <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">
-              You might also like
-            </h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {[1, 2, 3, 4].map((i) => (
-                <div
-                  key={i}
-                  className="group cursor-pointer"
-                  onClick={() => navigate(`/shop`)}
-                >
-                  <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl overflow-hidden mb-3">
-                    <div className="w-full h-full group-hover:scale-110 transition-transform duration-500" />
+          {/* Popular Products when cart is empty */}
+          {recommendedProducts.length > 0 && (
+            <div className="mt-16">
+              <h2 className="text-2xl font-bold text-gray-900 mb-8 text-center">
+                You might also like
+              </h2>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                {recommendedProducts.map((product) => (
+                  <div
+                    key={product._id}
+                    className="group cursor-pointer"
+                    onClick={() => navigate(`/product/${product._id}`)}
+                  >
+                    <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl overflow-hidden mb-3">
+                      {product.images?.[0] ? (
+                        <img
+                          src={product.images[0]}
+                          alt={product.name}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-400">
+                          <ShoppingBag className="w-12 h-12" />
+                        </div>
+                      )}
+                    </div>
+                    <h3 className="font-medium text-gray-900 group-hover:text-primary-600 line-clamp-1">
+                      {product.name}
+                    </h3>
+                    <p className="text-gray-600">
+                      {product.price?.toFixed(3) || "0.000"} DT
+                    </p>
                   </div>
-                  <h3 className="font-medium text-gray-900 group-hover:text-primary-600">
-                    Suggested Item {i}
-                  </h3>
-                  <p className="text-gray-600">
-                    ${(39.99 + i * 10).toFixed(2)}
-                  </p>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     );
   }
 
-  // Ensure cartTotal has default values if undefined
   const safeCartTotal = {
     subtotal: cartTotal?.subtotal || 0,
     shipping: cartTotal?.shipping || 0,
@@ -178,20 +269,33 @@ const Cart = () => {
       <div className="container mx-auto px-4">
         {/* Page Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Shopping Cart
-          </h1>
-          <div className="flex items-center gap-4 text-gray-600">
-            <p>
-              {cart.length} item{cart.length !== 1 ? "s" : ""} in your cart
-            </p>
-            <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
-            <p>
-              Total:{" "}
-              <span className="font-bold text-primary-600">
-                {safeCartTotal.total.toFixed(3)} DT
-              </span>
-            </p>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div>
+              <h1 className="text-4xl font-bold text-gray-900 mb-2">
+                Shopping Cart
+              </h1>
+              <div className="flex items-center gap-4 text-gray-600">
+                <p>
+                  {cart.length} item{cart.length !== 1 ? "s" : ""} in your cart
+                </p>
+                <div className="w-1 h-1 bg-gray-300 rounded-full"></div>
+                <p>
+                  Total:{" "}
+                  <span className="font-bold text-primary-600">
+                    {safeCartTotal.total.toFixed(3)} DT
+                  </span>
+                </p>
+              </div>
+            </div>
+            <Button
+              variant="outline"
+              onClick={() => navigate("/shop")}
+              className="flex items-center gap-2"
+              disabled={loading}
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Continue Shopping
+            </Button>
           </div>
         </div>
 
@@ -233,27 +337,19 @@ const Cart = () => {
               <div className="p-6 border-t border-gray-200">
                 <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
                   <Button
-                    variant="outline"
-                    onClick={() => navigate("/shop")}
-                    className="flex items-center gap-2"
+                    variant="ghost"
+                    onClick={handleClearCart}
                     disabled={loading}
+                    className="text-rose-600 hover:text-rose-700 hover:bg-rose-50"
                   >
-                    <ArrowLeft className="w-4 h-4" />
-                    Continue Shopping
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Clear Cart
                   </Button>
 
                   <div className="flex gap-4">
                     <Button
-                      variant="ghost"
-                      onClick={handleClearCart}
-                      disabled={loading}
-                      className="text-rose-600 hover:text-rose-700"
-                    >
-                      Clear Cart
-                    </Button>
-                    <Button
+                      variant="outline"
                       onClick={() => {
-                        // Save cart for later functionality
                         toast.success("Cart saved for later");
                       }}
                       disabled={loading}
@@ -266,7 +362,7 @@ const Cart = () => {
             </div>
 
             {/* Promo Code */}
-            <div className="mt-8 bg-gradient-to-r from-primary-50 to-neutral-50 rounded-2xl p-6">
+            {/* <div className="mt-8 bg-gradient-to-r from-primary-50 to-neutral-50 rounded-2xl p-6 border border-primary-100">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">
                 Have a promo code?
               </h3>
@@ -284,7 +380,7 @@ const Cart = () => {
               <p className="text-sm text-gray-600 mt-3">
                 Available codes: SUMMER25, NEW10, FREESHIP
               </p>
-            </div>
+            </div> */}
 
             {/* Shipping Progress */}
             {safeCartTotal.subtotal < 99 && (
@@ -308,7 +404,11 @@ const Cart = () => {
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Your progress</span>
                     <span className="font-medium">
-                      {((safeCartTotal.subtotal / 99) * 100).toFixed(0)}%
+                      {Math.min(
+                        (safeCartTotal.subtotal / 99) * 100,
+                        100
+                      ).toFixed(0)}
+                      %
                     </span>
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-2">
@@ -330,7 +430,7 @@ const Cart = () => {
           {/* Order Summary */}
           <div className="lg:col-span-1">
             <CartSummary
-              items={cart} // This should be the array of cart items
+              items={cart}
               subtotal={safeCartTotal.subtotal}
               shipping={safeCartTotal.shipping}
               tax={safeCartTotal.tax}
@@ -365,7 +465,7 @@ const Cart = () => {
             </div>
 
             {/* Customer Support */}
-            <div className="mt-8 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl p-6">
+            <div className="mt-8 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl p-6 border border-blue-100">
               <div className="flex items-center gap-4 mb-4">
                 <div className="w-12 h-12 bg-gradient-to-br from-blue-100 to-blue-200 rounded-xl flex items-center justify-center">
                   <Package className="w-6 h-6 text-blue-600" />
@@ -404,44 +504,117 @@ const Cart = () => {
           </div>
         </div>
 
-        {/* Recommended Products */}
-        <div className="mt-12 pt-12 border-t border-gray-200">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">
-                Frequently bought together
-              </h2>
-              <p className="text-gray-600">Items that complement your cart</p>
-            </div>
-            <Button variant="outline">View All</Button>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { id: 5, name: "Casual Sneakers", price: 59.99 },
-              { id: 6, name: "Baseball Cap", price: 24.99 },
-              { id: 7, name: "Leather Belt", price: 34.99 },
-              { id: 8, name: "Sunglasses", price: 45.99 },
-            ].map((product) => (
-              <div
-                key={product.id}
-                className="group bg-white rounded-2xl shadow-lg p-4 hover:shadow-xl transition-shadow"
-              >
-                <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl mb-4"></div>
-                <h3 className="font-semibold text-gray-900 group-hover:text-primary-600">
-                  {product.name}
-                </h3>
-                <div className="flex items-center justify-between mt-2">
-                  <span className="text-lg font-bold text-gray-900">
-                    ${product.price.toFixed(2)}
-                  </span>
-                  <Button size="small" variant="outline">
-                    Add to Cart
-                  </Button>
-                </div>
+        {/* Recommended Products - DYNAMIC */}
+        {!loadingRecommendations && recommendedProducts.length > 0 && (
+          <div className="mt-12 pt-12 border-t border-gray-200">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">
+                  {recommendationSource === "frequently_bought"
+                    ? "🔄 Frequently Bought Together"
+                    : "⭐ You Might Also Like"}
+                </h2>
+                <p className="text-gray-600">
+                  {recommendationSource === "frequently_bought"
+                    ? "Customers who bought these items also bought:"
+                    : "Popular items you might be interested in:"}
+                </p>
               </div>
-            ))}
+              <Button variant="outline" onClick={() => navigate("/shop")}>
+                View All
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {recommendedProducts.map((product) => {
+                // Check if product is already in cart
+                const isInCart = cart.some(
+                  (item) =>
+                    item.product?._id === product._id ||
+                    item.productId === product._id
+                );
+
+                return (
+                  <div
+                    key={product._id}
+                    className="group bg-white rounded-2xl shadow-lg p-4 hover:shadow-xl transition-all hover:-translate-y-1 relative"
+                  >
+                    {isInCart && (
+                      <div className="absolute top-2 right-2 bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">
+                        In Cart
+                      </div>
+                    )}
+                    <Link to={`/product/${product._id}`}>
+                      <div className="aspect-square bg-gradient-to-br from-gray-100 to-gray-200 rounded-xl mb-4 overflow-hidden">
+                        {product.images?.[0] ? (
+                          <img
+                            src={product.images[0]}
+                            alt={product.name}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-gray-400">
+                            <ShoppingBag className="w-12 h-12" />
+                          </div>
+                        )}
+                      </div>
+                    </Link>
+                    <Link to={`/product/${product._id}`}>
+                      <h3 className="font-semibold text-gray-900 group-hover:text-primary-600 transition-colors line-clamp-1">
+                        {product.name}
+                      </h3>
+                    </Link>
+                    <p className="text-sm text-gray-600 line-clamp-1">
+                      {product.category?.name || "Clothing"}
+                    </p>
+                    <div className="flex items-center justify-between mt-3">
+                      <span className="text-lg font-bold text-gray-900">
+                        {product.price?.toFixed(3) || "0.000"} DT
+                      </span>
+                      {!isInCart ? (
+                        <Button
+                          size="small"
+                          variant="outline"
+                          onClick={() => handleAddRecommendedToCart(product)}
+                          disabled={addingToCart[product._id]}
+                          className="flex items-center gap-1"
+                        >
+                          {addingToCart[product._id] ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Plus className="w-4 h-4" />
+                          )}
+                          Add
+                        </Button>
+                      ) : (
+                        <Button
+                          size="small"
+                          variant="ghost"
+                          onClick={() => navigate("/cart")}
+                          className="text-green-600"
+                        >
+                          View in Cart
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        )}
+
+        {/* Loading state for recommendations */}
+        {loadingRecommendations && cart.length > 0 && (
+          <div className="mt-12 pt-12 border-t border-gray-200">
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-8 h-8 text-primary-600 animate-spin" />
+              <span className="ml-3 text-gray-600">
+                Finding recommendations...
+              </span>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

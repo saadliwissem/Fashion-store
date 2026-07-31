@@ -1,12 +1,11 @@
+// pages/Shop.jsx
 import React, { useState, useEffect, useCallback } from "react";
 import { Filter, Grid, List, ChevronDown, Loader2 } from "lucide-react";
 import ProductCard from "../components/products/ProductCard";
 import ProductFilter from "../components/products/ProductFilter";
 import Button from "../components/common/Button";
-import axios from "axios";
-
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+import { productsAPI } from "../services/api";
+import toast from "react-hot-toast";
 
 const Shop = () => {
   const [viewMode, setViewMode] = useState("grid");
@@ -52,44 +51,64 @@ const Shop = () => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/categories`);
-      // Transform categories for the filter component
-      const transformedCategories = response.data.categories.map(
-        (category) => ({
-          id: category._id || category.slug,
-          name: category.name,
-          count: category.productCount || 0,
-          slug: category.slug,
-        })
-      );
+      const response = await productsAPI.getCategories();
+      // Handle different response structures
+      let categoriesData = [];
+      if (response.data?.categories) {
+        categoriesData = response.data.categories;
+      } else if (response.data?.data) {
+        categoriesData = response.data.data;
+      } else if (Array.isArray(response.data)) {
+        categoriesData = response.data;
+      }
 
-      // Add "All Products" option
+      const transformedCategories = categoriesData.map((category) => ({
+        id: category._id || category.id,
+        name: category.name,
+        count: category.productCount || 0,
+        slug: category.slug,
+      }));
+
       setCategories([
-        { id: "all", name: "All Products", count: totalProducts, slug: "all" },
+        {
+          id: "all",
+          name: "All Products",
+          count: totalProducts || 0,
+          slug: "all",
+        },
         ...transformedCategories,
       ]);
     } catch (err) {
       console.error("Error fetching categories:", err);
-      setError("Failed to load categories");
+      // Use default categories if API fails
+      setCategories([
+        { id: "all", name: "All Products", count: 0, slug: "all" },
+        { id: "clothing", name: "Clothing", count: 0, slug: "clothing" },
+        {
+          id: "accessories",
+          name: "Accessories",
+          count: 0,
+          slug: "accessories",
+        },
+      ]);
     }
   };
 
   const fetchCategoryFilters = async () => {
     try {
-      const response = await axios.get(
-        `${API_BASE_URL}/products/filters/categories`
-      );
+      const response = await productsAPI.getCategoryFilters();
+
       if (response.data) {
-        // Extract available sizes and colors from filters
-        if (response.data.sizes) {
-          setAvailableSizes(response.data.sizes);
+        const data = response.data;
+        if (data.sizes) {
+          setAvailableSizes(data.sizes);
         }
-        if (response.data.colors) {
-          setAvailableColors(response.data.colors);
+        if (data.colors) {
+          setAvailableColors(data.colors);
         }
-        if (response.data.maxPrice) {
-          setMaxPrice(response.data.maxPrice);
-          setPriceRange([0, response.data.maxPrice]);
+        if (data.maxPrice) {
+          setMaxPrice(data.maxPrice);
+          setPriceRange([0, data.maxPrice]);
         }
       }
     } catch (err) {
@@ -103,8 +122,9 @@ const Shop = () => {
         { name: "Blue", value: "#3B82F6" },
         { name: "Red", value: "#EF4444" },
         { name: "Green", value: "#10B981" },
-        { name: "primary", value: "#f0b100" },
       ]);
+      setMaxPrice(1000);
+      setPriceRange([0, 1000]);
     }
   };
 
@@ -113,7 +133,6 @@ const Shop = () => {
     setError(null);
 
     try {
-      let url = `${API_BASE_URL}/products`;
       const params = {
         page: currentPage,
         limit: itemsPerPage,
@@ -125,7 +144,7 @@ const Shop = () => {
         const selectedCat = categories.find(
           (cat) => cat.id === selectedCategory
         );
-        if (selectedCat) {
+        if (selectedCat && selectedCat.slug !== "all") {
           params.category = selectedCat.slug;
         }
       }
@@ -151,32 +170,42 @@ const Shop = () => {
         params.minRating = minRating;
       }
 
-      // Make API call
-      const response = await axios.get(url, { params });
+      const response = await productsAPI.getProducts(params);
 
-      setProducts(response.data.products);
-      console.log(response.data.products);
-      setTotalProducts(response.data.count || 0);
-      setTotalPages(
-        response.data.pages ||
-          Math.ceil((response.data.total || 0) / itemsPerPage)
-      );
+      // Handle different response structures
+      let productsData = [];
+      let total = 0;
+      let pages = 0;
+      console.log(response.data);
 
-      // Update categories count with actual product counts from this query
-      if (response.data.pages !== undefined) {
-        setCategories((prev) =>
-          prev.map((cat) =>
-            cat.id === "all" ? { ...cat, count: response.data.pages } : cat
-          )
-        );
+      if (response.data?.data) {
+        productsData = response.data.data;
+        total = response.data.total || productsData.length;
+        pages = response.data.pages || 1;
+      } else if (response.data?.products) {
+        productsData = response.data.products;
+        total = response.data.count || productsData.length;
+        pages = response.data.pages || 1;
+      } else if (Array.isArray(response.data)) {
+        productsData = response.data;
+        total = productsData.length;
+        pages = 1;
+      } else if (response.data?.items) {
+        productsData = response.data.items;
+        total = response.data.total || productsData.length;
+        pages = response.data.totalPages || 1;
       }
+
+      setProducts(productsData);
+      setTotalProducts(total);
+      setTotalPages(pages || Math.ceil(total / itemsPerPage));
     } catch (err) {
       console.error("Error fetching products:", err);
       setError(err.response?.data?.message || "Failed to load products");
-
-      // Fallback to empty array
       setProducts([]);
       setTotalProducts(0);
+      setTotalPages(0);
+      toast.error("Failed to load products");
     } finally {
       setLoading(false);
     }
@@ -189,23 +218,24 @@ const Shop = () => {
       "price-high": "-price",
       newest: "-createdAt",
       rating: "-averageRating",
+      popularity: "-purchaseCount",
     };
     return sortMap[sortId] || "-createdAt";
   };
 
   const handleSortChange = (value) => {
     setSortBy(value);
-    setCurrentPage(1); // Reset to first page on sort change
+    setCurrentPage(1);
   };
 
   const handleCategoryChange = (categoryId) => {
     setSelectedCategory(categoryId);
-    setCurrentPage(1); // Reset to first page on category change
+    setCurrentPage(1);
   };
 
   const handlePriceChange = (range) => {
     setPriceRange(range);
-    setCurrentPage(1); // Reset to first page on price change
+    setCurrentPage(1);
   };
 
   const handleSizeChange = (size) => {
@@ -223,7 +253,7 @@ const Shop = () => {
   };
 
   const handleRatingChange = (rating) => {
-    setMinRating(rating);
+    setMinRating(rating === minRating ? 0 : rating);
     setCurrentPage(1);
   };
 
@@ -244,10 +274,11 @@ const Shop = () => {
 
   const sortOptions = [
     { id: "featured", name: "Featured" },
+    { id: "newest", name: "Newest" },
     { id: "price-low", name: "Price: Low to High" },
     { id: "price-high", name: "Price: High to Low" },
-    { id: "newest", name: "Newest" },
     { id: "rating", name: "Highest Rated" },
+    { id: "popularity", name: "Most Popular" },
   ];
 
   // Generate pagination numbers
@@ -289,7 +320,7 @@ const Shop = () => {
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
-          {/* Filters Sidebar - Mobile/Desktop */}
+          {/* Filters Sidebar */}
           <div
             className={`lg:w-1/4 ${showFilters ? "block" : "hidden lg:block"}`}
           >
@@ -403,7 +434,7 @@ const Shop = () => {
                 )}
                 {(priceRange[0] > 0 || priceRange[1] < maxPrice) && (
                   <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm">
-                    ${priceRange[0]} - ${priceRange[1]}
+                    {priceRange[0]} - {priceRange[1]} TND
                   </span>
                 )}
                 {selectedSizes.map((size) => (
@@ -453,7 +484,7 @@ const Shop = () => {
                   Error loading products
                 </h3>
                 <p className="text-gray-600 mb-6">{error}</p>
-                <Button onClick={fetchProducts}>Retry</Button>
+                <Button onClick={() => fetchProducts()}>Retry</Button>
               </div>
             )}
 

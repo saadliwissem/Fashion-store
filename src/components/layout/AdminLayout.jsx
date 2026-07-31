@@ -23,7 +23,7 @@ import {
   Globe,
   Star,
   AlertCircle,
-  Warehouse
+  Warehouse,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
@@ -56,6 +56,12 @@ const AdminLayout = ({ children }) => {
         {
           name: "Dashboard",
           path: "/admin",
+          icon: LayoutDashboard,
+          exact: true,
+        },
+        {
+          name: "Home Settings",
+          path: "/home-settings",
           icon: LayoutDashboard,
           exact: true,
         },

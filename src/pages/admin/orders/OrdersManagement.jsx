@@ -644,18 +644,37 @@ const OrdersManagement = () => {
     }
   };
 
+  // In OrdersManagement.js - Replace the handleDelete function
+
   const handleDelete = async () => {
     try {
-      await adminAPI.deleteOrder(selectedOrder._id);
-      toast.success(`Order #${selectedOrder.orderNumber} deleted successfully`);
-      setShowDeleteModal(false);
-      setSelectedOrder(null);
+      // Check if we're deleting a single order or multiple
+      if (selectedOrder) {
+        // Single order deletion
+        await adminAPI.deleteOrder(selectedOrder._id);
+        toast.success(
+          `Order #${selectedOrder.orderNumber} deleted successfully`
+        );
+        setShowDeleteModal(false);
+        setSelectedOrder(null);
+      } else if (selectedOrders.length > 0) {
+        // Bulk deletion
+        await adminAPI.bulkDeleteOrders({ orderIds: selectedOrders });
+        toast.success(`${selectedOrders.length} orders deleted successfully`);
+        setSelectedOrders([]);
+        setShowDeleteModal(false);
+      }
+
       fetchOrders();
+      fetchOrderStats();
     } catch (error) {
-      console.error("Error deleting order:", error);
-      toast.error(error.response?.data?.message || "Failed to delete order");
+      console.error("Error deleting order(s):", error);
+      toast.error(error.response?.data?.message || "Failed to delete order(s)");
     }
   };
+
+  // Add this to your adminAPI if you want bulk delete
+  // bulkDeleteOrders: (data) => api.delete("/admin/orders/bulk", { data }),
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -1094,7 +1113,6 @@ const OrdersManagement = () => {
                 </div>
               </div>
             </div>
-
             {/* Filters and Controls */}
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
@@ -1248,7 +1266,6 @@ const OrdersManagement = () => {
                 </div>
               </div>
             </div>
-
             {/* Bulk Actions */}
             {selectedOrders.length > 0 && (
               <div className="bg-gradient-to-r from-primary-50 to-pink-50 rounded-2xl p-4 border border-primary-100">
@@ -1286,7 +1303,11 @@ const OrdersManagement = () => {
                       size="small"
                       variant="outline"
                       className="text-rose-600 border-rose-200 hover:bg-rose-50"
-                      onClick={() => setShowDeleteModal(true)}
+                      onClick={() => {
+                        // Set selectedOrder to null to indicate bulk delete
+                        setSelectedOrder(null);
+                        setShowDeleteModal(true);
+                      }}
                     >
                       Delete Selected
                     </Button>
@@ -1294,10 +1315,8 @@ const OrdersManagement = () => {
                 </div>
               </div>
             )}
-
             {/* Orders Content */}
             {viewMode === "table" ? renderTableView() : renderGridView()}
-
             {/* Analytics Section */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 lg:col-span-2">
@@ -1368,7 +1387,6 @@ const OrdersManagement = () => {
           </>
         )}
       </div>
-
       {/* Modals */}
       {showStatusModal && selectedOrder && (
         <StatusUpdateModal
@@ -1384,7 +1402,6 @@ const OrdersManagement = () => {
           }}
         />
       )}
-
       {showTrackingModal && selectedOrder && (
         <TrackingUpdateModal
           isOpen={showTrackingModal}
@@ -1399,7 +1416,6 @@ const OrdersManagement = () => {
           }}
         />
       )}
-
       {showPaymentModal && selectedOrder && (
         <PaymentUpdateModal
           isOpen={showPaymentModal}
@@ -1414,7 +1430,6 @@ const OrdersManagement = () => {
           }}
         />
       )}
-
       {showDetailsModal && selectedOrder && (
         <OrderDetailsModal
           isOpen={showDetailsModal}
@@ -1425,7 +1440,6 @@ const OrdersManagement = () => {
           order={selectedOrder}
         />
       )}
-
       {showDeleteModal && (
         <DeleteConfirmation
           isOpen={showDeleteModal}
@@ -1437,12 +1451,25 @@ const OrdersManagement = () => {
           title={
             selectedOrder
               ? `Delete Order #${selectedOrder.orderNumber}`
-              : `Delete ${selectedOrders.length} orders`
+              : selectedOrders.length > 1
+              ? `Delete ${selectedOrders.length} Orders`
+              : "Delete Order"
           }
           message={
             selectedOrder
               ? `Are you sure you want to delete order #${selectedOrder.orderNumber}? This action cannot be undone.`
-              : `Are you sure you want to delete ${selectedOrders.length} selected orders? This action cannot be undone.`
+              : selectedOrders.length > 1
+              ? `Are you sure you want to delete ${selectedOrders.length} selected orders? This action cannot be undone.`
+              : "Are you sure you want to delete this order? This action cannot be undone."
+          }
+          confirmText={
+            selectedOrder
+              ? "Delete Order"
+              : `Delete ${
+                  selectedOrders.length > 1
+                    ? `${selectedOrders.length} Orders`
+                    : "Order"
+                }`
           }
         />
       )}

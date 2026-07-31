@@ -98,6 +98,20 @@ export const productsAPI = {
   getCategoryFilters: () => api.get("/products/filters/categories"),
   createReview: (productId, reviewData) =>
     api.post(`/products/${productId}/reviews`, reviewData),
+  getFrequentlyBoughtTogether: async (productIds) => {
+    const params = new URLSearchParams();
+    if (productIds && productIds.length > 0) {
+      params.append("productIds", productIds.join(","));
+    }
+    const response = await api.get(
+      `/products/frequently-bought-together?${params}`
+    );
+    return response.data;
+  },
+  getProducts: (params) => api.get("/products", { params }),
+  getProduct: (id) => api.get(`/products/${id}`),
+  getCategories: () => api.get("/categories"),
+  getCategoryFilters: () => api.get("/products/filters/categories"),
 };
 
 // Categories API
@@ -213,6 +227,7 @@ export const adminAPI = {
   updateOrder: (id, data) => api.put(`/admin/orders/${id}`, data),
   deleteOrder: (id) => api.delete(`/admin/orders/${id}`),
   bulkUpdateOrders: (data) => api.put("/admin/orders/bulk", data),
+  bulkDeleteOrders: (data) => api.delete("/admin/orders/bulk", { data }),
   getOrderStats: () => api.get("/admin/orders/stats"),
   updateTracking: (id, data) => api.put(`/admin/orders/${id}/tracking`, data),
   updatePaymentStatus: (id, data) =>

@@ -1,3 +1,4 @@
+// pages/Checkout.jsx
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Lock, Shield, Truck, Loader } from "lucide-react";
@@ -7,8 +8,9 @@ import PaymentForm from "../components/checkout/PaymentForm";
 import OrderSummary from "../components/checkout/OrderSummary";
 import Button from "../components/common/Button";
 import toast from "react-hot-toast";
-import { cartAPI, ordersAPI } from "../services/api";
+import { cartAPI, ordersAPI, authAPI } from "../services/api"; // ✅ Changed: Added authAPI
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
 
 // Tunisian governorates
 const TUNISIAN_GOVERNORATES = [
@@ -40,12 +42,17 @@ const TUNISIAN_GOVERNORATES = [
 
 const Checkout = () => {
   const navigate = useNavigate();
+  const { isAuthenticated, user } = useAuth(); // ✅ Added: get user from auth
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [cart, setCart] = useState(null);
   const [cartLoading, setCartLoading] = useState(true);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState("card");
   const { clearCart } = useCart();
+
+  // State for saved addresses
+  const [savedAddresses, setSavedAddresses] = useState([]);
+  const [loadingAddresses, setLoadingAddresses] = useState(false);
 
   const [formData, setFormData] = useState({
     // Address Information
@@ -58,10 +65,12 @@ const Checkout = () => {
     zipCode: "",
     address: "",
     address2: "",
+    addressLabel: "Home",
     saveAddress: true,
+    setDefault: false,
 
     // Shipping Method
-    shippingMethod: "standard", // standard, express, pickup
+    shippingMethod: "standard",
 
     // Payment Information
     cardName: "",
@@ -100,7 +109,10 @@ const Checkout = () => {
 
   useEffect(() => {
     fetchCart();
-  }, []);
+    if (isAuthenticated) {
+      loadSavedAddresses();
+    }
+  }, [isAuthenticated]);
 
   const fetchCart = async () => {
     try {
@@ -113,6 +125,73 @@ const Checkout = () => {
     } finally {
       setCartLoading(false);
     }
+  };
+
+  // Load saved addresses from authAPI
+  const loadSavedAddresses = async () => {
+    try {
+      setLoadingAddresses(true);
+      // Get user profile which includes addresses
+      const response = await authAPI.getProfile();
+      const userData = response.data.user;
+
+      // Extract addresses from user profile
+      const addresses = userData?.addresses || [];
+      setSavedAddresses(addresses);
+
+      // If there's a default address, select it
+      const defaultAddress = addresses.find((addr) => addr.isDefault);
+      if (defaultAddress) {
+        handleSelectSavedAddress(defaultAddress);
+      }
+
+      // Also pre-fill user's name and email from profile
+      setFormData((prev) => ({
+        ...prev,
+        firstName: userData?.firstName || prev.firstName,
+        lastName: userData?.lastName || prev.lastName,
+        email: userData?.email || prev.email,
+        phone: userData?.phone || prev.phone,
+      }));
+    } catch (error) {
+      console.error("Failed to load addresses:", error);
+      setSavedAddresses([]);
+    } finally {
+      setLoadingAddresses(false);
+    }
+  };
+
+  // Handle selecting a saved address
+  const handleSelectSavedAddress = (address) => {
+    setFormData((prev) => ({
+      ...prev,
+      firstName: address.firstName || "",
+      lastName: address.lastName || "",
+      phone: address.phone || "",
+      governorate: address.governorate || "",
+      city: address.city || "",
+      zipCode: address.zipCode || "",
+      address: address.address || "",
+      address2: address.address2 || "",
+      addressLabel: address.label || "Home",
+      saveAddress: false,
+      setDefault: false,
+    }));
+  };
+
+  // Handle using a new address
+  const handleUseNewAddress = () => {
+    setFormData((prev) => ({
+      ...prev,
+      governorate: "",
+      city: "",
+      zipCode: "",
+      address: "",
+      address2: "",
+      addressLabel: "Home",
+      saveAddress: true,
+      setDefault: false,
+    }));
   };
 
   const handleInputChange = (e) => {
@@ -189,28 +268,22 @@ const Checkout = () => {
             }
           }
 
-          // Card number validation (simplified)
           const cardNumber = formData.cardNumber.replace(/\s/g, "");
           if (cardNumber.length < 16) {
             toast.error("Please enter a valid 16-digit card number");
             return false;
           }
 
-          // Expiry date validation
           const [month, year] = formData.cardExpiry.split("/");
           if (!month || !year || month.length !== 2 || year.length !== 2) {
             toast.error("Please enter expiry date in MM/YY format");
             return false;
           }
 
-          // CVC validation
           if (formData.cardCVC.length < 3) {
             toast.error("Please enter a valid 3-digit CVC");
             return false;
           }
-        } else if (selectedPaymentMethod === "cod") {
-          // Cash on delivery doesn't need additional validation
-          return true;
         }
         return true;
       case 4: // Terms validation
@@ -255,13 +328,12 @@ const Checkout = () => {
     setLoading(true);
 
     try {
-      // Prepare order data
       const orderData = {
         shippingAddress: {
           firstName: formData.firstName.trim(),
           lastName: formData.lastName.trim(),
           email: formData.email.trim(),
-          phone: formData.phone.replace(/\D/g, ""), // Clean phone number
+          phone: formData.phone.replace(/\D/g, ""),
           governorate: formData.governorate,
           city: formData.city.trim(),
           zipCode: formData.zipCode.trim(),
@@ -272,42 +344,33 @@ const Checkout = () => {
         shippingMethod: formData.shippingMethod,
         customerNotes: formData.notes?.trim() || "",
         saveAddress: formData.saveAddress,
+        addressLabel: formData.addressLabel,
+        setDefault: formData.setDefault,
       };
 
-      // Add payment details if paying by card
       if (selectedPaymentMethod === "card") {
         orderData.paymentDetails = {
           cardLastFour: formData.cardNumber.slice(-4),
           cardName: formData.cardName,
-          // In a real app, you would use a payment processor like Stripe here
-          // This is just for demonstration
-        };
-      } else if (selectedPaymentMethod === "mobile") {
-        orderData.paymentDetails = {
-          mobileProvider: "Orange Money", // Default or get from UI
         };
       }
 
-      // Call order API
       const response = await ordersAPI.create(orderData);
 
       toast.success("Commande passée avec succès! Merci pour votre achat.");
       clearCart();
-      // Redirect to order confirmation
       setTimeout(() => {
         navigate(`/orders/${response.data.order._id}`);
       }, 1500);
     } catch (error) {
       console.error("Order error:", error);
-
       const errorMessage =
         error.response?.data?.message || "Failed to place order";
 
       if (error.response?.status === 400) {
-        // Handle specific error messages
         if (errorMessage.includes("stock")) {
           toast.error("Some items are out of stock. Please update your cart.");
-          fetchCart(); // Refresh cart to get updated stock
+          fetchCart();
         } else if (errorMessage.includes("Cart is empty")) {
           toast.error("Your cart is empty");
           navigate("/cart");
@@ -337,13 +400,12 @@ const Checkout = () => {
       };
     }
 
-    // Use cart summary if available, otherwise calculate
     if (cart.summary) {
       const subtotal = cart.summary.subtotal || 0;
       const shippingPrice =
         shippingMethods.find((m) => m.id === formData.shippingMethod)?.price ||
         0;
-      const tax = subtotal * 0.19; // 7% TVA in Tunisia
+      const tax = subtotal * 0.19;
       const total = subtotal + shippingPrice + tax;
 
       return {
@@ -355,7 +417,6 @@ const Checkout = () => {
         totalItems: cart.summary.totalItems || 0,
       };
     } else {
-      // Fallback calculation
       const subtotal = cart.items.reduce(
         (sum, item) => sum + (item.product?.price || 0) * item.quantity,
         0
@@ -393,6 +454,10 @@ const Checkout = () => {
             formData={formData}
             handleInputChange={handleInputChange}
             governorates={TUNISIAN_GOVERNORATES}
+            savedAddresses={savedAddresses}
+            onSelectSavedAddress={handleSelectSavedAddress}
+            onUseNewAddress={handleUseNewAddress}
+            loadingAddresses={loadingAddresses}
           />
         );
       case 2:
@@ -467,7 +532,6 @@ const Checkout = () => {
               </div>
             </div>
 
-            {/* Order Notes */}
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-3">
                 Additional Notes
@@ -482,8 +546,6 @@ const Checkout = () => {
               />
             </div>
 
-            {/* Terms and Conditions */}
-            {/* Terms and Conditions */}
             <div className="flex items-start gap-3">
               <input type="checkbox" id="terms" className="mt-1" required />
               <div className="text-sm text-gray-600">
@@ -492,11 +554,11 @@ const Checkout = () => {
                   <Link
                     to="/termsandconditions"
                     className="font-medium text-primary-600 hover:text-primary-500 underline"
-                    target="_blank" // Optional: opens in new tab
+                    target="_blank"
                   >
                     Terms & Conditions and Privacy Policy.
                   </Link>{" "}
-                  . I understand that my order is subject to availability and
+                  I understand that my order is subject to availability and
                   confirmation. By placing this order, I authorize the charge to
                   my payment method.
                 </label>
@@ -539,7 +601,6 @@ const Checkout = () => {
   return (
     <div className="min-h-screen py-8 bg-gradient-to-b from-gray-50 to-white">
       <div className="container mx-auto px-4">
-        {/* Header */}
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-3">Checkout</h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
@@ -548,14 +609,11 @@ const Checkout = () => {
         </div>
 
         <div className="max-w-6xl mx-auto">
-          {/* Checkout Steps */}
           <CheckoutSteps steps={steps} currentStep={currentStep} />
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
-            {/* Left Column - Forms */}
             <div className="lg:col-span-2">
               <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8">
-                {/* Step Indicator */}
                 <div className="mb-8">
                   <h2 className="text-2xl font-bold text-gray-900 mb-2">
                     {steps[currentStep - 1].name}
@@ -565,10 +623,8 @@ const Checkout = () => {
                   </p>
                 </div>
 
-                {/* Step Content */}
                 {renderStepContent()}
 
-                {/* Navigation Buttons */}
                 <div className="flex justify-between mt-8 pt-8 border-t border-gray-200">
                   {currentStep > 1 ? (
                     <Button
@@ -607,7 +663,6 @@ const Checkout = () => {
                 </div>
               </div>
 
-              {/* Security Badges */}
               <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div className="bg-white p-4 rounded-xl shadow-sm text-center">
                   <div className="text-2xl mb-2">🔒</div>
@@ -628,7 +683,6 @@ const Checkout = () => {
               </div>
             </div>
 
-            {/* Right Column - Order Summary */}
             <div className="lg:col-span-1">
               <OrderSummary
                 items={cart.items || []}
@@ -644,7 +698,6 @@ const Checkout = () => {
             </div>
           </div>
 
-          {/* Help Section */}
           <div className="mt-8 p-6 bg-gradient-to-r from-primary-50 to-neutral-50 rounded-2xl">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
               Need Help?

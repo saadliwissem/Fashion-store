@@ -83,6 +83,7 @@ import Profile from "./pages/Profile";
 import ClaimsPage from "./pages/ClaimsPage";
 import ClaimDetailsPage from "./pages/ClaimDetailsPage";
 import TermsAndConditions from "./pages/TermsAndConditions";
+import HomeSettings from "./pages/admin/HomeSettings";
 
 const GoogleCallback = lazy(() => import("./pages/GoogleCallback"));
 const Orders = lazy(() => import("./components/orders/OrdersList"));
@@ -213,6 +214,14 @@ function App() {
                           element={
                             <AdminRoute>
                               <AdminDashboard />
+                            </AdminRoute>
+                          }
+                        />
+                        <Route
+                          path="/home-settings"
+                          element={
+                            <AdminRoute>
+                              <HomeSettings />
                             </AdminRoute>
                           }
                         />

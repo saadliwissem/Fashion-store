@@ -1,3 +1,4 @@
+// pages/Home.jsx
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Button from "../components/common/Button";
@@ -10,104 +11,205 @@ import {
   Puzzle,
   Sparkles,
   Users,
+  Loader,
 } from "lucide-react";
 import ProductCard from "../components/products/ProductCard";
-import homeCover from "../assets/images/home_cover.jpg";
-import axios from "axios";
+import { homeAPI } from "../services/homeAPI";
+import { productsAPI } from "../services/api";
 import { useAuth } from "../context/AuthContext";
-const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+import toast from "react-hot-toast";
 
 const Home = () => {
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState([]);
+  const [settings, setSettings] = useState(null);
+  const [settingsLoading, setSettingsLoading] = useState(true);
   const { isAuthenticated } = useAuth();
+
   useEffect(() => {
+    fetchHomeSettings();
     fetchProducts();
   }, []);
 
-  const fetchProducts = async () => {
-    setLoading(true);
-
+  const fetchHomeSettings = async () => {
     try {
-      let url = `${API_BASE_URL}/products/featured`;
+      setSettingsLoading(true);
+      const response = await homeAPI.getSettings();
+      setSettings(response.data.data);
+    } catch (error) {
+      console.error("Error fetching home settings:", error);
+      toast.error("Failed to load home settings");
+    } finally {
+      setSettingsLoading(false);
+    }
+  };
 
-      // Make API call
-      const response = await axios.get(url);
+  const fetchProducts = async () => {
+    try {
+      const response = await productsAPI.getProducts({
+        featured: true,
+        limit: 4,
+      });
 
-      setProducts(response.data.products || response.data);
-    } catch (err) {
-      console.error("Error fetching products:", err);
+      let productsData = [];
+      if (response.data?.data) {
+        productsData = response.data.data;
+      } else if (response.data?.products) {
+        productsData = response.data.products;
+      } else if (Array.isArray(response.data)) {
+        productsData = response.data;
+      }
+      setProducts(productsData);
+    } catch (error) {
+      console.error("Error fetching products:", error);
       setProducts([]);
     } finally {
       setLoading(false);
     }
   };
+
+  // Loading state
+  if (settingsLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <Loader className="w-12 h-12 text-primary-600 animate-spin mx-auto" />
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Fallback if settings not loaded
+  if (!settings) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">
+            Failed to load content. Please refresh.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const { hero, mysteries, features, cta } = settings;
+
+  // Helper to get icon component
+  const getIconComponent = (iconName, className = "w-8 h-8") => {
+    const icons = {
+      Truck: <Truck className={className} />,
+      Shield: <Shield className={className} />,
+      Star: <Star className={className} />,
+      TrendingUp: <TrendingUp className={className} />,
+      Users: <Users className={className} />,
+      Puzzle: <Puzzle className={className} />,
+      Sparkles: <Sparkles className={className} />,
+    };
+    return icons[iconName] || <Star className={className} />;
+  };
+
   return (
-    <div className="fade-in ">
+    <div className="fade-in">
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-primary-50 to-pink-50 py-20">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-8">
               <div>
-                <span className="inline-block px-4 py-2 bg-primary-100 text-primary-700 rounded-full font-semibold mb-4">
-                  New Summer Collection 2024
-                </span>
-                <h1 className="text-5xl lg:text-6xl font-bold mb-6">
-                  Elevate Your
-                  <span className="block bg-gradient-to-r from-primary-600 to-pink-500 bg-clip-text text-transparent">
-                    Style Game
+                {hero?.badge && (
+                  <span className="inline-block px-4 py-2 bg-primary-100 text-primary-700 rounded-full font-semibold mb-4">
+                    {hero.badge}
                   </span>
+                )}
+                <h1 className="text-5xl lg:text-6xl font-bold mb-6">
+                  {hero?.title?.split(" ").map((word, index, array) => {
+                    const isLast = index === array.length - 1;
+                    const isSecondLast = index === array.length - 2;
+
+                    // If it's the last word, put it on a new line with gradient
+                    if (isLast) {
+                      return (
+                        <span
+                          key={index}
+                          className="block bg-gradient-to-r from-primary-600 to-pink-500 bg-clip-text text-transparent"
+                        >
+                          {word}
+                        </span>
+                      );
+                    }
+                    // If it's the second last word, also put it on the gradient line
+                    if (isSecondLast) {
+                      return (
+                        <span key={index}>
+                          <span className="bg-gradient-to-r from-primary-600 to-pink-500 bg-clip-text text-transparent">
+                            {word}
+                          </span>{" "}
+                        </span>
+                      );
+                    }
+                    // All other words stay on the same line
+                    return <span key={index}>{word} </span>;
+                  })}
                 </h1>
-                <p className="text-xl text-gray-600 mb-8">
-                  Discover premium clothing that combines comfort, style, and
-                  sustainability. Shop the latest trends at unbeatable prices.
-                </p>
+                <p className="text-xl text-gray-600 mb-8">{hero?.subtitle}</p>
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4">
-                <Link to="/shop">
+                <Link to={hero?.buttons?.primary?.link || "/shop"}>
                   <Button size="large" className="group">
-                    Shop Now
+                    {hero?.buttons?.primary?.text || "Shop Now"}
                     <ArrowRight className="ml-2 group-hover:translate-x-2 transition-transform" />
                   </Button>
                 </Link>
-                <Link to="/shop?category=new">
+                <Link
+                  to={hero?.buttons?.secondary?.link || "/shop?category=new"}
+                >
                   <Button variant="outline" size="large">
-                    New Arrivals
+                    {hero?.buttons?.secondary?.text || "New Arrivals"}
                   </Button>
                 </Link>
               </div>
 
-              <div className="grid grid-cols-3 gap-6 pt-8">
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-primary-600">
-                    10K+
+              {hero?.stats && (
+                <div className="grid grid-cols-3 gap-6 pt-8">
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-primary-600">
+                      {hero.stats.customers?.value || "10K+"}
+                    </div>
+                    <div className="text-gray-600">
+                      {hero.stats.customers?.label || "Happy Customers"}
+                    </div>
                   </div>
-                  <div className="text-gray-600">Happy Customers</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-primary-600">
-                    500+
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-primary-600">
+                      {hero.stats.products?.value || "500+"}
+                    </div>
+                    <div className="text-gray-600">
+                      {hero.stats.products?.label || "Premium Products"}
+                    </div>
                   </div>
-                  <div className="text-gray-600">Premium Products</div>
-                </div>
-                <div className="text-center">
-                  <div className="text-3xl font-bold text-primary-600">
-                    24/7
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-primary-600">
+                      {hero.stats.support?.value || "24/7"}
+                    </div>
+                    <div className="text-gray-600">
+                      {hero.stats.support?.label || "Customer Support"}
+                    </div>
                   </div>
-                  <div className="text-gray-600">Customer Support</div>
                 </div>
-              </div>
+              )}
             </div>
 
             <div className="relative">
               <div className="relative z-10">
                 <img
-                  src={homeCover}
-                  alt="Fashion Model"
+                  src={hero?.image?.url || "/placeholder-hero.jpg"}
+                  alt={hero?.image?.alt || "Hero Image"}
                   className="rounded-3xl shadow-2xl w-full h-auto"
+                  onError={(e) => {
+                    e.target.src = "/placeholder-hero.jpg";
+                  }}
                 />
               </div>
               <div className="absolute -bottom-6 -left-6 w-64 h-64 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-3xl opacity-20 blur-2xl"></div>
@@ -116,195 +218,185 @@ const Home = () => {
           </div>
         </div>
       </section>
-      {/* Puzzle Mysteries Section - FIXED VERSION */}
-      <section className="py-16">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-100 text-primary-700 font-semibold mb-4">
-              <span>✨</span>
-              <span>Exclusive Experience</span>
+
+      {/* Puzzle Mysteries Section */}
+      {mysteries?.enabled && (
+        <section className="py-16">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              {mysteries.badge && (
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-100 text-primary-700 font-semibold mb-4">
+                  <span>{mysteries.badge}</span>
+                </div>
+              )}
+              {/* Mysteries Title */}
+              <h2 className="text-3xl lg:text-4xl font-bold mb-4">
+                {mysteries.title?.split(" ").map((word, index, array) => {
+                  if (index === array.length - 1) {
+                    return (
+                      <span
+                        key={index}
+                        className="block bg-gradient-to-r from-primary-600 to-pink-500 bg-clip-text text-transparent"
+                      >
+                        {word}
+                      </span>
+                    );
+                  }
+                  if (index === array.length - 2) {
+                    return (
+                      <span key={index}>
+                        <span className="bg-gradient-to-r from-primary-600 to-pink-500 bg-clip-text text-transparent">
+                          {word}
+                        </span>{" "}
+                      </span>
+                    );
+                  }
+                  return <span key={index}>{word} </span>;
+                })}
+              </h2>
+              <p className="text-gray-600 max-w-2xl mx-auto">
+                {mysteries.subtitle}
+              </p>
             </div>
-            <h2 className="text-3xl lg:text-4xl font-bold mb-4">
-              Join Our
-              <span className="block bg-gradient-to-r from-primary-600 to-pink-500 bg-clip-text text-transparent">
-                Puzzle Mysteries
-              </span>
-            </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Become part of an exclusive community solving epic fashion
-              mysteries. Claim unique fragments, collaborate with keepers, and
-              earn legendary rewards.
-            </p>
-          </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            {/* Mystery Preview Card - REMOVED bg-white and gradient overlay */}
-            <div className="rounded-3xl overflow-hidden border border-gray-200 group hover:shadow-2xl transition-all duration-300">
-              <div className="h-48 overflow-hidden">
-                <img
-                  src="https://images.unsplash.com/photo-1635805737707-575885ab0820?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
-                  alt="Anime Chronicles Mystery"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-                {/* REMOVED: This gradient overlay div that could affect page background */}
-                {/* <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" /> */}
-              </div>
-
-              <div className="p-8">
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="px-3 py-1 rounded-full bg-primary-100 text-primary-700 text-sm font-medium">
-                    Active Mystery
-                  </span>
-                  <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-sm font-medium">
-                    32 Keepers
-                  </span>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+              {/* Mystery Preview Card */}
+              <div className="rounded-3xl overflow-hidden border border-gray-200 group hover:shadow-2xl transition-all duration-300">
+                <div className="h-48 overflow-hidden">
+                  <img
+                    src={
+                      mysteries.featuredMystery?.image?.url ||
+                      "/placeholder-mystery.jpg"
+                    }
+                    alt={
+                      mysteries.featuredMystery?.image?.alt ||
+                      "Featured Mystery"
+                    }
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                    onError={(e) => {
+                      e.target.src = "/placeholder-mystery.jpg";
+                    }}
+                  />
                 </div>
 
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">
-                  Anime Chronicles
-                </h3>
-                <p className="text-gray-600 mb-6">
-                  Unravel hidden truths behind legendary anime worlds. Claim
-                  fragments, solve mysteries, and earn exclusive rewards.
-                </p>
+                <div className="p-8">
+                  <div className="flex items-center gap-2 mb-4">
+                    <span
+                      className={`px-3 py-1 rounded-full text-sm font-medium ${
+                        mysteries.featuredMystery?.badgeColor ||
+                        "bg-primary-100 text-primary-700"
+                      }`}
+                    >
+                      {mysteries.featuredMystery?.badge || "Active Mystery"}
+                    </span>
+                    {mysteries.featuredMystery?.stats && (
+                      <span className="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-sm font-medium">
+                        {mysteries.featuredMystery.stats.claimed || 0} Keepers
+                      </span>
+                    )}
+                  </div>
 
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="text-center">
-                      <div className="text-xl font-bold text-gray-900">9</div>
-                      <div className="text-xs text-gray-500">Fragments</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-xl font-bold text-emerald-600">
-                        3
+                  <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                    {mysteries.featuredMystery?.title || "Featured Mystery"}
+                  </h3>
+                  <p className="text-gray-600 mb-6">
+                    {mysteries.featuredMystery?.description}
+                  </p>
+
+                  {mysteries.featuredMystery?.stats && (
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className="text-center">
+                          <div className="text-xl font-bold text-gray-900">
+                            {mysteries.featuredMystery.stats.fragments || 0}
+                          </div>
+                          <div className="text-xs text-gray-500">Fragments</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-xl font-bold text-emerald-600">
+                            {mysteries.featuredMystery.stats.claimed || 0}
+                          </div>
+                          <div className="text-xs text-gray-500">Claimed</div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-xl font-bold text-amber-600">
+                            {mysteries.featuredMystery.stats.available || 0}
+                          </div>
+                          <div className="text-xs text-gray-500">Available</div>
+                        </div>
                       </div>
-                      <div className="text-xs text-gray-500">Claimed</div>
-                    </div>
-                    <div className="text-center">
-                      <div className="text-xl font-bold text-amber-600">6</div>
-                      <div className="text-xs text-gray-500">Available</div>
-                    </div>
-                  </div>
 
-                  <Link
-                    to="/mysteries"
-                    className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-primary-600 to-pink-500 text-white font-medium hover:shadow-lg transition-all group-hover:scale-105"
+                      <Link
+                        to={mysteries.featuredMystery?.link || "/mysteries"}
+                        className="flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-primary-600 to-pink-500 text-white font-medium hover:shadow-lg transition-all group-hover:scale-105"
+                      >
+                        <span>🧩</span>
+                        Explore
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* How It Works */}
+              <div className="space-y-6">
+                {mysteries.steps?.map((step, index) => (
+                  <div
+                    key={index}
+                    className="p-8 bg-white rounded-2xl border border-gray-100 hover:shadow-lg transition-shadow"
                   >
-                    <span>🧩</span>
-                    Explore
-                  </Link>
-                </div>
+                    <div className="flex items-center gap-4 mb-6">
+                      <div
+                        className={`w-12 h-12 bg-gradient-to-br ${
+                          step.bgColor || "from-primary-100 to-primary-200"
+                        } rounded-2xl flex items-center justify-center`}
+                      >
+                        <span className="text-2xl">{step.icon || "🔍"}</span>
+                      </div>
+                      <div>
+                        <h4 className="text-xl font-bold mb-1">{step.title}</h4>
+                        <p className="text-gray-600">{step.description}</p>
+                      </div>
+                    </div>
+                    <p className="text-gray-700">{step.detail}</p>
+                  </div>
+                ))}
               </div>
             </div>
 
-            {/* How It Works - REMOVED glass-card class */}
-            <div className="space-y-6">
-              <div className="p-8">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-12 h-12 bg-gradient-to-br from-primary-100 to-primary-200 rounded-2xl flex items-center justify-center">
-                    <span className="text-2xl">🔍</span>
-                  </div>
-                  <div>
-                    <h4 className="text-xl font-bold mb-1">
-                      Discover Mysteries
-                    </h4>
-                    <p className="text-gray-600">
-                      Browse exclusive puzzle collections
-                    </p>
-                  </div>
-                </div>
-                <p className="text-gray-700">
-                  Each mystery contains unique fragments that form part of a
-                  larger story. Explore themes like Anime Chronicles, Mythology
-                  Enigmas, and more.
-                </p>
-              </div>
-
-              <div className="p-8">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-12 h-12 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-2xl flex items-center justify-center">
-                    <span className="w-6 h-6">👥</span>
-                  </div>
-                  <div>
-                    <h4 className="text-xl font-bold mb-1">
-                      Claim & Collaborate
-                    </h4>
-                    <p className="text-gray-600">
-                      Join keepers solving puzzles together
-                    </p>
-                  </div>
-                </div>
-                <p className="text-gray-700">
-                  Claim unique fragments, connect with other keepers, and work
-                  together to unravel mysteries. Each fragment is globally
-                  unique to its owner.
-                </p>
-              </div>
-
-              <div className="p-8">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="w-12 h-12 bg-gradient-to-br from-amber-100 to-amber-200 rounded-2xl flex items-center justify-center">
-                    <span className="w-6 h-6">✨</span>
-                  </div>
-                  <div>
-                    <h4 className="text-xl font-bold mb-1">Earn Rewards</h4>
-                    <p className="text-gray-600">
-                      Unlock exclusive prizes and recognition
-                    </p>
-                  </div>
-                </div>
-                <p className="text-gray-700">
-                  Solve mysteries to earn limited edition artifacts, digital
-                  content, special recognition, and early access to future
-                  releases.
-                </p>
-              </div>
+            <div className="text-center">
+              <Link
+                to={mysteries.ctaButton?.link || "/mysteries"}
+                className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-primary-600 to-pink-500 text-white font-bold text-lg hover:shadow-xl transition-all hover:scale-105"
+              >
+                <span className="w-5 h-5">🧩</span>
+                {mysteries.ctaButton?.text || "Explore All Mysteries"}
+                <span className="w-5 h-5">→</span>
+              </Link>
             </div>
           </div>
+        </section>
+      )}
 
-          <div className="text-center">
-            <Link
-              to="/mysteries"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-xl bg-gradient-to-r from-primary-600 to-pink-500 text-white font-bold text-lg hover:shadow-xl transition-all hover:scale-105"
-            >
-              <span className="w-5 h-5">🧩</span>
-              Explore All Mysteries
-              <span className="w-5 h-5">→</span>
-            </Link>
-          </div>
-        </div>
-      </section>
       {/* Features */}
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="glass-card p-8 text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-primary-100 to-primary-200 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <Truck className="w-8 h-8 text-primary-600" />
-              </div>
-              <h3 className="text-xl font-bold mb-4">Free Shipping</h3>
-              <p className="text-gray-600">
-                Free delivery on orders over 300 TND
-              </p>
-            </div>
-
-            <div className="glass-card p-8 text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <Shield className="w-8 h-8 text-emerald-600" />
-              </div>
-              <h3 className="text-xl font-bold mb-4">Secure Payment</h3>
-              <p className="text-gray-600">100% secure payment processing</p>
-            </div>
-
-            <div className="glass-card p-8 text-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-amber-100 to-amber-200 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <Star className="w-8 h-8 text-amber-600" />
-              </div>
-              <h3 className="text-xl font-bold mb-4">Premium Quality</h3>
-              <p className="text-gray-600">
-                High-quality materials & craftsmanship
-              </p>
-            </div>
+            {features
+              ?.filter((f) => f.enabled !== false)
+              .map((feature, index) => (
+                <div key={index} className="glass-card p-8 text-center">
+                  <div
+                    className={`w-16 h-16 bg-gradient-to-br ${
+                      feature.bgColor || "from-primary-100 to-primary-200"
+                    } rounded-2xl flex items-center justify-center mx-auto mb-6`}
+                  >
+                    {getIconComponent(feature.icon, "w-8 h-8")}
+                  </div>
+                  <h3 className="text-xl font-bold mb-4">{feature.title}</h3>
+                  <p className="text-gray-600">{feature.description}</p>
+                </div>
+              ))}
           </div>
         </div>
       </section>
@@ -331,46 +423,58 @@ const Home = () => {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-            {loading
-              ? "Loading products..."
-              : products.map((product) => (
-                  <ProductCard key={product._id} product={product} />
-                ))}
+            {loading ? (
+              <div className="col-span-4 flex justify-center py-12">
+                <Loader className="w-8 h-8 text-primary-600 animate-spin" />
+              </div>
+            ) : products.length > 0 ? (
+              products.map((product) => (
+                <ProductCard key={product._id} product={product} />
+              ))
+            ) : (
+              <div className="col-span-4 text-center py-12 text-gray-600">
+                No featured products available
+              </div>
+            )}
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-primary-600 to-black rounded-3xl mx-4 lg:mx-8">
+      <section
+        className={`py-20 bg-gradient-to-r ${
+          cta?.bgGradient || "from-primary-600 to-black"
+        } rounded-3xl mx-4 lg:mx-8`}
+      >
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
-            Ready to Transform Your Wardrobe?
+            {cta?.title || "Ready to Transform Your Wardrobe?"}
           </h2>
           <p className="text-xl text-primary-100 mb-8 max-w-2xl mx-auto">
-            Join thousands of satisfied customers who have elevated their style
-            with DAR ENNAR
+            {cta?.subtitle ||
+              "Join thousands of satisfied customers who have elevated their style with PUZZLE"}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/shop">
+            <Link to={cta?.buttons?.primary?.link || "/shop"}>
               <Button
-                variant="secondary"
+                variant={cta?.buttons?.primary?.variant || "secondary"}
                 size="large"
                 className="bg-white text-primary-600 hover:bg-gray-100"
               >
-                Start Shopping
+                {cta?.buttons?.primary?.text || "Start Shopping"}
               </Button>
             </Link>
             {!isAuthenticated && (
-              <Link to="/register">
+              <Link to={cta?.buttons?.secondary?.link || "/register"}>
                 <Button
-                  variant="outline"
+                  variant={cta?.buttons?.secondary?.variant || "outline"}
                   size="large"
                   className="border-white text-white hover:bg-white/10"
                 >
-                  Create Account
+                  {cta?.buttons?.secondary?.text || "Create Account"}
                 </Button>
               </Link>
-            )}{" "}
+            )}
           </div>
         </div>
       </section>

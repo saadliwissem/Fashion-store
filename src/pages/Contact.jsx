@@ -56,7 +56,7 @@ const ContactUs = () => {
     {
       icon: <Phone className="w-6 h-6" />,
       title: "Phone Support",
-      details: ["+216 70 123 456", "+216 71 987 654"],
+      details: ["+216 21 409 809", "+216 50 385 161"],
       description: "Call us for immediate assistance",
       color: "text-blue-600",
       bgColor: "bg-blue-100",
@@ -66,8 +66,8 @@ const ContactUs = () => {
     {
       icon: <Mail className="w-6 h-6" />,
       title: "Email Us",
-      details: ["contact@DAR ENNAR.tn", "support@DAR ENNAR.tn"],
-      description: "We reply within 2 hours",
+      details: ["ordercraft@order-craft.net"],
+      description: "We reply within 4 hours",
       color: "text-primary-600",
       bgColor: "bg-primary-100",
       actionText: "Send Email",
@@ -82,50 +82,41 @@ const ContactUs = () => {
       bgColor: "bg-emerald-100",
       actionText: "Chat Now",
       action: () => {
-        toast.success("Live chat will open in a new window");
+        toast.success("Live chat is not active for now");
         // In production: window.open('/chat', '_blank')
       },
     },
     {
       icon: <MapPin className="w-6 h-6" />,
       title: "Visit Our Store",
-      details: ["Avenue Habib Bourguiba", "Tunis, Tunisia"],
-      description: "Free parking available",
+      details: ["Rue Sidi Jebali", "Ariana, Tunisia"],
+      description: "",
       color: "text-rose-600",
       bgColor: "bg-rose-100",
       actionText: "Get Directions",
       action: () =>
-        window.open(
-          "https://www.google.com/maps/search/?api=1&query=Avenue+Habib+Bourguiba+Tunis+Tunisia",
-          "_blank"
-        ),
+        window.open("https://maps.app.goo.gl/ByXFyXTBSGFyaheJ6", "_blank"),
     },
   ];
 
   const departments = [
     {
       name: "Customer Support",
-      email: "support@DAR ENNAR.tn",
-      phone: "+216 70 111 222",
+      email: "support@order-craft.net",
+      phone: "+216 21409809",
       description: "Order issues, returns, and general inquiries",
     },
     {
       name: "Sales & Partnerships",
-      email: "sales@DAR ENNAR.tn",
-      phone: "+216 70 333 444",
+      email: "support@order-craft.net",
+      phone: "+216 21 409 809",
       description: "Wholesale, corporate orders, and partnerships",
     },
     {
       name: "Technical Support",
-      email: "tech@DAR ENNAR.tn",
-      phone: "+216 70 555 666",
+      email: "support@order-craft.net",
+      phone: "+216 21 409 809",
       description: "Website issues, account problems, and technical queries",
-    },
-    {
-      name: "Careers",
-      email: "careers@DAR ENNAR.tn",
-      phone: "+216 70 777 888",
-      description: "Job opportunities and internship inquiries",
     },
   ];
 
@@ -605,45 +596,6 @@ const ContactUs = () => {
                   <span className="font-medium">Note:</span> Online orders are
                   processed 24/7. Physical store hours may vary on holidays.
                 </p>
-              </div>
-            </div>
-
-            {/* Map Location */}
-            <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-gray-900 mb-4">
-                  Our Main Store
-                </h3>
-                <p className="text-gray-600 mb-4">
-                  Visit our flagship store in the heart of Tunis. Free parking
-                  available.
-                </p>
-                <div className="flex items-center gap-2 text-gray-700 mb-4">
-                  <MapPin className="w-5 h-5 text-primary-600" />
-                  <span>Avenue Habib Bourguiba, Tunis, Tunisia</span>
-                </div>
-              </div>
-              <div className="h-64 bg-gray-200 relative">
-                {/* In production, use a real map component like Google Maps */}
-                <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-100 to-primary-100">
-                  <div className="text-center">
-                    <MapPin className="w-12 h-12 text-primary-600 mx-auto mb-3" />
-                    <p className="font-medium text-gray-700">Interactive Map</p>
-                    <p className="text-sm text-gray-500 mt-1">
-                      Click to view in Google Maps
-                    </p>
-                  </div>
-                </div>
-                <button
-                  onClick={() =>
-                    window.open(
-                      "https://www.google.com/maps/search/?api=1&query=Avenue+Habib+Bourguiba+Tunis+Tunisia",
-                      "_blank"
-                    )
-                  }
-                  className="absolute inset-0 w-full h-full"
-                  aria-label="Open in Google Maps"
-                />
               </div>
             </div>
           </div>

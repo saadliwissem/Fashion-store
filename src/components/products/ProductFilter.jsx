@@ -1,12 +1,13 @@
+// components/products/ProductFilter.jsx
 import React from "react";
 import { X, DollarSign, Star } from "lucide-react";
 import Button from "../common/Button";
 
 const ProductFilter = ({
-  categories,
-  selectedCategory,
+  categories = [],
+  selectedCategory = "all",
   onCategoryChange,
-  priceRange,
+  priceRange = [0, 1000],
   onPriceChange,
   maxPrice = 1000,
   availableSizes = [],
@@ -22,20 +23,16 @@ const ProductFilter = ({
 }) => {
   const ratings = [5, 4, 3, 2, 1];
 
-  // Format price for display
   const formatPrice = (price) => {
-    if (price >= 1000) {
-      return `${(price / 1000).toFixed(0)}k`;
-    }
-    return `${price} TND`;
+    return `${Math.round(price)} TND`;
   };
 
-  // Create price marks dynamically based on maxPrice
+  // Create price marks dynamically
   const getPriceMarks = () => {
     const marks = [];
     const step = Math.ceil(maxPrice / 4);
     for (let i = 0; i <= 4; i++) {
-      const value = i * step;
+      const value = Math.min(i * step, maxPrice);
       marks.push({
         value,
         label: formatPrice(value),
@@ -46,9 +43,8 @@ const ProductFilter = ({
 
   const priceMarks = getPriceMarks();
 
-  // Check if a color is selected
-  const isColorSelected = (colorValue) => {
-    return selectedColors.includes(colorValue);
+  const isColorSelected = (colorName) => {
+    return selectedColors.includes(colorName);
   };
 
   return (
@@ -65,28 +61,32 @@ const ProductFilter = ({
       <div className="mb-8">
         <h3 className="font-semibold text-gray-900 mb-4">Categories</h3>
         <div className="space-y-2 max-h-60 overflow-y-auto pr-2">
-          {categories.map((category) => (
-            <button
-              key={category.id}
-              onClick={() => onCategoryChange(category.id)}
-              className={`flex items-center justify-between w-full p-3 rounded-lg text-left transition-colors ${
-                selectedCategory === category.id
-                  ? "bg-primary-50 text-primary-700"
-                  : "hover:bg-gray-50"
-              }`}
-            >
-              <span className="font-medium">{category.name}</span>
-              <span
-                className={`px-2 py-1 rounded-full text-xs ${
+          {categories.length > 0 ? (
+            categories.map((category) => (
+              <button
+                key={category.id}
+                onClick={() => onCategoryChange(category.id)}
+                className={`flex items-center justify-between w-full p-3 rounded-lg text-left transition-colors ${
                   selectedCategory === category.id
-                    ? "bg-primary-100 text-primary-700"
-                    : "bg-gray-100 text-gray-600"
+                    ? "bg-primary-50 text-primary-700"
+                    : "hover:bg-gray-50"
                 }`}
               >
-                {category.count || 0}
-              </span>
-            </button>
-          ))}
+                <span className="font-medium">{category.name}</span>
+                <span
+                  className={`px-2 py-1 rounded-full text-xs ${
+                    selectedCategory === category.id
+                      ? "bg-primary-100 text-primary-700"
+                      : "bg-gray-100 text-gray-600"
+                  }`}
+                >
+                  {category.count || 0}
+                </span>
+              </button>
+            ))
+          ) : (
+            <p className="text-gray-500 text-sm">No categories available</p>
+          )}
         </div>
       </div>
 
@@ -133,7 +133,7 @@ const ProductFilter = ({
         </div>
       </div>
 
-      {/* Sizes - Only show if available */}
+      {/* Sizes */}
       {availableSizes.length > 0 && (
         <div className="mb-8">
           <h3 className="font-semibold text-gray-900 mb-4">Size</h3>
@@ -155,7 +155,7 @@ const ProductFilter = ({
         </div>
       )}
 
-      {/* Colors - Only show if available */}
+      {/* Colors */}
       {availableColors.length > 0 && (
         <div className="mb-8">
           <h3 className="font-semibold text-gray-900 mb-4">Color</h3>
@@ -207,7 +207,7 @@ const ProductFilter = ({
           {ratings.map((rating) => (
             <button
               key={rating}
-              onClick={() => onRatingChange(minRating === rating ? 0 : rating)}
+              onClick={() => onRatingChange(rating)}
               className={`flex items-center gap-2 p-2 w-full rounded-lg transition-colors ${
                 minRating === rating
                   ? "bg-amber-50 text-amber-700"

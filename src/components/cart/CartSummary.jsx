@@ -84,7 +84,7 @@ const CartSummary = ({
                     </p>
                     <div className="flex items-center justify-between text-sm text-gray-600">
                       <span>Qty: {itemQuantity}</span>
-                      <span>${itemTotal.toFixed(2)}</span>
+                      <span>{itemTotal.toFixed(2)} DT</span>
                     </div>
                   </div>
                 </div>

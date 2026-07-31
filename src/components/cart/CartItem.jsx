@@ -104,7 +104,7 @@ const CartItem = ({
               {/* Mobile Actions */}
               <div className="flex items-center gap-4 mt-4 md:hidden">
                 <div className="text-lg font-bold text-gray-900">
-                  ${itemTotal.toFixed(2)}
+                  {itemTotal.toFixed(2)}DT
                 </div>
                 <div className="flex items-center gap-2">
                   <button
@@ -131,10 +131,12 @@ const CartItem = ({
 
         {/* Price - Desktop */}
         <div className="hidden md:block col-span-2 text-center">
-          <span className="text-gray-900 font-medium">${price.toFixed(2)}</span>
+          <span className="text-gray-900 font-medium">
+            {price.toFixed(2)} DT
+          </span>
           {item.originalPrice && (
             <div className="text-sm text-gray-400 line-through">
-              ${item.originalPrice.toFixed(2)}
+              {item.originalPrice.toFixed(2)} DT
             </div>
           )}
         </div>
@@ -202,11 +204,11 @@ const CartItem = ({
         {/* Total - Desktop */}
         <div className="hidden md:block col-span-2 text-center">
           <span className="text-xl font-bold text-gray-900">
-            ${itemTotal.toFixed(2)}
+            {itemTotal.toFixed(2)} DT
           </span>
           {quantity > 1 && (
             <div className="text-sm text-gray-500">
-              ${price.toFixed(2)} × {quantity}
+              {price.toFixed(2)} DT × {quantity}
             </div>
           )}
         </div>
